@@ -1,0 +1,9 @@
+{
+  "extends": [
+    "./eslint",
+    "./eslint/react",
+    "./eslint/next",
+    "./eslint/typescript",
+    "prettier"
+  ]
+}
