@@ -12,6 +12,6 @@ export const Layout: React.FC<LayoutProps> = ({children}) => (
   <AntdLayout>
     <AntdLayout.Header />
     <main className={styles.main}>{children}</main>
-    <AntdLayout.Footer />
+    {/* <AntdLayout.Footer /> */}
   </AntdLayout>
 )
