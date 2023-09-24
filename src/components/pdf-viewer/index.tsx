@@ -4,7 +4,7 @@ import {StyleSheet, PDFViewer} from '@react-pdf/renderer'
 import dynamic from 'next/dynamic'
 
 import styles from './styles.module.css'
-import {Asana} from 'types'
+import type {Sequence} from 'types'
 import {PDFDocument} from './document'
 
 const classes = StyleSheet.create({
@@ -23,14 +23,14 @@ const classes = StyleSheet.create({
 })
 
 interface PdfViewerProps {
-  asanas: Asana[]
+  sequence: Sequence
 }
 
-const PdfViewer: React.FC<PdfViewerProps> = ({asanas}) => {
+const PdfViewer: React.FC<PdfViewerProps> = ({sequence}) => {
   return (
     <div className={styles.viewerWrapper}>
       <PDFViewer style={classes.viewer} showToolbar={false}>
-        {PDFDocument(asanas)}
+        {PDFDocument(sequence)}
       </PDFViewer>
     </div>
   )

@@ -13,7 +13,7 @@ interface AsanaCardProps {
   data: Asana
   isLink?: boolean
   href?: string
-  size: 'default' | 'small'
+  size?: 'default' | 'small'
   onAsanaClick?: (asana: Asana) => void
 }
 
@@ -21,7 +21,8 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
   data,
   isLink,
   href,
-  onAsanaClick: onAsanaClickProp
+  onAsanaClick: onAsanaClickProp,
+  size = 'default'
 }) => {
   const {name, image, description} = data
 
@@ -43,14 +44,16 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
         </div>
         <div>
           <Typography.Title level={2}>{name}</Typography.Title>
-          {description && <Typography>{description}</Typography>}
+          {!!description && size === 'default' && (
+            <Typography>{description}</Typography>
+          )}
         </div>
       </Link>
     )
   }
 
   return (
-    <button className={styles.card} onClick={onAsanaClick}>
+    <button className={clsx(styles.card, styles[size])} onClick={onAsanaClick}>
       {image && (
         <div className={styles.imageContainer}>
           <img
@@ -63,8 +66,14 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
         </div>
       )}
       <div>
-        {name && <Typography.Title level={2}>{name}</Typography.Title>}
-        {description && <Typography>{description}</Typography>}
+        {name && (
+          <Typography.Title level={2} className={styles.title}>
+            {name}
+          </Typography.Title>
+        )}
+        {!!description && size === 'default' && (
+          <Typography>{description}</Typography>
+        )}
       </div>
     </button>
   )

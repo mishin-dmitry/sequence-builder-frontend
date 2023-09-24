@@ -17,7 +17,7 @@ export interface AsanaCardsListProps {
 
 export const AsanaCardsList: React.FC<AsanaCardsListProps> = ({
   asanas = [],
-  size = 'default',
+  size,
   className,
   onAsanaClick,
   withLinks
