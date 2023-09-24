@@ -5,6 +5,10 @@
   padding: 5px;
   border-radius: 8px;
   position: relative;
+
+  &.dragging {
+    background-color: lightblue;
+  }
 }
 
 .deleteButton {
@@ -31,4 +35,7 @@
 
 .sequence {
   margin: -10px 0 0 -10px;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
 }
