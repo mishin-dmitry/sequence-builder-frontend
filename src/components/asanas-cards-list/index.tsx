@@ -37,7 +37,8 @@ export const AsanaCardsList: React.FC<AsanaCardsListProps> = ({
         ))}
       </ul>
     ),
-    [asanas]
+    [asanas, className, onAsanaClick, size, withLinks]
   )
+
   return list
 }

@@ -12,7 +12,11 @@ import {PDFDocument} from 'components/pdf-viewer/document'
 import {saveAs} from 'file-saver'
 import {pdf} from '@react-pdf/renderer'
 import {SequenceRow} from 'components/sequence-row'
-import {DragDropContext, resetServerContext} from 'react-beautiful-dnd'
+import {
+  DragDropContext,
+  resetServerContext,
+  type DropResult
+} from 'react-beautiful-dnd'
 import type {GetServerSideProps} from 'next/types'
 
 interface Sequence {
@@ -42,10 +46,14 @@ interface BuilderData {
 const initialBuilderData: BuilderData = {
   asanas: {},
   sequences: {},
-  sequenceOrder: ['sequence-1']
+  sequenceOrder: []
 }
 
+const MAX_SEQUENCE_COUNT = 5
+
 const CreateSequencePage: React.FC = () => {
+  const [editingSequence, setEditingSequence] = useState<string>('')
+
   const [builderData, setBuilderData] =
     useState<BuilderData>(initialBuilderData)
 
@@ -53,33 +61,42 @@ const CreateSequencePage: React.FC = () => {
   const [isModelVisible, setIsModelVisible] = useState(false)
   const {isFetching, asanas} = useAsana()
 
-  const onAsanaClick = useCallback(({pk, ...restData}: Asana) => {
-    setBuilderData((prevData) => {
-      const prevBuilderSequences = prevData.sequences['sequence-1']
+  const sequencesCount = useMemo(
+    () => Object.keys(builderData.sequences).length,
+    [builderData.sequences]
+  )
 
-      const newBuilderData: BuilderData = {
-        asanas: {
-          ...prevData.asanas,
-          [`asana-${pk}`]: {
-            pk,
-            ...restData
-          }
-        },
-        sequences: {
-          ...prevData.sequences,
-          // TODO
-          'sequence-1': {
-            ...prevBuilderSequences,
-            id: 'sequence-1',
-            asanaIds: [...(prevBuilderSequences?.asanaIds ?? []), `asana-${pk}`]
-          }
-        },
-        sequenceOrder: [...prevData.sequenceOrder]
-      }
+  const onAsanaClick = useCallback(
+    ({pk, ...restData}: Asana) => {
+      setBuilderData((prevData) => {
+        const prevBuilderSequences = prevData.sequences[editingSequence]
 
-      return newBuilderData
-    })
-  }, [])
+        const newBuilderData: BuilderData = {
+          asanas: {
+            ...prevData.asanas,
+            [`asana-${pk}`]: {
+              pk,
+              ...restData
+            }
+          },
+          sequences: {
+            ...prevData.sequences,
+            [editingSequence]: {
+              ...prevBuilderSequences,
+              asanaIds: [
+                ...(prevBuilderSequences?.asanaIds ?? []),
+                `asana-${pk}`
+              ]
+            }
+          },
+          sequenceOrder: [...prevData.sequenceOrder]
+        }
+
+        return newBuilderData
+      })
+    },
+    [editingSequence]
+  )
 
   const deleteAsanaById = useCallback((id: number): void => {
     setSequence(({title, asanas}) => ({
@@ -107,16 +124,42 @@ const CreateSequencePage: React.FC = () => {
     setSequence(({asanas}) => ({asanas, title}))
   }, [])
 
-  const onDragStart = useCallback((data) => {
+  const onAddSequence = useCallback(() => {
+    const newSequenceCount = sequencesCount + 1
+    const newSequenceId = `sequence-${newSequenceCount}`
+
+    setBuilderData((prevBuildData) => {
+      const newBuilderData: BuilderData = {
+        ...prevBuildData,
+        sequences: {
+          ...prevBuildData.sequences,
+          [newSequenceId]: {
+            id: newSequenceId,
+            title: '',
+            asanaIds: []
+          }
+        },
+        sequenceOrder: [...prevBuildData.sequenceOrder, newSequenceId]
+      }
+
+      return newBuilderData
+    })
+
+    if (!sequencesCount) {
+      setEditingSequence(newSequenceId)
+    }
+  }, [sequencesCount])
+
+  const onDragStart = useCallback((data: any) => {
     console.log('start', data)
   }, [])
 
-  const onDragUpdate = useCallback((data) => {
+  const onDragUpdate = useCallback((data: any) => {
     console.log('update', data)
   }, [])
 
   const onDragEnd = useCallback(
-    ({source, destination, draggableId}) => {
+    ({source, destination, draggableId}: DropResult) => {
       if (!destination) {
         return
       }
@@ -127,6 +170,13 @@ const CreateSequencePage: React.FC = () => {
       ) {
         return
       }
+
+      // Так как id для draggable должен быть уникальным
+      // для каждый асаны в id мы добавляем index,
+      // но здесь нам index не нужен, поэтому уберем его
+      const [prefix, pk] = draggableId.split('-')
+
+      draggableId = `${prefix}-${pk}`
 
       const sequence = builderData.sequences[source.droppableId]
       const newAsanasIds = [...sequence.asanaIds]
@@ -147,12 +197,12 @@ const CreateSequencePage: React.FC = () => {
         }
       }
 
-      console.log(newBuilderData, builderData)
-
       setBuilderData(newBuilderData)
     },
     [builderData]
   )
+
+  const onSequenceRowClick = useCallback(setEditingSequence, [])
 
   const sequences = useMemo(() => {
     return builderData.sequenceOrder.map((sequenceId) => {
@@ -173,6 +223,8 @@ const CreateSequencePage: React.FC = () => {
             onDelete={deleteAsanaById}
             onChange={onSequenceTitleChange}
             id={sequenceId}
+            isEditing={sequenceId === editingSequence}
+            onClick={onSequenceRowClick}
           />
         </DragDropContext>
       )
@@ -185,7 +237,9 @@ const CreateSequencePage: React.FC = () => {
     onDragStart,
     onDragUpdate,
     deleteAsanaById,
-    onSequenceTitleChange
+    onSequenceTitleChange,
+    editingSequence,
+    onSequenceRowClick
   ])
 
   if (isFetching) {
@@ -203,7 +257,19 @@ const CreateSequencePage: React.FC = () => {
         />
       </div>
       <div className={styles.previewWrapper}>
-        <div className={styles.sequences}>{sequences}</div>
+        <div className={styles.sequences}>
+          {sequences}
+          {sequencesCount < MAX_SEQUENCE_COUNT && (
+            <Button
+              type="default"
+              size="large"
+              className={styles.button}
+              block
+              onClick={onAddSequence}>
+              Добавить ряд
+            </Button>
+          )}
+        </div>
 
         <div className={styles.actionButtons}>
           <Button

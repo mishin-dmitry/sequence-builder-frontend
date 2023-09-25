@@ -6,7 +6,7 @@ module.exports = {
     node: true,
     jest: true
   },
-  extends: ['eslint:recommended', 'plugin:security/recommended'],
+  extends: ['eslint:recommended'],
   rules: {
     'no-multiple-empty-lines': ['error', {max: 1}],
     'no-empty': ['error', {allowEmptyCatch: true}],

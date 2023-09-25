@@ -30,7 +30,7 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
 
   const onAsanaClick = useCallback(() => {
     onAsanaClickProp?.(data)
-  }, [])
+  }, [data, onAsanaClickProp])
 
   if (!isDataExists) {
     return null

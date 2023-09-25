@@ -13,23 +13,28 @@ interface SequenceRowProps {
   data: Asana[]
   id: string
   title?: string
+  isEditing?: boolean
   onDelete: (id: number) => void
   onChange: (title: string) => void
+  onClick: (id: string) => void
 }
 
 export const SequenceRow: React.FC<SequenceRowProps> = ({
   data = [],
+  id,
+  isEditing,
   onDelete,
   onChange,
-  id
+  onClick: onClickProp
 }) => {
   const sequence = useMemo(() => {
     return data.map(({pk, image}, index) => {
+      // Так как в одной последовательности может быть несколько
+      // одинаковых асан, а id должен быть уникальным для каждой асаны
+      const uniqueId = `asana-${pk}-${index}`
+
       return (
-        <Draggable
-          index={index}
-          draggableId={`asana-${pk}`}
-          key={`asana-${pk}`}>
+        <Draggable index={index} draggableId={uniqueId} key={uniqueId}>
           {({draggableProps, dragHandleProps, innerRef}, {isDragging}) => (
             <div
               className={clsx(
@@ -81,8 +86,12 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
     )
   }, [id, sequence])
 
+  const onClick = useCallback(() => onClickProp(id), [id, onClickProp])
+
   return (
-    <div className={styles.sequenceRow}>
+    <div
+      className={clsx(styles.sequenceRow, isEditing && styles.editing)}
+      onClick={onClick}>
       <Input
         placeholder="Введите заголовок..."
         onChange={onInputChange}
@@ -91,14 +100,6 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
         name="title"
       />
       {droppable}
-      {/* <Droppable droppableId={id}>
-        {({innerRef, placeholder, droppableProps}) => (
-          <div ref={innerRef} className={styles.sequence} {...droppableProps}>
-            {sequence}
-            {placeholder}
-          </div>
-        )}
-      </Droppable> */}
     </div>
   )
 }
