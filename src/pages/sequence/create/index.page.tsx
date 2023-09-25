@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 
 import styles from './styles.module.css'
 import {Spinner} from 'components/spinner'
@@ -19,6 +19,9 @@ import {
 } from 'react-beautiful-dnd'
 import type {GetServerSideProps} from 'next/types'
 import {Resizable} from 're-resizable'
+import {Input} from 'components/input'
+
+import debounce from 'lodash.debounce'
 
 interface BuilderData {
   asanas: {
@@ -50,12 +53,19 @@ const MAX_SEQUENCE_COUNT = 5
 
 const CreateSequencePage: React.FC = () => {
   const [editingSequence, setEditingSequence] = useState<string>('sequence-1')
+  const [documentTitle, setDocumentTitle] = useState<string>('')
 
   const [builderData, setBuilderData] =
     useState<BuilderData>(initialBuilderData)
 
   const [isModelVisible, setIsModelVisible] = useState(false)
-  const {isFetching, asanas} = useAsana()
+  const {isFetching, asanas: allAsanas} = useAsana()
+
+  const [asanas, setAsanas] = useState(allAsanas)
+
+  useEffect(() => {
+    setAsanas(allAsanas)
+  }, [allAsanas])
 
   const sequencesCount = useMemo(
     () => Object.keys(builderData.sequences).length,
@@ -122,10 +132,10 @@ const CreateSequencePage: React.FC = () => {
   )
 
   // Очистить последовательность
-  const clearSequence = useCallback(
-    () => setBuilderData(initialBuilderData),
-    []
-  )
+  const clearSequence = useCallback(() => {
+    setBuilderData(initialBuilderData)
+    setDocumentTitle('')
+  }, [])
 
   // Показать превью pdf файла
   const showPreview = useCallback(() => setIsModelVisible(true), [])
@@ -137,13 +147,13 @@ const CreateSequencePage: React.FC = () => {
     const {sequences, asanas} = builderData
 
     return {
-      documentTitle: 'Заголовок последовательности',
+      documentTitle,
       rows: Object.values(sequences).map(({title, asanaIds}) => ({
         title,
         asanas: asanaIds.map((id) => asanas[id])
       }))
     }
-  }, [builderData])
+  }, [builderData, documentTitle])
 
   // Сгенерировать pdf файл
   const generatePdf = useCallback(async () => {
@@ -258,7 +268,9 @@ const CreateSequencePage: React.FC = () => {
     [builderData]
   )
 
-  const onSequenceRowClick = useCallback(setEditingSequence, [])
+  const onSequenceRowClick = useCallback(setEditingSequence, [
+    setEditingSequence
+  ])
 
   const sequences = useMemo(() => {
     return builderData.sequenceOrder.map((sequenceId) => {
@@ -298,6 +310,26 @@ const CreateSequencePage: React.FC = () => {
     onSequenceRowClick
   ])
 
+  const onSearchAsana = useCallback(
+    debounce((event: React.ChangeEvent<HTMLInputElement>) => {
+      const {value} = event.target
+
+      const filteredAsanas = value
+        ? allAsanas.filter(({name}) => name.toLowerCase().includes(value))
+        : allAsanas
+
+      setAsanas(filteredAsanas)
+    }, 200),
+    [allAsanas]
+  )
+
+  const onDocumentTitleChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setDocumentTitle(event.target.value)
+    },
+    []
+  )
+
   if (isFetching) {
     return <Spinner />
   }
@@ -318,6 +350,14 @@ const CreateSequencePage: React.FC = () => {
         maxWidth="505px"
         minWidth="160px">
         <div className={styles.listWrapper}>
+          <div className={styles.searchWrapper}>
+            <Input
+              name="search"
+              placeholder="Найти асану..."
+              allowClear
+              onChange={onSearchAsana}
+            />
+          </div>
           <AsanaCardsList
             asanas={asanas}
             className={styles.list}
@@ -327,6 +367,13 @@ const CreateSequencePage: React.FC = () => {
         </div>
       </Resizable>
       <div className={styles.previewWrapper}>
+        <Input
+          placeholder="Введите название вашей последовательности..."
+          label="Название последовательности"
+          value={documentTitle}
+          onChange={onDocumentTitleChange}
+          name="documentTitle"
+        />
         <div className={styles.sequences}>
           {sequences}
           {sequencesCount < MAX_SEQUENCE_COUNT && (
