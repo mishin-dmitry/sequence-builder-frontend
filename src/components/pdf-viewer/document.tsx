@@ -19,9 +19,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   image: {
-    margin: 10,
-    width: '70px',
-    height: '70px'
+    margin: 5,
+    width: '50px',
+    height: '50px'
   },
   text: {},
   columnView: {

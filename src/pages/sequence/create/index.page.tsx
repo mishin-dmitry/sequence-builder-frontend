@@ -312,10 +312,10 @@ const CreateSequencePage: React.FC = () => {
           borderRight: '1px solid #ddd'
         }}
         defaultSize={{
-          width: '350px',
+          width: '335px',
           height: '100%'
         }}
-        maxWidth="520px"
+        maxWidth="505px"
         minWidth="160px">
         <div className={styles.listWrapper}>
           <AsanaCardsList

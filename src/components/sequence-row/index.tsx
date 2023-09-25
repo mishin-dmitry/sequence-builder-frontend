@@ -2,8 +2,6 @@ import React, {useCallback, useMemo} from 'react'
 import type {Asana} from 'types'
 
 import {imageSrc} from 'lib/image-src'
-import {Button} from 'antd'
-import {CloseOutlined} from '@ant-design/icons'
 import {Input} from 'components/input'
 import {Droppable, Draggable} from 'react-beautiful-dnd'
 import styles from './styles.module.css'
@@ -37,6 +35,7 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
         <Draggable index={index} draggableId={uniqueId} key={uniqueId}>
           {({draggableProps, dragHandleProps, innerRef}, {isDragging}) => (
             <div
+              onDoubleClick={() => onDelete(index)}
               className={clsx(
                 styles.imageWrapper,
                 isDragging && styles.dragging
@@ -44,16 +43,7 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
               ref={innerRef}
               {...draggableProps}
               {...dragHandleProps}>
-              <img width={70} height={70} key={pk} src={imageSrc(image)} />
-              <Button
-                shape="circle"
-                type="primary"
-                size="small"
-                danger
-                icon={<CloseOutlined />}
-                className={styles.deleteButton}
-                onClick={() => onDelete(index)}
-              />
+              <img width={50} height={50} key={pk} src={imageSrc(image)} />
             </div>
           )}
         </Draggable>

@@ -11,18 +11,6 @@
   }
 }
 
-.deleteButton {
-  position: absolute;
-  right: -10px;
-  top: -10px;
-  width: 20px !important;
-  height: 20px !important;
-  justify-content: center;
-  min-width: 20px !important;
-  display: flex;
-  align-items: center;
-}
-
 .sequenceRow {
   padding: 10px;
   border: 1px solid lightgray;
