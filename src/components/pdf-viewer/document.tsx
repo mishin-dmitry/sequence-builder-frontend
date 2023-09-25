@@ -13,10 +13,10 @@ import {Asana} from 'types'
 
 const styles = StyleSheet.create({
   page: {
-    backgroundColor: '#fff',
     margin: 20,
     fontFamily: 'Roboto',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    padding: 20
   },
   image: {
     margin: 5,

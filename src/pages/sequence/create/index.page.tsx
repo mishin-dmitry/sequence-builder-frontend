@@ -12,11 +12,13 @@ import {PDFDocument} from 'components/pdf-viewer/document'
 import {saveAs} from 'file-saver'
 import {pdf} from '@react-pdf/renderer'
 import {SequenceRow} from 'components/sequence-row'
+
 import {
   DragDropContext,
   resetServerContext,
   type DropResult
 } from 'react-beautiful-dnd'
+
 import type {GetServerSideProps} from 'next/types'
 import {Resizable} from 're-resizable'
 import {Input} from 'components/input'
