@@ -23,14 +23,14 @@
   }
 
   &.small {
-    width: 200px;
+    width: 150px;
 
     & .imageContainer {
-      height: 100px;
+      height: 80px;
     }
 
     & .title {
-      font-size: 20px;
+      font-size: 16px;
     }
   }
 }

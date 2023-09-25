@@ -18,16 +18,7 @@ import {
   type DropResult
 } from 'react-beautiful-dnd'
 import type {GetServerSideProps} from 'next/types'
-
-interface Sequence {
-  title?: string
-  asanas: Asana[]
-}
-
-const initialSequence: Sequence = {
-  title: '',
-  asanas: []
-}
+import {Resizable} from 're-resizable'
 
 interface BuilderData {
   asanas: {
@@ -45,19 +36,24 @@ interface BuilderData {
 
 const initialBuilderData: BuilderData = {
   asanas: {},
-  sequences: {},
-  sequenceOrder: []
+  sequences: {
+    'sequence-1': {
+      id: 'sequence-1',
+      title: '',
+      asanaIds: []
+    }
+  },
+  sequenceOrder: ['sequence-1']
 }
 
 const MAX_SEQUENCE_COUNT = 5
 
 const CreateSequencePage: React.FC = () => {
-  const [editingSequence, setEditingSequence] = useState<string>('')
+  const [editingSequence, setEditingSequence] = useState<string>('sequence-1')
 
   const [builderData, setBuilderData] =
     useState<BuilderData>(initialBuilderData)
 
-  const [sequence, setSequence] = useState<Sequence>(initialSequence)
   const [isModelVisible, setIsModelVisible] = useState(false)
   const {isFetching, asanas} = useAsana()
 
@@ -66,6 +62,7 @@ const CreateSequencePage: React.FC = () => {
     [builderData.sequences]
   )
 
+  // Добавить асану в ряд последовательности
   const onAsanaClick = useCallback(
     ({pk, ...restData}: Asana) => {
       setBuilderData((prevData) => {
@@ -98,31 +95,90 @@ const CreateSequencePage: React.FC = () => {
     [editingSequence]
   )
 
-  const deleteAsanaById = useCallback((id: number): void => {
-    setSequence(({title, asanas}) => ({
-      title,
-      asanas: asanas.filter((_, index) => id !== index)
-    }))
-  }, [])
+  // Удалить асану в редактируемой последовательности
+  const deleteAsanaById = useCallback(
+    (id: number): void => {
+      setBuilderData((prevData) => {
+        const prevBuilderSequences = prevData.sequences[editingSequence]
 
-  const clearSequence = useCallback(() => setSequence(initialSequence), [])
+        const newBuilderData: BuilderData = {
+          ...prevData,
+          sequences: {
+            ...prevData.sequences,
+            [editingSequence]: {
+              ...prevBuilderSequences,
+              asanaIds: (prevBuilderSequences?.asanaIds ?? []).filter(
+                (_, index) => id !== index
+              )
+            }
+          },
+          sequenceOrder: [...prevData.sequenceOrder]
+        }
 
+        return newBuilderData
+      })
+    },
+    [editingSequence]
+  )
+
+  // Очистить последовательность
+  const clearSequence = useCallback(
+    () => setBuilderData(initialBuilderData),
+    []
+  )
+
+  // Показать превью pdf файла
   const showPreview = useCallback(() => setIsModelVisible(true), [])
+
+  // Скрыть превью pdf файла
   const hidePreview = useCallback(() => setIsModelVisible(false), [])
 
-  const generatePdf = useCallback(async () => {
-    const pdfDoc = pdf(PDFDocument(sequence))
+  const pdfAsanaData = useMemo(() => {
+    const {sequences, asanas} = builderData
 
-    pdfDoc.updateContainer(PDFDocument(sequence))
+    return {
+      documentTitle: 'Заголовок последовательности',
+      rows: Object.values(sequences).map(({title, asanaIds}) => ({
+        title,
+        asanas: asanaIds.map((id) => asanas[id])
+      }))
+    }
+  }, [builderData])
+
+  // Сгенерировать pdf файл
+  const generatePdf = useCallback(async () => {
+    const pdfDoc = pdf(PDFDocument(pdfAsanaData))
+
+    pdfDoc.updateContainer(PDFDocument(pdfAsanaData))
 
     const blob = await pdfDoc.toBlob()
 
     saveAs(blob, 'test')
-  }, [sequence])
+  }, [pdfAsanaData])
 
-  const onSequenceTitleChange = useCallback((title: string) => {
-    setSequence(({asanas}) => ({asanas, title}))
-  }, [])
+  // Изменить заголовок ряда последовательности
+  const onSequenceRowTitleChange = useCallback(
+    (title: string) => {
+      setBuilderData((prevData) => {
+        const prevBuilderSequences = prevData.sequences[editingSequence]
+
+        const newBuilderData: BuilderData = {
+          ...prevData,
+          sequences: {
+            ...prevData.sequences,
+            [editingSequence]: {
+              ...prevBuilderSequences,
+              title
+            }
+          },
+          sequenceOrder: [...prevData.sequenceOrder]
+        }
+
+        return newBuilderData
+      })
+    },
+    [editingSequence]
+  )
 
   const onAddSequence = useCallback(() => {
     const newSequenceCount = sequencesCount + 1
@@ -221,7 +277,7 @@ const CreateSequencePage: React.FC = () => {
           <SequenceRow
             data={data}
             onDelete={deleteAsanaById}
-            onChange={onSequenceTitleChange}
+            onChange={onSequenceRowTitleChange}
             id={sequenceId}
             isEditing={sequenceId === editingSequence}
             onClick={onSequenceRowClick}
@@ -237,7 +293,7 @@ const CreateSequencePage: React.FC = () => {
     onDragStart,
     onDragUpdate,
     deleteAsanaById,
-    onSequenceTitleChange,
+    onSequenceRowTitleChange,
     editingSequence,
     onSequenceRowClick
   ])
@@ -248,14 +304,28 @@ const CreateSequencePage: React.FC = () => {
 
   return (
     <div className={styles.root}>
-      <div className={styles.listWrapper}>
-        <AsanaCardsList
-          asanas={asanas}
-          className={styles.list}
-          onAsanaClick={onAsanaClick}
-          size="small"
-        />
-      </div>
+      <Resizable
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRight: '1px solid #ddd'
+        }}
+        defaultSize={{
+          width: '350px',
+          height: '100%'
+        }}
+        maxWidth="520px"
+        minWidth="160px">
+        <div className={styles.listWrapper}>
+          <AsanaCardsList
+            asanas={asanas}
+            className={styles.list}
+            onAsanaClick={onAsanaClick}
+            size="small"
+          />
+        </div>
+      </Resizable>
       <div className={styles.previewWrapper}>
         <div className={styles.sequences}>
           {sequences}
@@ -276,7 +346,7 @@ const CreateSequencePage: React.FC = () => {
             type="primary"
             size="large"
             danger
-            disabled={!sequence.asanas.length}
+            // disabled={!sequence.asanas.length}
             onClick={clearSequence}>
             Очистить
           </Button>
@@ -284,14 +354,16 @@ const CreateSequencePage: React.FC = () => {
             type="primary"
             size="large"
             onClick={showPreview}
-            disabled={!sequence.asanas.length}>
+            // disabled={!sequence.asanas.length}
+          >
             Посмотреть результат
           </Button>
           <Button
             type="primary"
             size="large"
             onClick={generatePdf}
-            disabled={!sequence.asanas.length}>
+            // disabled={!sequence.asanas.length}
+          >
             Сохранить
           </Button>
         </div>
@@ -304,7 +376,7 @@ const CreateSequencePage: React.FC = () => {
           onOk={generatePdf}
           onCancel={hidePreview}
           width={1000}>
-          <PdfViewer sequence={sequence} />
+          <PdfViewer sequence={pdfAsanaData} />
         </Modal>
       </div>
     </div>

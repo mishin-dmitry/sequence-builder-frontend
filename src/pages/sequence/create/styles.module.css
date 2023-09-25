@@ -1,5 +1,4 @@
 .listWrapper {
-  width: 440px;
   height: calc(100vh - 90px);
   display: flex;
   flex-direction: column;
@@ -22,6 +21,7 @@
 
 .sequences {
   flex: 1;
+  padding-left: 10px;
 }
 
 .actionButtons {

@@ -4,8 +4,7 @@ import {StyleSheet, PDFViewer} from '@react-pdf/renderer'
 import dynamic from 'next/dynamic'
 
 import styles from './styles.module.css'
-import type {Sequence} from 'types'
-import {PDFDocument} from './document'
+import {PDFDocument, type Sequence} from './document'
 
 const classes = StyleSheet.create({
   section: {
