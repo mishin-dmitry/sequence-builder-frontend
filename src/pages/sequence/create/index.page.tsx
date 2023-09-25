@@ -213,9 +213,7 @@ const CreateSequencePage: React.FC = () => {
       return newBuilderData
     })
 
-    if (!sequencesCount) {
-      setEditingSequence(newSequenceId)
-    }
+    setEditingSequence(newSequenceId)
   }, [sequencesCount])
 
   const onDragStart = useCallback((data: any) => {
@@ -317,7 +315,9 @@ const CreateSequencePage: React.FC = () => {
       const {value} = event.target
 
       const filteredAsanas = value
-        ? allAsanas.filter(({name}) => name.toLowerCase().includes(value))
+        ? allAsanas.filter(({name}) =>
+            name.toLowerCase().includes(value.toLowerCase())
+          )
         : allAsanas
 
       setAsanas(filteredAsanas)
@@ -369,25 +369,29 @@ const CreateSequencePage: React.FC = () => {
         </div>
       </Resizable>
       <div className={styles.previewWrapper}>
-        <Input
-          placeholder="Введите название вашей последовательности..."
-          label="Название последовательности"
-          value={documentTitle}
-          onChange={onDocumentTitleChange}
-          name="documentTitle"
-        />
-        <div className={styles.sequences}>
-          {sequences}
-          {sequencesCount < MAX_SEQUENCE_COUNT && (
-            <Button
-              type="default"
-              size="large"
-              className={styles.button}
-              block
-              onClick={onAddSequence}>
-              Добавить ряд
-            </Button>
-          )}
+        <div className={styles.scrollContainer}>
+          <div className={styles.scrollContainerInner}>
+            <Input
+              placeholder="Введите название вашей последовательности..."
+              label="Название последовательности"
+              value={documentTitle}
+              onChange={onDocumentTitleChange}
+              name="documentTitle"
+            />
+            <div className={styles.sequences}>
+              {sequences}
+              {sequencesCount < MAX_SEQUENCE_COUNT && (
+                <Button
+                  type="default"
+                  size="large"
+                  className={styles.button}
+                  block
+                  onClick={onAddSequence}>
+                  Добавить ряд
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className={styles.actionButtons}>
