@@ -1,9 +1,5 @@
 import React from 'react'
 
-import {Input as AntdInput, type InputProps as AntdInputProps} from 'antd'
-
-import type {TextAreaProps} from 'antd/es/input'
-
 import styles from './styles.module.css'
 
 interface LabelProps {

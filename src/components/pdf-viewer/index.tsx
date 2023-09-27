@@ -1,6 +1,6 @@
 import React from 'react'
 
-import {PDFViewer, StyleSheet, Canvas} from '@react-pdf/renderer'
+import {PDFViewer, StyleSheet} from '@react-pdf/renderer'
 import dynamic from 'next/dynamic'
 
 import styles from './styles.module.css'

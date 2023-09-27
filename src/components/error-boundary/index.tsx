@@ -16,15 +16,15 @@ export class ErrorBoundary extends React.Component<Props, State> {
     this.state = {hasError: false}
   }
 
-  static getDerivedStateFromError(error: Error) {
+  static getDerivedStateFromError(): {hasError: boolean} {
     return {hasError: true}
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     console.error(error, errorInfo)
   }
 
-  render() {
+  render(): React.ReactNode {
     if (this.state.hasError) {
       // You can render any custom fallback UI
       return this.props.fallback

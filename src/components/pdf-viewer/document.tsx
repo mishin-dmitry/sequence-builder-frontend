@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
 
 Font.register({
   family: 'Roboto',
-  src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf'
+  src: 'http://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmEU9vAx05IsDqlA.ttf'
 })
 
 interface Row {

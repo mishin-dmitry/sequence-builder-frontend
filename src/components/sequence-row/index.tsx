@@ -10,20 +10,25 @@ import clsx from 'clsx'
 interface SequenceRowProps {
   data: Asana[]
   id: string
+  index: number
   title?: string
   isEditing?: boolean
-  onDelete: (id: number) => void
+  onDeleteAsana: (id: number) => void
   onChange: (title: string) => void
   onClick: (id: string) => void
+  onDeleteSequence: (id: string) => void
 }
 
 export const SequenceRow: React.FC<SequenceRowProps> = ({
   data = [],
   id,
+  title,
   isEditing,
-  onDelete,
+  onDeleteAsana,
   onChange,
-  onClick: onClickProp
+  onClick: onClickProp,
+  onDeleteSequence,
+  index
 }) => {
   const sequence = useMemo(() => {
     return data.map(({pk, image}, index) => {
@@ -35,7 +40,7 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
         <Draggable index={index} draggableId={uniqueId} key={uniqueId}>
           {({draggableProps, dragHandleProps, innerRef}, {isDragging}) => (
             <div
-              onDoubleClick={() => onDelete(index)}
+              onDoubleClick={() => onDeleteAsana(index)}
               className={clsx(
                 styles.imageWrapper,
                 isDragging && styles.dragging
@@ -43,13 +48,19 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
               ref={innerRef}
               {...draggableProps}
               {...dragHandleProps}>
-              <img width={50} height={50} key={pk} src={imageSrc(image)} />
+              <img
+                width={50}
+                height={50}
+                key={pk}
+                src={imageSrc(image)}
+                alt="Изображение асаны"
+              />
             </div>
           )}
         </Draggable>
       )
     })
-  }, [data, onDelete])
+  }, [data, onDeleteAsana])
 
   const onInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,11 +73,12 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
 
   const droppable = useMemo(() => {
     return (
-      <Droppable droppableId={id} direction="horizontal">
-        {({innerRef, placeholder, droppableProps}, {isDraggingOver}) => (
+      <Droppable droppableId={id} direction="horizontal" type="sequence">
+        {({innerRef, placeholder, droppableProps}) => (
+          // {({innerRef, placeholder, droppableProps}, {isDraggingOver}) => (
           <div
             ref={innerRef}
-            className={clsx(styles.sequence, isDraggingOver && styles.active)}
+            className={clsx(styles.sequence)}
             {...droppableProps}>
             {sequence}
             {placeholder}
@@ -78,18 +90,32 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
 
   const onClick = useCallback(() => onClickProp(id), [id, onClickProp])
 
+  const onDoubleClick = useCallback(
+    () => onDeleteSequence(id),
+    [id, onDeleteSequence]
+  )
+
   return (
-    <div
-      className={clsx(styles.sequenceRow, isEditing && styles.editing)}
-      onClick={onClick}>
-      <Input
-        placeholder="Введите заголовок..."
-        onChange={onInputChange}
-        className={styles.input}
-        label="Заголовок"
-        name="title"
-      />
-      {droppable}
-    </div>
+    <Draggable draggableId={id} key={id} index={index}>
+      {({draggableProps, dragHandleProps, innerRef}) => (
+        <div
+          className={clsx(styles.sequenceRow, isEditing && styles.editing)}
+          onDoubleClick={onDoubleClick}
+          ref={innerRef}
+          onClick={onClick}
+          {...dragHandleProps}
+          {...draggableProps}>
+          <Input
+            placeholder="Введите заголовок..."
+            onChange={onInputChange}
+            className={styles.input}
+            label="Заголовок"
+            name="title"
+            value={title}
+          />
+          {droppable}
+        </div>
+      )}
+    </Draggable>
   )
 }

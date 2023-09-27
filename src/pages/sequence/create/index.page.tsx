@@ -16,7 +16,8 @@ import {SequenceRow} from 'components/sequence-row'
 import {
   DragDropContext,
   resetServerContext,
-  type DropResult
+  type DropResult,
+  Droppable
 } from 'react-beautiful-dnd'
 
 import type {GetServerSideProps} from 'next/types'
@@ -71,7 +72,7 @@ const CreateSequencePage: React.FC = () => {
 
   const sequencesCount = useMemo(
     () => Object.keys(builderData.sequences).length,
-    [builderData.sequences]
+    [builderData]
   )
 
   // Добавить асану в ряд последовательности
@@ -146,13 +147,13 @@ const CreateSequencePage: React.FC = () => {
   const hidePreview = useCallback(() => setIsModelVisible(false), [])
 
   const pdfAsanaData = useMemo(() => {
-    const {sequences, asanas} = builderData
+    const {sequences, asanas, sequenceOrder} = builderData
 
     return {
       documentTitle,
-      rows: Object.values(sequences).map(({title, asanaIds}) => ({
-        title,
-        asanas: asanaIds.map((id) => asanas[id])
+      rows: sequenceOrder.map((sequenceId) => ({
+        title: sequences[sequenceId]?.title,
+        asanas: (sequences[sequenceId]?.asanaIds ?? []).map((id) => asanas[id])
       }))
     }
   }, [builderData, documentTitle])
@@ -192,9 +193,24 @@ const CreateSequencePage: React.FC = () => {
     [editingSequence]
   )
 
+  const getNextSequenceId = useCallback((sequenceIds: string[]) => {
+    let maxId = 0
+
+    sequenceIds.forEach((id) => {
+      const [, currentId] = id.split('-')
+
+      const currentIdNumber = +currentId
+
+      if (currentIdNumber > maxId) {
+        maxId = currentIdNumber
+      }
+    })
+
+    return `sequence-${maxId + 1}`
+  }, [])
+
   const onAddSequence = useCallback(() => {
-    const newSequenceCount = sequencesCount + 1
-    const newSequenceId = `sequence-${newSequenceCount}`
+    const newSequenceId = getNextSequenceId(builderData.sequenceOrder)
 
     setBuilderData((prevBuildData) => {
       const newBuilderData: BuilderData = {
@@ -214,18 +230,10 @@ const CreateSequencePage: React.FC = () => {
     })
 
     setEditingSequence(newSequenceId)
-  }, [sequencesCount])
-
-  const onDragStart = useCallback((data: any) => {
-    console.log('start', data)
-  }, [])
-
-  const onDragUpdate = useCallback((data: any) => {
-    console.log('update', data)
-  }, [])
+  }, [getNextSequenceId, builderData.sequenceOrder])
 
   const onDragEnd = useCallback(
-    ({source, destination, draggableId}: DropResult) => {
+    ({source, destination, draggableId, type}: DropResult) => {
       if (!destination) {
         return
       }
@@ -234,6 +242,20 @@ const CreateSequencePage: React.FC = () => {
         destination.droppableId === source.droppableId &&
         destination.index === source.index
       ) {
+        return
+      }
+
+      if (type === 'rows') {
+        const newSequencesOrder = [...builderData.sequenceOrder]
+
+        newSequencesOrder.splice(source.index, 1)
+        newSequencesOrder.splice(destination.index, 0, draggableId)
+
+        setBuilderData((prevData) => ({
+          ...prevData,
+          sequenceOrder: newSequencesOrder
+        }))
+
         return
       }
 
@@ -272,42 +294,60 @@ const CreateSequencePage: React.FC = () => {
     setEditingSequence
   ])
 
+  const onSequenceRowDoubleClick = useCallback(
+    (id: string) => {
+      setBuilderData((prevData) => {
+        const filteredData = {
+          ...prevData,
+          sequenceOrder: prevData.sequenceOrder.filter(
+            (sequenceId) => sequenceId !== id
+          )
+        }
+
+        delete filteredData.sequences[id]
+
+        return filteredData
+      })
+
+      const lastBuilderSequenceId = (builderData.sequenceOrder ?? [])[
+        builderData.sequenceOrder.length - 1
+      ]
+
+      setEditingSequence(lastBuilderSequenceId)
+    },
+    [builderData]
+  )
+
   const sequences = useMemo(() => {
-    return builderData.sequenceOrder.map((sequenceId) => {
-      const currentSequence = builderData.sequences[sequenceId]
+    return builderData.sequenceOrder.map((sequenceId, index) => {
+      const currentSequence = builderData.sequences[sequenceId] ?? {}
 
       const data = (currentSequence?.asanaIds ?? []).map(
         (id) => builderData.asanas[id]
       )
 
       return (
-        <DragDropContext
-          onDragEnd={onDragEnd}
-          onDragStart={onDragStart}
-          onDragUpdate={onDragUpdate}
-          key={sequenceId}>
-          <SequenceRow
-            data={data}
-            onDelete={deleteAsanaById}
-            onChange={onSequenceRowTitleChange}
-            id={sequenceId}
-            isEditing={sequenceId === editingSequence}
-            onClick={onSequenceRowClick}
-          />
-        </DragDropContext>
+        <SequenceRow
+          data={data}
+          onDeleteAsana={deleteAsanaById}
+          onChange={onSequenceRowTitleChange}
+          id={sequenceId}
+          isEditing={sequenceId === editingSequence}
+          onClick={onSequenceRowClick}
+          onDeleteSequence={onSequenceRowDoubleClick}
+          key={index}
+          index={index}
+          title={currentSequence.title}
+        />
       )
     })
   }, [
-    builderData.sequenceOrder,
-    builderData.sequences,
-    builderData.asanas,
-    onDragEnd,
-    onDragStart,
-    onDragUpdate,
+    builderData,
     deleteAsanaById,
     onSequenceRowTitleChange,
     editingSequence,
-    onSequenceRowClick
+    onSequenceRowClick,
+    onSequenceRowDoubleClick
   ])
 
   const onSearchAsana = useCallback(
@@ -369,30 +409,40 @@ const CreateSequencePage: React.FC = () => {
         </div>
       </Resizable>
       <div className={styles.previewWrapper}>
-        <div className={styles.scrollContainer}>
-          <div className={styles.scrollContainerInner}>
-            <Input
-              placeholder="Введите название вашей последовательности..."
-              label="Название последовательности"
-              value={documentTitle}
-              onChange={onDocumentTitleChange}
-              name="documentTitle"
-            />
-            <div className={styles.sequences}>
-              {sequences}
-              {sequencesCount < MAX_SEQUENCE_COUNT && (
-                <Button
-                  type="default"
-                  size="large"
-                  className={styles.button}
-                  block
-                  onClick={onAddSequence}>
-                  Добавить ряд
-                </Button>
-              )}
+        <DragDropContext onDragEnd={onDragEnd}>
+          <div className={styles.scrollContainer}>
+            <div className={styles.scrollContainerInner}>
+              <Input
+                placeholder="Введите название вашей последовательности..."
+                label="Название последовательности"
+                value={documentTitle}
+                onChange={onDocumentTitleChange}
+                name="documentTitle"
+              />
+              <Droppable droppableId="allRows" type="rows">
+                {({innerRef, droppableProps, placeholder}) => (
+                  <div
+                    className={styles.sequences}
+                    ref={innerRef}
+                    {...droppableProps}>
+                    {sequences}
+                    {placeholder}
+                  </div>
+                )}
+              </Droppable>
             </div>
+            {sequencesCount < MAX_SEQUENCE_COUNT && (
+              <Button
+                type="default"
+                size="large"
+                className={styles.button}
+                block
+                onClick={onAddSequence}>
+                Добавить ряд
+              </Button>
+            )}
           </div>
-        </div>
+        </DragDropContext>
 
         <div className={styles.actionButtons}>
           <Button
@@ -438,7 +488,7 @@ const CreateSequencePage: React.FC = () => {
 
 export default CreateSequencePage
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticProps: GetServerSideProps = async () => {
   // reset dnd context to prevent didn't match error
   resetServerContext()
 
