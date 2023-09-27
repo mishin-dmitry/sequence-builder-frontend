@@ -2,6 +2,7 @@
 node_modules
 .next
 out
+_static
 coverage
 dist
 src/base/jst.js
