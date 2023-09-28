@@ -7,8 +7,9 @@
   "author": "Mishin Dmitry <dmishin.dev@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "next dev",
-    "build": "next build && next export"
+    "start": "next start",
+    "dev": "next dev",
+    "build": "next build"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.5",
