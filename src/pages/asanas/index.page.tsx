@@ -1,26 +1,17 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 
-import {AsanaCardsList} from 'components/asanas-cards-list'
-import {useAsana} from 'context/asanas'
 import {Spinner} from 'components/spinner'
-import {Typography} from 'antd'
+import {useRouter} from 'next/router'
+import {Urls} from 'lib/urls'
 
 const AsanaListPage: React.FC = () => {
-  const {isFetching, asanas} = useAsana()
+  const router = useRouter()
 
-  if (isFetching) {
-    return <Spinner />
-  }
+  useEffect(() => {
+    router.push(Urls.CREATE_SEQUENCE)
+  }, [router])
 
-  return (
-    <div>
-      {!asanas.length ? (
-        <Typography.Title level={1}>Список пуст</Typography.Title>
-      ) : (
-        <AsanaCardsList asanas={asanas} />
-      )}
-    </div>
-  )
+  return <Spinner />
 }
 
 export default AsanaListPage
