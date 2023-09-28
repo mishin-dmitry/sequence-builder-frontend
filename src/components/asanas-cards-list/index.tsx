@@ -2,7 +2,6 @@ import React, {useMemo} from 'react'
 
 import type {Asana} from 'types'
 import {AsanaCard} from 'components/asana-card'
-import {Urls} from 'lib/urls'
 import {Typography} from 'antd'
 
 import styles from './styles.module.css'
