@@ -438,7 +438,7 @@ const CreateSequencePage: React.FC = () => {
                 className={styles.button}
                 block
                 onClick={onAddSequence}>
-                Добавить ряд
+                Добавить блок
               </Button>
             )}
           </div>

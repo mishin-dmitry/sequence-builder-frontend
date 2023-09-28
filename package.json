@@ -33,12 +33,13 @@
     "postcss-preset-env": "^9.1.4",
     "prettier": "^3.0.3",
     "raw-loader": "^4.0.2",
-    "typescript": "^5.2.2",
     "stylelint": "14.16.1",
     "stylelint-config-prettier": "^9.0.3",
-    "stylelint-config-standard": "^24.0.0"
+    "stylelint-config-standard": "^24.0.0",
+    "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@ant-design/cssinjs": "^1.17.0",
     "@react-pdf/renderer": "^3.1.12",
     "antd": "^5.9.2",
     "clsx": "^2.0.0",

@@ -75,11 +75,7 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
     return (
       <Droppable droppableId={id} direction="horizontal" type="sequence">
         {({innerRef, placeholder, droppableProps}) => (
-          // {({innerRef, placeholder, droppableProps}, {isDraggingOver}) => (
-          <div
-            ref={innerRef}
-            className={clsx(styles.sequence)}
-            {...droppableProps}>
+          <div ref={innerRef} className={styles.sequences} {...droppableProps}>
             {sequence}
             {placeholder}
           </div>

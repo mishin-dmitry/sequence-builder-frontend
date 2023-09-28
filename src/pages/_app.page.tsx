@@ -8,18 +8,16 @@ import {ProvideAsanas} from 'context/asanas'
 
 import 'styles/global.css'
 
-const App: React.FC<AppProps> = ({Component, pageProps}) => {
-  return (
-    <>
-      <ErrorBoundary fallback={<h1>Что то пошло не так...</h1>}>
-        <ProvideAsanas>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </ProvideAsanas>
-      </ErrorBoundary>
-    </>
-  )
-}
+const App: React.FC<AppProps> = ({Component, pageProps}) => (
+  <>
+    <ErrorBoundary fallback={<h1>Что то пошло не так...</h1>}>
+      <ProvideAsanas>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </ProvideAsanas>
+    </ErrorBoundary>
+  </>
+)
 
 export default App
