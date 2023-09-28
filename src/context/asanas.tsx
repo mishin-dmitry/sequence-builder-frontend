@@ -50,7 +50,7 @@ export const ProvideAsanas: React.FC<{children: React.ReactNode}> = ({
   }, [])
 
   const getAsanaById = useCallback(
-    (id: number) => (asanas ?? []).find((asana) => asana.pk === id),
+    (id: number) => (asanas ?? []).find((asana) => asana.id === id),
     [asanas]
   )
 

@@ -77,15 +77,15 @@ const CreateSequencePage: React.FC = () => {
 
   // Добавить асану в ряд последовательности
   const onAsanaClick = useCallback(
-    ({pk, ...restData}: Asana) => {
+    ({id, ...restData}: Asana) => {
       setBuilderData((prevData) => {
         const prevBuilderSequences = prevData.sequences[editingSequence]
 
         const newBuilderData: BuilderData = {
           asanas: {
             ...prevData.asanas,
-            [`asana-${pk}`]: {
-              pk,
+            [`asana-${id}`]: {
+              id,
               ...restData
             }
           },
@@ -95,7 +95,7 @@ const CreateSequencePage: React.FC = () => {
               ...prevBuilderSequences,
               asanaIds: [
                 ...(prevBuilderSequences?.asanaIds ?? []),
-                `asana-${pk}`
+                `asana-${id}`
               ]
             }
           },
@@ -262,9 +262,9 @@ const CreateSequencePage: React.FC = () => {
       // Так как id для draggable должен быть уникальным
       // для каждый асаны в id мы добавляем index,
       // но здесь нам index не нужен, поэтому уберем его
-      const [prefix, pk] = draggableId.split('-')
+      const [prefix, id] = draggableId.split('-')
 
-      draggableId = `${prefix}-${pk}`
+      draggableId = `${prefix}-${id}`
 
       const sequence = builderData.sequences[source.droppableId]
       const newAsanasIds = [...sequence.asanaIds]

@@ -28,7 +28,7 @@ export const AsanaCardsList: React.FC<AsanaCardsListProps> = ({
         {asanas.map((data: Asana) => (
           <AsanaCard
             data={data}
-            key={data.pk}
+            key={data.id}
             isLink={withLinks}
             size={size}
             onAsanaClick={onAsanaClick}

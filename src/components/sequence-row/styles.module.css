@@ -38,3 +38,9 @@
   overflow: hidden;
   overflow-x: scroll;
 }
+
+.buttonWrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}

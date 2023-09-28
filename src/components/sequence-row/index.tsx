@@ -6,6 +6,7 @@ import {Input} from 'components/input'
 import {Droppable, Draggable} from 'react-beautiful-dnd'
 import styles from './styles.module.css'
 import clsx from 'clsx'
+import {Button} from 'antd'
 
 interface SequenceRowProps {
   data: Asana[]
@@ -31,10 +32,10 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
   index
 }) => {
   const sequence = useMemo(() => {
-    return data.map(({pk, image}, index) => {
+    return data.map(({id, image}, index) => {
       // Так как в одной последовательности может быть несколько
       // одинаковых асан, а id должен быть уникальным для каждой асаны
-      const uniqueId = `asana-${pk}-${index}`
+      const uniqueId = `asana-${id}-${index}`
 
       return (
         <Draggable index={index} draggableId={uniqueId} key={uniqueId}>
@@ -51,7 +52,7 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
               <img
                 width={50}
                 height={50}
-                key={pk}
+                key={id}
                 src={imageSrc(image)}
                 alt="Изображение асаны"
               />
@@ -86,7 +87,7 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
 
   const onClick = useCallback(() => onClickProp(id), [id, onClickProp])
 
-  const onDoubleClick = useCallback(
+  const onButtonClick = useCallback(
     () => onDeleteSequence(id),
     [id, onDeleteSequence]
   )
@@ -96,20 +97,24 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
       {({draggableProps, dragHandleProps, innerRef}) => (
         <div
           className={clsx(styles.sequenceRow, isEditing && styles.editing)}
-          onDoubleClick={onDoubleClick}
           ref={innerRef}
           onClick={onClick}
           {...dragHandleProps}
           {...draggableProps}>
           <Input
-            placeholder="Введите заголовок..."
+            placeholder="Введите название блока асан..."
             onChange={onInputChange}
             className={styles.input}
-            label="Заголовок"
+            label="Блок асан"
             name="title"
             value={title}
           />
           {droppable}
+          <div className={styles.buttonWrapper}>
+            <Button danger type="primary" onClick={onButtonClick} size="middle">
+              Удалить блок
+            </Button>
+          </div>
         </div>
       )}
     </Draggable>

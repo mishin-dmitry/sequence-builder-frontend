@@ -1,5 +1,5 @@
 export interface Asana {
-  pk?: number
+  id?: number
   name: string
   description: string
   image: string
@@ -7,5 +7,5 @@ export interface Asana {
 
 export interface Sequence {
   title?: string
-  asanas: Exclude<Asana, 'pk'>[]
+  asanas: Exclude<Asana, 'id'>[]
 }

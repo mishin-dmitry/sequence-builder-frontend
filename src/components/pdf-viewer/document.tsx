@@ -72,7 +72,7 @@ export const PDFDocument = ({rows, documentTitle}: Sequence): any => (
                   <Image
                     style={styles.image}
                     src={imageSrc(asana.image)}
-                    key={asana.pk}
+                    key={asana.id}
                   />
                 ))}
               </View>
