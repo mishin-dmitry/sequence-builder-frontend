@@ -15,10 +15,11 @@
   padding: 10px;
   border: 1px solid lightgray;
   border-radius: 8px;
+  background: #f5f5f5;
 
   &.editing {
     border-color: lightblue;
-    background-color: #e1ebee;
+    background: #e1ebee !important;
   }
 
   & + .sequenceRow {

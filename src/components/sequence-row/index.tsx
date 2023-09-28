@@ -61,7 +61,7 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
         </Draggable>
       )
     })
-  }, [data, onDeleteAsana])
+  }, [data, onDeleteAsana, rowId])
 
   const onInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {

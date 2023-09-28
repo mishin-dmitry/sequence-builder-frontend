@@ -82,7 +82,7 @@ const CreateSequencePage: React.FC = () => {
       setBuilderData((prevData) => {
         const prevBuilderSequences = prevData.sequences[editingSequence]
 
-        const newBuilderData: BuilderData = {
+        return {
           asanas: {
             ...prevData.asanas,
             [`asana-${id}`]: {
@@ -102,8 +102,6 @@ const CreateSequencePage: React.FC = () => {
           },
           sequenceOrder: [...prevData.sequenceOrder]
         }
-
-        return newBuilderData
       })
     },
     [editingSequence]
@@ -115,7 +113,7 @@ const CreateSequencePage: React.FC = () => {
       setBuilderData((prevData) => {
         const prevBuilderSequences = prevData.sequences[editingSequence]
 
-        const newBuilderData: BuilderData = {
+        return {
           ...prevData,
           sequences: {
             ...prevData.sequences,
@@ -128,8 +126,6 @@ const CreateSequencePage: React.FC = () => {
           },
           sequenceOrder: [...prevData.sequenceOrder]
         }
-
-        return newBuilderData
       })
     },
     [editingSequence]
@@ -141,11 +137,11 @@ const CreateSequencePage: React.FC = () => {
     setDocumentTitle('')
   }, [])
 
-  // Показать превью pdf файла
-  const showPreview = useCallback(() => setIsModelVisible(true), [])
-
   // Скрыть превью pdf файла
   const hidePreview = useCallback(() => setIsModelVisible(false), [])
+
+  // Показать превью pdf файла
+  const showPreview = useCallback(() => setIsModelVisible(true), [])
 
   const pdfAsanaData = useMemo(() => {
     const {sequences, asanas, sequenceOrder} = builderData
@@ -167,8 +163,8 @@ const CreateSequencePage: React.FC = () => {
 
     const blob = await pdfDoc.toBlob()
 
-    saveAs(blob, 'test')
-  }, [pdfAsanaData])
+    saveAs(blob, documentTitle)
+  }, [pdfAsanaData, documentTitle])
 
   // Изменить заголовок ряда последовательности
   const onSequenceRowTitleChange = useCallback(
@@ -258,48 +254,51 @@ const CreateSequencePage: React.FC = () => {
       }
 
       if (type === 'rows') {
-        const newSequencesOrder = [...builderData.sequenceOrder]
+        setBuilderData((prevData) => {
+          const newSequencesOrder = [...prevData.sequenceOrder]
 
-        newSequencesOrder.splice(source.index, 1)
-        newSequencesOrder.splice(destination.index, 0, draggableId)
+          newSequencesOrder.splice(source.index, 1)
+          newSequencesOrder.splice(destination.index, 0, draggableId)
 
-        setBuilderData((prevData) => ({
-          ...prevData,
-          sequenceOrder: newSequencesOrder
-        }))
+          return {
+            ...prevData,
+            sequences: JSON.parse(JSON.stringify(prevData.sequences)),
+            sequenceOrder: newSequencesOrder
+          }
+        })
 
         return
       }
 
-      // Так как id для draggable должен быть уникальным
-      // для каждый асаны в id мы добавляем index,
-      // но здесь нам index не нужен, поэтому уберем его
-      const [prefix, id] = draggableId.split('-')
+      setBuilderData((prevData) => {
+        const [prefix, id] = draggableId.split('-')
 
-      draggableId = `${prefix}-${id}`
+        draggableId = `${prefix}-${id}`
 
-      const sequence = builderData.sequences[source.droppableId]
-      const newAsanasIds = [...sequence.asanaIds]
+        const sequence = prevData.sequences[source.droppableId]
+        const newAsanasIds = [...sequence.asanaIds]
 
-      newAsanasIds.splice(source.index, 1)
-      newAsanasIds.splice(destination.index, 0, draggableId)
+        newAsanasIds.splice(source.index, 1)
+        newAsanasIds.splice(destination.index, 0, draggableId)
 
-      const newSequence = {
-        ...sequence,
-        asanaIds: newAsanasIds
-      }
-
-      const newBuilderData = {
-        ...builderData,
-        sequences: {
-          ...builderData.sequences,
-          [newSequence.id]: newSequence
+        const newSequence = {
+          ...sequence,
+          asanaIds: newAsanasIds
         }
-      }
 
-      setBuilderData(newBuilderData)
+        return {
+          ...prevData,
+          sequences: {
+            ...prevData.sequences,
+            [newSequence.id]: {
+              ...sequence,
+              asanaIds: newAsanasIds
+            }
+          }
+        }
+      })
     },
-    [builderData]
+    []
   )
 
   const onSequenceRowClick = useCallback(setEditingSequence, [
@@ -490,6 +489,7 @@ const CreateSequencePage: React.FC = () => {
           open={isModelVisible}
           onOk={generatePdf}
           onCancel={hidePreview}
+          destroyOnClose
           width={1000}>
           <PdfViewer sequence={pdfAsanaData} />
         </Modal>
