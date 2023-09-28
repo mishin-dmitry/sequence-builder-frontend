@@ -31,7 +31,6 @@ export const AsanaCardsList: React.FC<AsanaCardsListProps> = ({
             data={data}
             key={data.pk}
             isLink={withLinks}
-            href={`${Urls.EDIT}/${data.pk}`}
             size={size}
             onAsanaClick={onAsanaClick}
           />
