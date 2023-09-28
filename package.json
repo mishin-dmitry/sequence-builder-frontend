@@ -7,7 +7,7 @@
   "author": "Mishin Dmitry <dmishin.dev@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "next start",
+    "start": "next start -p 3000",
     "dev": "next dev",
     "build": "next build"
   },
