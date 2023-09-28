@@ -488,7 +488,7 @@ const CreateSequencePage: React.FC = () => {
 
 export default CreateSequencePage
 
-export const getStaticProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async () => {
   // reset dnd context to prevent didn't match error
   resetServerContext()
 

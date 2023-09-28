@@ -28,7 +28,7 @@ export const ProvideAsanas: React.FC<{children: React.ReactNode}> = ({
   children
 }) => {
   const [asanas, setAsanas] = useState<Asana[]>([])
-  const [isFetching, setIsFetching] = useState(false)
+  const [isFetching, setIsFetching] = useState(true)
 
   const fetchAsanaList = useCallback(async () => {
     try {
