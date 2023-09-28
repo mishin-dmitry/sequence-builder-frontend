@@ -17,7 +17,8 @@ import {
   DragDropContext,
   resetServerContext,
   type DropResult,
-  Droppable
+  Droppable,
+  DragStart
 } from 'react-beautiful-dnd'
 
 import type {GetServerSideProps} from 'next/types'
@@ -232,6 +233,17 @@ const CreateSequencePage: React.FC = () => {
     setEditingSequence(newSequenceId)
   }, [getNextSequenceId, builderData.sequenceOrder])
 
+  const onDragStart = useCallback(
+    ({source}: DragStart) => {
+      // Если начали тащить асану из другого блока и он неактивен,
+      // то поменяем редактируемые блок асан
+      if (source.droppableId !== editingSequence) {
+        setEditingSequence(source.droppableId)
+      }
+    },
+    [editingSequence]
+  )
+
   const onDragEnd = useCallback(
     ({source, destination, draggableId, type}: DropResult) => {
       if (!destination) {
@@ -409,7 +421,7 @@ const CreateSequencePage: React.FC = () => {
         </div>
       </Resizable>
       <div className={styles.previewWrapper}>
-        <DragDropContext onDragEnd={onDragEnd}>
+        <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
           <div className={styles.scrollContainer}>
             <div className={styles.scrollContainerInner}>
               <Input

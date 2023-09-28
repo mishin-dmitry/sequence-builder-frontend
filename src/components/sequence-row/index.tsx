@@ -22,7 +22,7 @@ interface SequenceRowProps {
 
 export const SequenceRow: React.FC<SequenceRowProps> = ({
   data = [],
-  id,
+  id: rowId,
   title,
   isEditing,
   onDeleteAsana,
@@ -33,9 +33,9 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
 }) => {
   const sequence = useMemo(() => {
     return data.map(({id, image}, index) => {
-      // Так как в одной последовательности может быть несколько
+      // Так как в разныз блоках последовательности может быть несколько
       // одинаковых асан, а id должен быть уникальным для каждой асаны
-      const uniqueId = `asana-${id}-${index}`
+      const uniqueId = `asana-${id}-${rowId}-${index}`
 
       return (
         <Draggable index={index} draggableId={uniqueId} key={uniqueId}>
@@ -74,7 +74,7 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
 
   const droppable = useMemo(() => {
     return (
-      <Droppable droppableId={id} direction="horizontal" type="sequence">
+      <Droppable droppableId={rowId} direction="horizontal" type="sequence">
         {({innerRef, placeholder, droppableProps}) => (
           <div ref={innerRef} className={styles.sequences} {...droppableProps}>
             {sequence}
@@ -83,17 +83,17 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
         )}
       </Droppable>
     )
-  }, [id, sequence])
+  }, [rowId, sequence])
 
-  const onClick = useCallback(() => onClickProp(id), [id, onClickProp])
+  const onClick = useCallback(() => onClickProp(rowId), [rowId, onClickProp])
 
   const onButtonClick = useCallback(
-    () => onDeleteSequence(id),
-    [id, onDeleteSequence]
+    () => onDeleteSequence(rowId),
+    [rowId, onDeleteSequence]
   )
 
   return (
-    <Draggable draggableId={id} key={id} index={index}>
+    <Draggable draggableId={rowId} key={rowId} index={index}>
       {({draggableProps, dragHandleProps, innerRef}) => (
         <div
           className={clsx(styles.sequenceRow, isEditing && styles.editing)}
