@@ -13,5 +13,5 @@ export interface CreateAsanaRequest {
 export const getAsanasList = request.bind<null, string, [], Promise<Asana[]>>(
   null,
   HttpMethod.GET,
-  process.env.API_PREFIX
+  `${process.env.API_PREFIX}/getAll`
 )
