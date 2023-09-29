@@ -8,6 +8,7 @@ import {imageSrc} from 'lib/image-src'
 import styles from './styles.module.css'
 import Link from 'next/link'
 import clsx from 'clsx'
+import {isMobile as _isMobile} from 'lib/is-mobile'
 
 interface AsanaCardProps {
   data: Asana
@@ -27,6 +28,7 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
   const {name, image, description} = data
 
   const isDataExists = !!description || !!image || !!name
+  const isMobile = _isMobile()
 
   const onAsanaClick = useCallback(() => {
     onAsanaClickProp?.(data)
@@ -38,7 +40,9 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
 
   if (isLink && href) {
     return (
-      <Link href={href} className={clsx(styles.card, styles.link)}>
+      <Link
+        href={href}
+        className={clsx(styles.card, styles.link, isMobile && styles.mobile)}>
         <div className={styles.imageContainer}>
           <img src={imageSrc(image as string)} />
         </div>
@@ -53,7 +57,9 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
   }
 
   return (
-    <button className={clsx(styles.card, styles[size])} onClick={onAsanaClick}>
+    <button
+      className={clsx(styles.card, styles[size], isMobile && styles.mobile)}
+      onClick={onAsanaClick}>
       {image && (
         <div className={styles.imageContainer}>
           <img

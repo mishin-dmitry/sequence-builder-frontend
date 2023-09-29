@@ -6,6 +6,7 @@ import {Typography} from 'antd'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
+import {isMobile} from 'lib/is-mobile'
 
 export interface AsanaCardsListProps {
   asanas: Asana[]
@@ -24,7 +25,7 @@ export const AsanaCardsList: React.FC<AsanaCardsListProps> = ({
 }) => {
   const list = useMemo(
     () => (
-      <ul className={clsx(styles.list, className)}>
+      <ul className={clsx(styles.list, isMobile() && styles.mobile, className)}>
         {asanas.map((data: Asana) => (
           <AsanaCard
             data={data}

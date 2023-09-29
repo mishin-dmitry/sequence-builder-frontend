@@ -13,7 +13,7 @@ export const Input: React.FC<InputProps> = ({label, name, ...inputProps}) => {
   return (
     <>
       {!!label && <Label htmlFor={name}>{label}</Label>}
-      <AntdInput {...inputProps} />
+      <AntdInput {...inputProps} size="large" />
     </>
   )
 }

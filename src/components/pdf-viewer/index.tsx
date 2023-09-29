@@ -5,6 +5,8 @@ import dynamic from 'next/dynamic'
 
 import styles from './styles.module.css'
 import {PDFDocument, type Sequence} from './document'
+import clsx from 'clsx'
+import {isMobile} from 'lib/is-mobile'
 
 interface PdfViewerProps {
   sequence: Sequence
@@ -19,7 +21,7 @@ const classes = StyleSheet.create({
 
 const PdfViewer: React.FC<PdfViewerProps> = ({sequence}) => {
   return (
-    <div className={styles.viewerWrapper}>
+    <div className={clsx(styles.viewerWrapper, isMobile() && styles.mobile)}>
       <PDFViewer style={classes.viewer}>{PDFDocument(sequence)}</PDFViewer>
     </div>
   )

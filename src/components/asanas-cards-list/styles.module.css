@@ -3,4 +3,11 @@
   display: flex;
   flex-wrap: wrap;
   margin: -10px 0 0 -10px;
+
+  &.mobile {
+    margin: -5px 0 0 -5px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    overflow-x: scroll;
+  }
 }

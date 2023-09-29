@@ -26,6 +26,8 @@ import {Resizable} from 're-resizable'
 import {Input} from 'components/input'
 
 import debounce from 'lodash.debounce'
+import {isMobile as _isMobile} from 'lib/is-mobile'
+import clsx from 'clsx'
 
 interface BuilderData {
   asanas: {
@@ -383,42 +385,55 @@ const CreateSequencePage: React.FC = () => {
     []
   )
 
+  const asanasList = useMemo(
+    () => (
+      <div className={styles.listWrapper}>
+        <div className={styles.searchWrapper}>
+          <Input
+            name="search"
+            placeholder="Найти асану..."
+            allowClear
+            onChange={onSearchAsana}
+          />
+        </div>
+        <AsanaCardsList
+          asanas={asanas}
+          className={styles.list}
+          onAsanaClick={onAsanaClick}
+          size="small"
+        />
+      </div>
+    ),
+    [asanas, onAsanaClick, onSearchAsana]
+  )
+
+  const isMobile = _isMobile()
+
   if (isFetching) {
     return <Spinner />
   }
 
   return (
-    <div className={styles.root}>
-      <Resizable
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRight: '1px solid #ddd'
-        }}
-        defaultSize={{
-          width: '335px',
-          height: '100%'
-        }}
-        maxWidth="505px"
-        minWidth="160px">
-        <div className={styles.listWrapper}>
-          <div className={styles.searchWrapper}>
-            <Input
-              name="search"
-              placeholder="Найти асану..."
-              allowClear
-              onChange={onSearchAsana}
-            />
-          </div>
-          <AsanaCardsList
-            asanas={asanas}
-            className={styles.list}
-            onAsanaClick={onAsanaClick}
-            size="small"
-          />
-        </div>
-      </Resizable>
+    <div className={clsx(styles.root, isMobile && styles.mobile)}>
+      {isMobile ? (
+        asanasList
+      ) : (
+        <Resizable
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRight: '1px solid #ddd'
+          }}
+          defaultSize={{
+            width: '335px',
+            height: '100%'
+          }}
+          maxWidth="505px"
+          minWidth="160px">
+          {asanasList}
+        </Resizable>
+      )}
       <div className={styles.previewWrapper}>
         <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
           <div className={styles.scrollContainer}>
@@ -459,25 +474,23 @@ const CreateSequencePage: React.FC = () => {
           <Button
             type="primary"
             size="large"
+            block={isMobile}
             danger
-            // disabled={!sequence.asanas.length}
             onClick={clearSequence}>
             Очистить
           </Button>
           <Button
             type="primary"
             size="large"
-            onClick={showPreview}
-            // disabled={!sequence.asanas.length}
-          >
+            block={isMobile}
+            onClick={showPreview}>
             Посмотреть результат
           </Button>
           <Button
             type="primary"
             size="large"
-            onClick={generatePdf}
-            // disabled={!sequence.asanas.length}
-          >
+            block={isMobile}
+            onClick={generatePdf}>
             Сохранить
           </Button>
         </div>
