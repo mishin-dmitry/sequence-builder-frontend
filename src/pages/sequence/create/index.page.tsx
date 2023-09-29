@@ -503,7 +503,8 @@ const CreateSequencePage: React.FC = () => {
           onOk={generatePdf}
           onCancel={hidePreview}
           destroyOnClose
-          width={1000}>
+          width={1000}
+          {...(isMobile ? {footer: null} : {})}>
           <PdfViewer sequence={pdfAsanaData} />
         </Modal>
       </div>
