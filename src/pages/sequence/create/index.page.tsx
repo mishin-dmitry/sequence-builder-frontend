@@ -368,9 +368,16 @@ const CreateSequencePage: React.FC = () => {
       const {value} = event.target
 
       const filteredAsanas = value
-        ? allAsanas.filter(({name}) =>
-            name.toLowerCase().includes(value.toLowerCase())
-          )
+        ? allAsanas.filter(({name, searchKeys}) => {
+            const parsedSearchKeys = searchKeys?.split(',') ?? []
+
+            return (
+              name.toLowerCase().includes(value.toLowerCase()) ||
+              parsedSearchKeys.some((key: string) =>
+                key.toLowerCase().includes(value.toLowerCase())
+              )
+            )
+          })
         : allAsanas
 
       setAsanas(filteredAsanas)
