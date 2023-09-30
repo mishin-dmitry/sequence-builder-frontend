@@ -21,6 +21,7 @@
     "@types/react": "^18.2.22",
     "@types/react-beautiful-dnd": "^13.1.4",
     "@types/react-dom": "^18.2.7",
+    "@types/svg-parser": "^2.0.4",
     "@typescript-eslint/eslint-plugin": "^5.10.0",
     "@typescript-eslint/parser": "^5.10.1",
     "eslint": "^8.50.0",
@@ -51,6 +52,7 @@
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.2.0",
-    "react-hook-form": "^7.46.1"
+    "react-hook-form": "^7.46.1",
+    "svg-parser": "^2.0.4"
   }
 }

@@ -1,12 +1,12 @@
 import React, {useCallback, useMemo} from 'react'
 import type {Asana} from 'types'
 
-import {imageSrc} from 'lib/image-src'
 import {Input} from 'components/input'
 import {Droppable, Draggable} from 'react-beautiful-dnd'
 import styles from './styles.module.css'
 import clsx from 'clsx'
 import {Button} from 'antd'
+import {iconsMap} from 'icons'
 
 interface SequenceRowProps {
   data: Asana[]
@@ -32,7 +32,7 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
   index
 }) => {
   const sequence = useMemo(() => {
-    return data.map(({id, image}, index) => {
+    return data.map(({id, alias}, index) => {
       // Так как в разныз блоках последовательности может быть несколько
       // одинаковых асан, а id должен быть уникальным для каждой асаны
       const uniqueId = `asana-${id}-${rowId}-${index}`
@@ -53,7 +53,9 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
                 width={50}
                 height={50}
                 key={id}
-                src={imageSrc(image)}
+                src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                  iconsMap[alias]
+                )}`}
                 alt="Изображение асаны"
               />
             </div>

@@ -2,7 +2,7 @@ export interface Asana {
   id?: number
   name: string
   description: string
-  image: string
+  alias: string
 }
 
 export interface Sequence {

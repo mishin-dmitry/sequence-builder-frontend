@@ -3,12 +3,12 @@ import React, {useCallback} from 'react'
 import type {Asana} from 'types'
 
 import {Typography} from 'antd'
-import {imageSrc} from 'lib/image-src'
 
 import styles from './styles.module.css'
 import Link from 'next/link'
 import clsx from 'clsx'
 import {isMobile as _isMobile} from 'lib/is-mobile'
+import {iconsMap} from 'icons'
 
 interface AsanaCardProps {
   data: Asana
@@ -25,9 +25,9 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
   onAsanaClick: onAsanaClickProp,
   size = 'default'
 }) => {
-  const {name, image, description} = data
+  const {name, alias = '', description} = data
 
-  const isDataExists = !!description || !!image || !!name
+  const isDataExists = !!description || !!alias || !!name
   const isMobile = _isMobile()
 
   const onAsanaClick = useCallback(() => {
@@ -43,10 +43,16 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
       <Link
         href={href}
         className={clsx(styles.card, styles.link, isMobile && styles.mobile)}>
-        <div className={styles.imageContainer}>
-          <img src={imageSrc(image as string)} />
-        </div>
-        <div>
+        {iconsMap[alias] && (
+          <div className={styles.imageContainer}>
+            <img
+              src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                iconsMap[alias]
+              )}`}
+            />
+          </div>
+        )}
+        <div className={styles.textContainer}>
           <Typography.Title level={2}>{name}</Typography.Title>
           {!!description && size === 'default' && (
             <Typography>{description}</Typography>
@@ -60,18 +66,16 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
     <button
       className={clsx(styles.card, styles[size], isMobile && styles.mobile)}
       onClick={onAsanaClick}>
-      {image && (
+      {iconsMap[alias] && (
         <div className={styles.imageContainer}>
           <img
-            src={
-              typeof image === 'string'
-                ? imageSrc(image)
-                : URL.createObjectURL(image as unknown as Blob)
-            }
+            src={`data:image/svg+xml;utf8,${encodeURIComponent(
+              iconsMap[alias]
+            )}`}
           />
         </div>
       )}
-      <div>
+      <div className={styles.textContainer}>
         {name && (
           <Typography.Title level={2} className={styles.title}>
             {name}
