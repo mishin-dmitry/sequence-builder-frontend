@@ -117,7 +117,7 @@ export const svgToComponent = (node: any): any => {
         Component = Path
         componentProps = {
           d: node.properties?.d,
-          fill: node.properties?.fill
+          fill: node.properties?.fill ?? '#000000'
         }
         break
 

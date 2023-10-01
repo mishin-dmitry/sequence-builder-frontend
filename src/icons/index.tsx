@@ -27,6 +27,16 @@ import {vira3} from './vira3'
 import {bokovayaPlanka} from './bokovaya-planka'
 import {dvipadaPithasana} from './dvipada-pithasana'
 import {vira1} from './vira1'
+import {ardhaChandrasana} from './ardha-chandrasana'
+import {parivritaArdhaChandrasana} from './parivrita-ardha-chandrasana'
+import {ardhaNavasana} from './ardha-navasana'
+import {navasana} from './navasana'
+import {bhudjaPidasana} from './bhudja-pidasana'
+import {dandasana} from './dandasana'
+import {vrikshasana} from './vrikshasana'
+import {galavasana} from './galavasana'
+import {kaundiniasana} from './kaundiniasana'
+import {urdhvaDhanurasana} from './urdhva-dhanurasana'
 
 export const iconsMap: Record<string, string> = {
   adhomukhaShvanasana,
@@ -57,5 +67,15 @@ export const iconsMap: Record<string, string> = {
   vira2,
   vira3,
   bokovayaPlanka,
-  dvipadaPithasana
+  dvipadaPithasana,
+  ardhaChandrasana,
+  parivritaArdhaChandrasana,
+  ardhaNavasana,
+  navasana,
+  bhudjaPidasana,
+  dandasana,
+  vrikshasana,
+  galavasana,
+  kaundiniasana,
+  urdhvaDhanurasana
 }
