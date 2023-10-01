@@ -521,9 +521,17 @@ const CreateSequencePage: React.FC = () => {
 
 export default CreateSequencePage
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const UA = context.req.headers['user-agent']
+
+  const isMobile = Boolean(
+    UA?.match(
+      /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
+    )
+  )
+
   // reset dnd context to prevent didn't match error
   resetServerContext()
 
-  return {props: {data: []}}
+  return {props: {data: [], isMobile}}
 }

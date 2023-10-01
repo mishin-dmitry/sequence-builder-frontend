@@ -8,11 +8,11 @@ import {ProvideAsanas} from 'context/asanas'
 
 import 'styles/global.css'
 
-const App: React.FC<AppProps> = ({Component, pageProps}) => (
+const App: React.FC<AppProps> = ({Component, pageProps = {}}) => (
   <>
     <ErrorBoundary fallback={<h1>Что то пошло не так...</h1>}>
       <ProvideAsanas>
-        <Layout>
+        <Layout isMobile={pageProps.isMobile}>
           <Component {...pageProps} />
         </Layout>
       </ProvideAsanas>
