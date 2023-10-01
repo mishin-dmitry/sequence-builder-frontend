@@ -36,6 +36,8 @@ export const ProvideAsanas: React.FC<{children: React.ReactNode}> = ({
 
       const response = await getAsanasList()
 
+      response.sort((a, b) => (a.name > b.name ? 1 : -1))
+
       setAsanas(response)
     } catch (error) {
       console.error(error)

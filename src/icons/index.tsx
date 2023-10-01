@@ -37,6 +37,17 @@ import {vrikshasana} from './vrikshasana'
 import {galavasana} from './galavasana'
 import {kaundiniasana} from './kaundiniasana'
 import {urdhvaDhanurasana} from './urdhva-dhanurasana'
+import {badhaKonasana} from './badha-konasana'
+import {pashchimatanasana} from './pashchimatanasana'
+import {ekaPadaPashchimatanasana} from './eka-pada-pashchimatanasana'
+import {gomukhasana} from './gomukhasana'
+import {pindasana} from './pindasana'
+import {titibhasana} from './titibhasana'
+import {utthitaTrikonasana} from './utthita-trikonasana'
+import {parivritaKaundiniasana} from './parivrita-kaundiniasana'
+import {salambaSarvangasana} from './salamba-sarvangasana'
+import {prasarita} from './prasarita'
+import {hastaPadangushthasana2} from './utthita-hasta-padangushthasana-2'
 
 export const iconsMap: Record<string, string> = {
   adhomukhaShvanasana,
@@ -77,5 +88,16 @@ export const iconsMap: Record<string, string> = {
   vrikshasana,
   galavasana,
   kaundiniasana,
-  urdhvaDhanurasana
+  urdhvaDhanurasana,
+  badhaKonasana,
+  pashchimatanasana,
+  ekaPadaPashchimatanasana,
+  gomukhasana,
+  pindasana,
+  titibhasana,
+  utthitaTrikonasana,
+  parivritaKaundiniasana,
+  salambaSarvangasana,
+  prasarita,
+  hastaPadangushthasana2
 }
