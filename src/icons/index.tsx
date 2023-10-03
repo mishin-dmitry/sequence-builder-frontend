@@ -41,13 +41,36 @@ import {badhaKonasana} from './badha-konasana'
 import {pashchimatanasana} from './pashchimatanasana'
 import {ekaPadaPashchimatanasana} from './eka-pada-pashchimatanasana'
 import {gomukhasana} from './gomukhasana'
-import {pindasana} from './pindasana'
+import {karnaPidasana} from './karna-pidasana'
 import {titibhasana} from './titibhasana'
 import {utthitaTrikonasana} from './utthita-trikonasana'
 import {parivritaKaundiniasana} from './parivrita-kaundiniasana'
 import {salambaSarvangasana} from './salamba-sarvangasana'
 import {prasarita} from './prasarita'
 import {hastaPadangushthasana2} from './utthita-hasta-padangushthasana-2'
+import {parshvakonasana} from './parshvakonasana'
+import {ashtavakrasana} from './ashtavakrasana'
+import {sahadjaPurvottanasana} from './sahadja-purvottanasana'
+import {parivritaParshvakonasana} from './parivrita-parshvakonasana'
+import {skrutkaLeza} from './skrutka-leza'
+import {kapotasana} from './kapotasana'
+import {upavishtaKonasana} from './upavishta-konasana'
+import {pavanaMuktasana} from './pavana-muktasana'
+import {balasana} from './balasana'
+import {suptaPadangushthasana1} from './supta-padangushthasana-1'
+import {parshvottanasana} from './parshvottanasana'
+import {utthitaAshtangaNamaskarasana} from './utthita-ashtanga-namaskarasana'
+import {shirshasana} from './shirshasana'
+import {nataradjasana} from './nataradjasana'
+import {parighasana} from './parighasana'
+import {parivrittaDjanuShirshasana} from './parivritta-djanu-shirshasana'
+import {kraunchasana} from './kraunchasana'
+import {adhoMukhaVrikshasana} from './adhoMukhaVrikshasana'
+import {mayurasana} from './mayurasana'
+import {pashasana} from './pashasana'
+import {matsiasana} from './matsiasana'
+import {suptaVirasana} from './supta-virasana'
+import {bhekasana} from './bhekasana'
 
 export const iconsMap: Record<string, string> = {
   adhomukhaShvanasana,
@@ -93,11 +116,34 @@ export const iconsMap: Record<string, string> = {
   pashchimatanasana,
   ekaPadaPashchimatanasana,
   gomukhasana,
-  pindasana,
+  karnaPidasana,
   titibhasana,
   utthitaTrikonasana,
   parivritaKaundiniasana,
   salambaSarvangasana,
   prasarita,
-  hastaPadangushthasana2
+  hastaPadangushthasana2,
+  parshvakonasana,
+  ashtavakrasana,
+  sahadjaPurvottanasana,
+  parivritaParshvakonasana,
+  skrutkaLeza,
+  kapotasana,
+  upavishtaKonasana,
+  pavanaMuktasana,
+  balasana,
+  suptaPadangushthasana1,
+  parshvottanasana,
+  utthitaAshtangaNamaskarasana,
+  shirshasana,
+  nataradjasana,
+  parighasana,
+  parivrittaDjanuShirshasana,
+  kraunchasana,
+  adhoMukhaVrikshasana,
+  mayurasana,
+  pashasana,
+  matsiasana,
+  suptaVirasana,
+  bhekasana
 }

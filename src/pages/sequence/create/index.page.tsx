@@ -1,8 +1,7 @@
+'use client'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 
 import styles from './styles.module.css'
-import {Spinner} from 'components/spinner'
-import {useAsana} from 'context/asanas'
 import {AsanaCardsList} from 'components/asanas-cards-list'
 import PdfViewer from 'components/pdf-viewer'
 import {Asana} from 'types'
@@ -24,9 +23,10 @@ import {
 import type {GetServerSideProps} from 'next/types'
 import {Resizable} from 're-resizable'
 import {Input} from 'components/input'
+import {getAsanasList} from 'api/actions'
+import {PageProps} from 'types/page-props'
 
 import debounce from 'lodash.debounce'
-import {isMobile as _isMobile} from 'lib/is-mobile'
 import clsx from 'clsx'
 
 interface BuilderData {
@@ -57,7 +57,10 @@ const initialBuilderData: BuilderData = {
 
 const MAX_SEQUENCE_COUNT = 5
 
-const CreateSequencePage: React.FC = () => {
+const CreateSequencePage: React.FC<PageProps> = ({
+  isMobile,
+  asanas: allAsanas = []
+}) => {
   const [editingSequence, setEditingSequence] = useState<string>('sequence-1')
   const [documentTitle, setDocumentTitle] = useState<string>('')
 
@@ -65,7 +68,6 @@ const CreateSequencePage: React.FC = () => {
     useState<BuilderData>(initialBuilderData)
 
   const [isModelVisible, setIsModelVisible] = useState(false)
-  const {isFetching, asanas: allAsanas} = useAsana()
 
   const [asanas, setAsanas] = useState(allAsanas)
 
@@ -408,17 +410,12 @@ const CreateSequencePage: React.FC = () => {
           className={styles.list}
           onAsanaClick={onAsanaClick}
           size="small"
+          isMobile={isMobile}
         />
       </div>
     ),
-    [asanas, onAsanaClick, onSearchAsana]
+    [asanas, isMobile, onAsanaClick, onSearchAsana]
   )
-
-  const isMobile = _isMobile()
-
-  if (isFetching) {
-    return <Spinner />
-  }
 
   return (
     <div className={clsx(styles.root, isMobile && styles.mobile)}>
@@ -512,14 +509,12 @@ const CreateSequencePage: React.FC = () => {
           destroyOnClose
           width={1000}
           {...(isMobile ? {footer: null} : {})}>
-          <PdfViewer sequence={pdfAsanaData} />
+          <PdfViewer sequence={pdfAsanaData} isMobile={isMobile} />
         </Modal>
       </div>
     </div>
   )
 }
-
-export default CreateSequencePage
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const UA = context.req.headers['user-agent']
@@ -530,8 +525,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     )
   )
 
+  const asanas = await getAsanasList()
+
+  asanas.sort((a, b) => (a.name > b.name ? 1 : -1))
+
   // reset dnd context to prevent didn't match error
   resetServerContext()
 
-  return {props: {data: [], isMobile}}
+  return {props: {isMobile, asanas}}
 }
+
+export default CreateSequencePage

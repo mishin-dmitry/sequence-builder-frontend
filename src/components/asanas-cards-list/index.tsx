@@ -12,32 +12,35 @@ export interface AsanaCardsListProps {
   asanas: Asana[]
   size?: 'default' | 'small'
   className?: string
-  onAsanaClick?: (asana: Asana) => void
   withLinks?: boolean
+  isMobile: boolean
+  onAsanaClick?: (asana: Asana) => void
 }
 
 export const AsanaCardsList: React.FC<AsanaCardsListProps> = ({
   asanas = [],
   size,
   className,
-  onAsanaClick,
-  withLinks
+  withLinks,
+  isMobile,
+  onAsanaClick
 }) => {
   const list = useMemo(
     () => (
-      <ul className={clsx(styles.list, isMobile() && styles.mobile, className)}>
+      <ul className={clsx(styles.list, isMobile && styles.mobile, className)}>
         {asanas.map((data: Asana) => (
           <AsanaCard
             data={data}
             key={data.id}
             isLink={withLinks}
             size={size}
+            isMobile={isMobile}
             onAsanaClick={onAsanaClick}
           />
         ))}
       </ul>
     ),
-    [asanas, className, onAsanaClick, size, withLinks]
+    [asanas, className, isMobile, onAsanaClick, size, withLinks]
   )
 
   return asanas.length ? (

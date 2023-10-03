@@ -106,7 +106,6 @@ export const SequenceRow: React.FC<SequenceRowProps> = ({
           <Input
             placeholder="Введите название блока асан..."
             onChange={onInputChange}
-            className={styles.input}
             label="Блок асан"
             name="title"
             value={title}

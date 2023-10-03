@@ -3,18 +3,19 @@ import React, {useCallback} from 'react'
 import type {Asana} from 'types'
 
 import {Typography} from 'antd'
+import {isMobile as _isMobile} from 'lib/is-mobile'
+import {iconsMap} from 'icons'
 
 import styles from './styles.module.css'
 import Link from 'next/link'
 import clsx from 'clsx'
-import {isMobile as _isMobile} from 'lib/is-mobile'
-import {iconsMap} from 'icons'
 
 interface AsanaCardProps {
   data: Asana
   isLink?: boolean
   href?: string
   size?: 'default' | 'small'
+  isMobile: boolean
   onAsanaClick?: (asana: Asana) => void
 }
 
@@ -23,12 +24,12 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
   isLink,
   href,
   onAsanaClick: onAsanaClickProp,
-  size = 'default'
+  size = 'default',
+  isMobile
 }) => {
   const {name, alias = '', description} = data
 
   const isDataExists = !!description || !!alias || !!name
-  const isMobile = _isMobile()
 
   const onAsanaClick = useCallback(() => {
     onAsanaClickProp?.(data)
