@@ -6,7 +6,6 @@ import {Typography} from 'antd'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
-import {isMobile} from 'lib/is-mobile'
 
 export interface AsanaCardsListProps {
   asanas: Asana[]
