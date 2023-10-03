@@ -106,6 +106,10 @@ import {suptaArdhaMatsiendrasana} from './supta-ardha-matsiendrasana'
 import {purvottanasana} from './purvottanasana'
 import {parivrittaUtkatasana} from './parivritta-utkatasana'
 import {suriaYantrasana} from './suria-yantrasana'
+import {urdhvaprasaritaEkapadasana} from './urdhvaprasarita-ekapadasana'
+import {easyVasishthasana} from './easy-vasishthasana'
+import {ekaPadaBakasana} from './eka-pada-bakasana'
+import {ardhaPadmaPadangushthasana} from './ardha-padma-padangushthasana'
 
 export const iconsMap: Record<string, string> = {
   adhomukhaShvanasana,
@@ -215,5 +219,9 @@ export const iconsMap: Record<string, string> = {
   suptaArdhaMatsiendrasana,
   purvottanasana,
   parivrittaUtkatasana,
-  suriaYantrasana
+  suriaYantrasana,
+  urdhvaprasaritaEkapadasana,
+  easyVasishthasana,
+  ekaPadaBakasana,
+  ardhaPadmaPadangushthasana
 }
