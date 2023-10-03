@@ -1,6 +1,7 @@
 import React, {useMemo} from 'react'
 
 import type {Asana} from 'types'
+
 import {AsanaCard} from 'components/asana-card'
 import {Typography} from 'antd'
 
@@ -20,7 +21,6 @@ export const AsanaCardsList: React.FC<AsanaCardsListProps> = ({
   asanas = [],
   size,
   className,
-  withLinks,
   isMobile,
   onAsanaClick
 }) => {
@@ -31,7 +31,6 @@ export const AsanaCardsList: React.FC<AsanaCardsListProps> = ({
           <AsanaCard
             data={data}
             key={data.id}
-            isLink={withLinks}
             size={size}
             isMobile={isMobile}
             onAsanaClick={onAsanaClick}
@@ -39,7 +38,7 @@ export const AsanaCardsList: React.FC<AsanaCardsListProps> = ({
         ))}
       </ul>
     ),
-    [asanas, className, isMobile, onAsanaClick, size, withLinks]
+    [asanas, className, isMobile, onAsanaClick, size]
   )
 
   return asanas.length ? (
