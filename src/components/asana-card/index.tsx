@@ -7,25 +7,26 @@ import {isMobile as _isMobile} from 'lib/is-mobile'
 import {iconsMap} from 'icons'
 
 import styles from './styles.module.css'
-import Link from 'next/link'
 import clsx from 'clsx'
 
 interface AsanaCardProps {
   data: Asana
-  isLink?: boolean
-  href?: string
   size?: 'default' | 'small'
+  isButton?: boolean
+  hideText?: boolean
   isMobile: boolean
+  className?: string
   onAsanaClick?: (asana: Asana) => void
 }
 
 export const AsanaCard: React.FC<AsanaCardProps> = ({
   data,
-  isLink,
-  href,
   onAsanaClick: onAsanaClickProp,
   size = 'default',
-  isMobile
+  isMobile,
+  hideText,
+  isButton = true,
+  className
 }) => {
   const {name, alias = '', description} = data
 
@@ -39,33 +40,42 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
     return null
   }
 
-  if (isLink && href) {
-    return (
-      <Link
-        href={href}
-        className={clsx(styles.card, styles.link, isMobile && styles.mobile)}>
-        {iconsMap[alias] && (
-          <div className={styles.imageContainer}>
-            <img
-              src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                iconsMap[alias]
-              )}`}
-            />
-          </div>
-        )}
-        <div className={styles.textContainer}>
-          <Typography.Title level={2}>{name}</Typography.Title>
-          {!!description && size === 'default' && (
-            <Typography>{description}</Typography>
-          )}
-        </div>
-      </Link>
-    )
-  }
+  const TagName = isButton ? 'button' : 'div'
+
+  // if (isLink && href) {
+  //   return (
+  //     <Link
+  //       href={href}
+  //       className={clsx(styles.card, styles.link, isMobile && styles.mobile)}>
+  //       {iconsMap[alias] && (
+  //         <div className={styles.imageContainer}>
+  //           <img
+  //             src={`data:image/svg+xml;utf8,${encodeURIComponent(
+  //               iconsMap[alias]
+  //             )}`}
+  //           />
+  //         </div>
+  //       )}
+  //       {!hideText && (
+  //         <div className={styles.textContainer}>
+  //           <Typography.Title level={2}>{name}</Typography.Title>
+  //           {!!description && size === 'default' && (
+  //             <Typography>{description}</Typography>
+  //           )}
+  //         </div>
+  //       )}
+  //     </Link>
+  //   )
+  // }
 
   return (
-    <button
-      className={clsx(styles.card, styles[size], isMobile && styles.mobile)}
+    <TagName
+      className={clsx(
+        styles.card,
+        styles[size],
+        isMobile && styles.mobile,
+        className
+      )}
       onClick={onAsanaClick}>
       {iconsMap[alias] && (
         <div className={styles.imageContainer}>
@@ -76,16 +86,18 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
           />
         </div>
       )}
-      <div className={styles.textContainer}>
-        {name && (
-          <Typography.Title level={2} className={styles.title}>
-            {name}
-          </Typography.Title>
-        )}
-        {!!description && size === 'default' && (
-          <Typography>{description}</Typography>
-        )}
-      </div>
-    </button>
+      {!hideText && (
+        <div className={styles.textContainer}>
+          {name && (
+            <Typography.Title level={2} className={styles.title}>
+              {name}
+            </Typography.Title>
+          )}
+          {!!description && size === 'default' && (
+            <Typography>{description}</Typography>
+          )}
+        </div>
+      )}
+    </TagName>
   )
 }

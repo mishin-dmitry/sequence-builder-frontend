@@ -1,0 +1,28 @@
+.menuWrapper {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.menu {
+  border: none !important;
+
+  & li {
+    margin: 0 !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+    font-size: 16px;
+  }
+}
+
+.burgerMenu {
+  background-color: transparent;
+  border: none;
+  outline: 0;
+  color: #fff;
+  cursor: pointer;
+
+  & svg {
+    font-size: 18px;
+  }
+}

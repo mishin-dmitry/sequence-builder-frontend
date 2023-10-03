@@ -17,3 +17,7 @@
 .layout {
   max-height: 100vh;
 }
+
+.header {
+  padding: 0 15px !important;
+}
