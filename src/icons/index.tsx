@@ -71,6 +71,25 @@ import {pashasana} from './pashasana'
 import {matsiasana} from './matsiasana'
 import {suptaVirasana} from './supta-virasana'
 import {bhekasana} from './bhekasana'
+import {anandaBalasana} from './ananda-balasana'
+import {shashankasana2} from './shashankasana-2'
+import {marichiasana1} from './marichiasana-1'
+import {marichiasana2} from './marichiasana-2'
+import {svastikasana} from './svastikasana'
+import {padmasana} from './padmasana'
+import {ardhaBhekasana} from './ardha-bhekasana'
+import {ashvaSanchalanasana2} from './ashva-sanchalanasana-2'
+import {vasishthasana} from './vasishthasana'
+import {ekaPadaRadjaKapotasana} from './eka-pada-radja-kapotasana'
+import {urdhvaMukhaPashimottanasana} from './urdhva-mukha-pashimottanasana'
+import {bakasana} from './bakasana'
+import {ardhaMatsiendrasana} from './ardha-matsiendrasana'
+import {akarnaDhanurasana} from './akarna-dhanurasana'
+import {parivrittaVirabhadrasana} from './parivrita-virabhadrasana'
+import {suptaBadhaKonasana} from './supta-badha-konasana'
+import {hanumanasana} from './hanumanasana'
+import {golub} from './golub'
+import {kakasana} from './kakasana'
 
 export const iconsMap: Record<string, string> = {
   adhomukhaShvanasana,
@@ -145,5 +164,24 @@ export const iconsMap: Record<string, string> = {
   pashasana,
   matsiasana,
   suptaVirasana,
-  bhekasana
+  bhekasana,
+  anandaBalasana,
+  shashankasana2,
+  marichiasana1,
+  marichiasana2,
+  svastikasana,
+  padmasana,
+  ardhaBhekasana,
+  ashvaSanchalanasana2,
+  vasishthasana,
+  ekaPadaRadjaKapotasana,
+  urdhvaMukhaPashimottanasana,
+  bakasana,
+  ardhaMatsiendrasana,
+  akarnaDhanurasana,
+  parivrittaVirabhadrasana,
+  suptaBadhaKonasana,
+  hanumanasana,
+  golub,
+  kakasana
 }
