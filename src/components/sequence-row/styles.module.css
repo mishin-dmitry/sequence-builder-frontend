@@ -38,6 +38,10 @@
   flex-wrap: nowrap;
   overflow: hidden;
   overflow-x: scroll;
+
+  &:empty {
+    display: none;
+  }
 }
 
 .buttonWrapper {

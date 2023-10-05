@@ -430,7 +430,7 @@ const CreateSequencePage: React.FC<PageProps> = ({
             borderRight: '1px solid #ddd'
           }}
           defaultSize={{
-            width: '360px',
+            width: '370px',
             height: '100%'
           }}
           maxWidth="535px"

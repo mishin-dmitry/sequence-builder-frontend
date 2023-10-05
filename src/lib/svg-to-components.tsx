@@ -56,13 +56,15 @@ export const svgToComponent = (node: any): any => {
       throw new Error(`tagName is doesn't exist`)
     }
 
+    const hasWidth = !!node.properties?.width
+
     switch (node.tagName.toUpperCase()) {
       case 'SVG':
         Component = Svg
         componentProps = {
           viewBox: node.properties?.viewBox,
-          height: parseIntAttributes(node.properties?.width) || 64,
-          width: parseIntAttributes(node.properties?.height) || 64,
+          height: parseIntAttributes(node.properties?.height) || 64,
+          width: hasWidth ? parseIntAttributes(node.properties?.width) : 64,
           style: {
             fontSize: '12px'
           }
@@ -117,7 +119,8 @@ export const svgToComponent = (node: any): any => {
         Component = Path
         componentProps = {
           d: node.properties?.d,
-          fill: node.properties?.fill ?? '#000000'
+          fill: node.properties?.fill ?? '#000000',
+          style: getStyleObjectFromString(node.properties?.style as string)
         }
         break
 
