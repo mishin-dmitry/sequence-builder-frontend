@@ -430,11 +430,11 @@ const CreateSequencePage: React.FC<PageProps> = ({
             borderRight: '1px solid #ddd'
           }}
           defaultSize={{
-            width: '335px',
+            width: '360px',
             height: '100%'
           }}
-          maxWidth="505px"
-          minWidth="160px">
+          maxWidth="535px"
+          minWidth="170px">
           {asanasList}
         </Resizable>
       )}
