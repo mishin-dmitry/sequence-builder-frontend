@@ -65,7 +65,7 @@ import {nataradjasana} from './nataradjasana'
 import {parighasana} from './parighasana'
 import {parivrittaDjanuShirshasana} from './parivritta-djanu-shirshasana'
 import {kraunchasana} from './kraunchasana'
-import {adhoMukhaVrikshasana} from './adhoMukhaVrikshasana'
+import {adhoMukhaVrikshasana} from './adho-mukha-vrikshasana'
 import {mayurasana} from './mayurasana'
 import {pashasana} from './pashasana'
 import {matsiasana} from './matsiasana'
@@ -110,6 +110,7 @@ import {urdhvaprasaritaEkapadasana} from './urdhvaprasarita-ekapadasana'
 import {easyVasishthasana} from './easy-vasishthasana'
 import {ekaPadaBakasana} from './eka-pada-bakasana'
 import {ardhaPadmaPadangushthasana} from './ardha-padma-padangushthasana'
+import {ekaPadaSarvangasana} from './eka-pada-sarvangasana'
 
 export const iconsMap: Record<string, string> = {
   adhomukhaShvanasana,
@@ -223,5 +224,6 @@ export const iconsMap: Record<string, string> = {
   urdhvaprasaritaEkapadasana,
   easyVasishthasana,
   ekaPadaBakasana,
-  ardhaPadmaPadangushthasana
+  ardhaPadmaPadangushthasana,
+  ekaPadaSarvangasana
 }

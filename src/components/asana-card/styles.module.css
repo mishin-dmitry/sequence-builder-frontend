@@ -28,15 +28,12 @@
     }
 
     &.mobile {
-      width: 100px;
+      width: 150px;
       margin: 5px;
 
-      & .imageContainer {
-        height: 50px;
-      }
-
       .title {
-        font-size: 11px;
+        font-size: 13px;
+        margin-top: -10px;
       }
     }
   }
