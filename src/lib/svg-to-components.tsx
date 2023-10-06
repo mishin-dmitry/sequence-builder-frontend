@@ -66,7 +66,8 @@ export const svgToComponent = (node: any): any => {
           height: parseIntAttributes(node.properties?.height) || 64,
           width: hasWidth ? parseIntAttributes(node.properties?.width) : 64,
           style: {
-            fontSize: '12px'
+            fontSize: '12px',
+            margin: 5
           }
         }
         break
@@ -99,7 +100,8 @@ export const svgToComponent = (node: any): any => {
           opacity: node.properties?.opacity,
           transform: node.properties?.transform,
           'clip-path': node.properties?.clipPath,
-          visibility: node.properties?.visibility
+          visibility: node.properties?.visibility,
+          style: getStyleObjectFromString(node.properties?.style as string)
         }
         break
 
