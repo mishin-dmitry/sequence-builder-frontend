@@ -11,12 +11,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     padding: 20
   },
-  image: {
-    margin: 5,
-    width: '80px',
-    height: '80px'
-  },
-  text: {},
   columnView: {
     display: 'flex',
     flexDirection: 'column'
@@ -25,9 +19,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexWrap: 'wrap',
     flexDirection: 'row'
-  },
-  rowTitle: {
-    fontSize: 12
   },
   documentTitle: {
     textAlign: 'center'
@@ -39,17 +30,12 @@ Font.register({
   src: 'https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmEU9vAx05IsDqlA.ttf'
 })
 
-interface Row {
-  title?: string
+export interface Sequence {
+  documentTitle?: string
   asanas: Asana[]
 }
 
-export interface Sequence {
-  documentTitle?: string
-  rows: Row[]
-}
-
-export const PDFDocument = ({rows, documentTitle}: Sequence): any => {
+export const PDFDocument = ({documentTitle, asanas}: Sequence): any => {
   return (
     <Document>
       <Page orientation="landscape" style={styles.page}>
@@ -57,19 +43,12 @@ export const PDFDocument = ({rows, documentTitle}: Sequence): any => {
           {!!documentTitle && (
             <Text style={styles.documentTitle}>{documentTitle}</Text>
           )}
-          <View>
-            {rows.map(({title, asanas}, index) => (
-              <View key={index} style={styles.columnView}>
-                <Text style={styles.rowTitle}>{title}</Text>
-                <View style={styles.rowView}>
-                  {asanas.map(({alias = ''}: Asana) =>
-                    iconsMap[alias]
-                      ? createSVGPdfRendererComponent(iconsMap[alias])
-                      : undefined
-                  )}
-                </View>
-              </View>
-            ))}
+          <View style={styles.rowView}>
+            {asanas.map(({alias = ''}: Asana) =>
+              iconsMap[alias]
+                ? createSVGPdfRendererComponent(iconsMap[alias])
+                : undefined
+            )}
           </View>
         </View>
       </Page>

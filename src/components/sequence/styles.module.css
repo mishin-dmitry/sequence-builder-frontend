@@ -1,18 +1,10 @@
 .imageWrapper {
-  margin: 10px 0 0 10px;
   display: inline-flex;
-  background-color: #fff;
-  padding: 5px;
-  border-radius: 8px;
   position: relative;
-
-  &.dragging {
-    background-color: lightblue;
-  }
 }
 
 .sequenceRow {
-  padding: 10px;
+  padding: 10px 10px 20px;
   border: 1px solid lightgray;
   border-radius: 8px;
   background: #f5f5f5;
@@ -32,12 +24,9 @@
 }
 
 .sequence {
-  margin: 0 0 0 -10px;
   display: flex;
   align-items: center;
-  flex-wrap: nowrap;
-  overflow: hidden;
-  overflow-x: scroll;
+  flex-wrap: wrap;
 
   &:empty {
     display: none;
