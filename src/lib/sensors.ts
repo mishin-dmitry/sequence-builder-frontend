@@ -1,3 +1,5 @@
+'use client'
+
 // https://github.com/clauderic/dnd-kit/issues/477
 import type {MouseEvent, KeyboardEvent, PointerEvent} from 'react'
 

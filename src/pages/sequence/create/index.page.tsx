@@ -10,7 +10,7 @@ import {PDFDocument} from 'components/pdf-viewer/document'
 import {saveAs} from 'file-saver'
 import {pdf} from '@react-pdf/renderer'
 import {Sequence} from 'components/sequence'
-import {arrayMove} from '@dnd-kit/sortable'
+import {arrayMove} from 'lib/array-move'
 
 import type {GetServerSideProps} from 'next/types'
 import {Resizable} from 're-resizable'

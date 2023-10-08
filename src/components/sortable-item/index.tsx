@@ -1,3 +1,4 @@
+'use client'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {useSortable} from '@dnd-kit/sortable'
