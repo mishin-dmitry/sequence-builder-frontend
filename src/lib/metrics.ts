@@ -88,6 +88,6 @@ export const reachGoal = async (...args: any[]): Promise<void> => {
       1000
     )
 
-    yaCounter(YANDEX_METRICS_KEY, 'reachGoal', args)
+    yaCounter(YANDEX_METRICS_KEY, 'reachGoal', ...args)
   } catch {}
 }
