@@ -197,7 +197,6 @@ const CreateSequencePage: React.FC<PageProps> = ({
             onSearchAsana={onSearchAsana}
             isMobile={isMobile}
             asanas={asanas}
-            className={styles.list}
             onAsanaClick={onAsanaClick}
             size="small"
           />
@@ -273,7 +272,6 @@ const CreateSequencePage: React.FC<PageProps> = ({
             onSearchAsana={onSearchAsana}
             isMobile={isMobile}
             asanas={asanas}
-            className={styles.list}
             onAsanaClick={onAsanaClick}
             size="small"
           />
