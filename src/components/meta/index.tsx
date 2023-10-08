@@ -13,7 +13,6 @@ export const Meta: React.FC<MetaProps> = ({title, description, keywords}) => (
     <meta name="description" content={description} />
     <meta name="title" content={title} />
     <meta name="keywords" content={keywords} />
-    <meta name="yandex-verification" content="6abcd5e5b74293d6" />
     <title>{title}</title>
   </Head>
 )

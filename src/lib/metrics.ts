@@ -65,9 +65,7 @@ export const activateYandexMetrika = (): Promise<void> => {
       (window, document, 'script', '//mc.yandex.ru/metrika/tag.js', 'ym')
     try {
       // @ts-ignore
-      ym(YANDEX_METRICS_KEY, 'init', {
-        ...DEFAULT_YANDEX_METRICA_PARAMS
-      })
+      ym(YANDEX_METRICS_KEY, 'init', DEFAULT_YANDEX_METRICA_PARAMS)
     } catch (e) {}
     /* eslint-enable */
   })
