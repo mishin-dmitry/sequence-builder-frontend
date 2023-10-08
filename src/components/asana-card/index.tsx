@@ -39,6 +39,7 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
       iconsMap[alias] && (
         <div className={styles.imageContainer}>
           <img
+            loading="lazy"
             src={`data:image/svg+xml;utf8,${encodeURIComponent(
               iconsMap[alias]
             )}`}
