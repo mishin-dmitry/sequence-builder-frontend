@@ -1,3 +1,5 @@
+'use client'
+
 import React, {useMemo} from 'react'
 
 import type {Asana} from 'types'
@@ -17,7 +19,7 @@ import {
   sortableKeyboardCoordinates
 } from '@dnd-kit/sortable'
 
-import SortableItem from 'components/sortable-item'
+import {SortableItem} from 'components/sortable-item'
 import {PlusCircleOutlined} from '@ant-design/icons'
 import {KeyboardSensor, MouseSensor, PointerSensor} from 'lib/sensors'
 
