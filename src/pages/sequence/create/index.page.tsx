@@ -16,10 +16,12 @@ import type {GetServerSideProps} from 'next/types'
 import {Resizable} from 're-resizable'
 import {Input} from 'components/input'
 import {getAsanasList} from 'api/actions'
+import {Meta} from 'components/meta'
 import type {PageProps} from 'types/page-props'
 
 import debounce from 'lodash.debounce'
 import clsx from 'clsx'
+import {reachGoal} from 'lib/metrics'
 
 interface BuilderData {
   asanas: {
@@ -63,13 +65,19 @@ const CreateSequencePage: React.FC<PageProps> = ({
   const clearSequence = useCallback(() => {
     setBuilderData(initialBuilderData)
     setDocumentTitle('')
+
+    reachGoal('clear_sequence')
   }, [])
 
   // Скрыть превью pdf файла
   const hidePreview = useCallback(() => setIsPdfModalVisible(false), [])
 
   // Показать превью pdf файла
-  const showPreview = useCallback(() => setIsPdfModalVisible(true), [])
+  const showPreview = useCallback(() => {
+    setIsPdfModalVisible(true)
+
+    reachGoal('show_preview')
+  }, [])
 
   // Скрыть превью pdf файла
   const hideAsanasModal = useCallback(() => setIsAsanasModalVisible(false), [])
@@ -120,6 +128,8 @@ const CreateSequencePage: React.FC<PageProps> = ({
     const blob = await pdfDoc.toBlob()
 
     saveAs(blob, documentTitle)
+
+    reachGoal('save_pdf')
   }, [pdfAsanaData, documentTitle])
 
   const onDragEnd = useCallback(
@@ -182,106 +192,113 @@ const CreateSequencePage: React.FC<PageProps> = ({
   )
 
   return (
-    <div className={clsx(styles.root, isMobile && styles.mobile)}>
-      {!isMobile && (
-        <Resizable
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRight: '1px solid #ddd'
-          }}
-          defaultSize={{
-            width: '352px',
-            height: '100%'
-          }}
-          maxWidth="535px"
-          minWidth="170px">
-          <AsanasList
-            onSearchAsana={onSearchAsana}
-            isMobile={isMobile}
-            asanas={asanas}
-            onAsanaClick={onAsanaClick}
-            size="small"
-          />
-        </Resizable>
-      )}
-      <div className={styles.previewWrapper}>
-        <div className={styles.scrollContainer}>
-          <div className={styles.scrollContainerInner}>
-            <Input
-              placeholder="Введите название вашей последовательности..."
-              label="Название последовательности"
-              value={documentTitle}
-              onChange={onDocumentTitleChange}
-              name="documentTitle"
+    <>
+      <Meta
+        title="Построение последовательностей для йоги"
+        description="Создайте свой идеальный путь в йоге с нашим приложением для построения последовательностей. Планируйте, комбинируйте и улучшайте свою практику йоги с Sequoia – вашим верным спутником на пути к гармонии и благополучию."
+        keywords="Йога, построение последовательностей, асаны"
+      />
+      <div className={clsx(styles.root, isMobile && styles.mobile)}>
+        {!isMobile && (
+          <Resizable
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRight: '1px solid #ddd'
+            }}
+            defaultSize={{
+              width: '352px',
+              height: '100%'
+            }}
+            maxWidth="535px"
+            minWidth="170px">
+            <AsanasList
+              onSearchAsana={onSearchAsana}
+              isMobile={isMobile}
+              asanas={asanas}
+              onAsanaClick={onAsanaClick}
+              size="small"
             />
-            <div className={styles.sequences}>
-              <Sequence
-                data={sequenceData}
-                isMobile={isMobile}
-                onDeleteAsana={deleteAsanaById}
-                onDragEnd={onDragEnd}
-                onAddAsanaButtonClick={showAsanasModal}
+          </Resizable>
+        )}
+        <div className={styles.previewWrapper}>
+          <div className={styles.scrollContainer}>
+            <div className={styles.scrollContainerInner}>
+              <Input
+                placeholder="Введите название вашей последовательности..."
+                label="Название последовательности"
+                value={documentTitle}
+                onChange={onDocumentTitleChange}
+                name="documentTitle"
               />
+              <div className={styles.sequences}>
+                <Sequence
+                  data={sequenceData}
+                  isMobile={isMobile}
+                  onDeleteAsana={deleteAsanaById}
+                  onDragEnd={onDragEnd}
+                  onAddAsanaButtonClick={showAsanasModal}
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className={styles.actionButtons}>
-          <Button
-            type="primary"
-            size="large"
-            block={isMobile}
-            danger
-            onClick={clearSequence}>
-            Очистить
-          </Button>
-          <Button
-            type="primary"
-            size="large"
-            block={isMobile}
-            onClick={showPreview}>
-            Посмотреть результат
-          </Button>
-          <Button
-            type="primary"
-            size="large"
-            block={isMobile}
-            onClick={generatePdf}>
-            Сохранить
-          </Button>
+          <div className={styles.actionButtons}>
+            <Button
+              type="primary"
+              size="large"
+              block={isMobile}
+              danger
+              onClick={clearSequence}>
+              Очистить
+            </Button>
+            <Button
+              type="primary"
+              size="large"
+              block={isMobile}
+              onClick={showPreview}>
+              Посмотреть результат
+            </Button>
+            <Button
+              type="primary"
+              size="large"
+              block={isMobile}
+              onClick={generatePdf}>
+              Сохранить
+            </Button>
+          </div>
+          <Modal
+            title="Ваша последовательность"
+            centered
+            okText="Скачать"
+            cancelText="Отмена"
+            open={isPdfModalVisible}
+            onOk={generatePdf}
+            onCancel={hidePreview}
+            destroyOnClose
+            width={1000}
+            {...(isMobile ? {footer: null} : {})}>
+            <PdfViewer sequence={pdfAsanaData} isMobile={isMobile} />
+          </Modal>
+          <Modal
+            title="Выберите асану"
+            centered
+            open={isAsanasModalVisible}
+            onCancel={hideAsanasModal}
+            destroyOnClose
+            footer={null}>
+            <AsanasList
+              onSearchAsana={onSearchAsana}
+              isMobile={isMobile}
+              asanas={asanas}
+              onAsanaClick={onAsanaClick}
+              size="small"
+            />
+          </Modal>
         </div>
-        <Modal
-          title="Ваша последовательность"
-          centered
-          okText="Скачать"
-          cancelText="Отмена"
-          open={isPdfModalVisible}
-          onOk={generatePdf}
-          onCancel={hidePreview}
-          destroyOnClose
-          width={1000}
-          {...(isMobile ? {footer: null} : {})}>
-          <PdfViewer sequence={pdfAsanaData} isMobile={isMobile} />
-        </Modal>
-        <Modal
-          title="Выберите асану"
-          centered
-          open={isAsanasModalVisible}
-          onCancel={hideAsanasModal}
-          destroyOnClose
-          footer={null}>
-          <AsanasList
-            onSearchAsana={onSearchAsana}
-            isMobile={isMobile}
-            asanas={asanas}
-            onAsanaClick={onAsanaClick}
-            size="small"
-          />
-        </Modal>
       </div>
-    </div>
+    </>
   )
 }
 

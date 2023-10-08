@@ -14,6 +14,7 @@ import styles from './styles.module.css'
 import sampleSize from 'lodash.samplesize'
 import shuffle from 'lodash.shuffle'
 import clsx from 'clsx'
+import {Meta} from 'components/meta'
 
 const VARIATIONS_LENGTH = 4
 
@@ -84,33 +85,40 @@ const QuizPage: React.FC<PageProps> = ({asanas, isMobile}) => {
   if (!rightAnswer) return <Spinner />
 
   return (
-    <div className={styles.pageWrapper}>
-      <AsanaCard
-        isMobile={isMobile}
-        data={rightAnswer}
-        hideText
-        isButton={false}
-        className={styles.card}
+    <>
+      <Meta
+        title="Построение последовательностей для йоги"
+        description="Создайте свой идеальный путь в йоге с нашим приложением для построения последовательностей. Планируйте, комбинируйте и улучшайте свою практику йоги с Sequoia – вашим верным спутником на пути к гармонии и благополучию."
+        keywords="Йога, построение последовательностей, асаны"
       />
+      <div className={styles.pageWrapper}>
+        <AsanaCard
+          isMobile={isMobile}
+          data={rightAnswer}
+          hideText
+          isButton={false}
+          className={styles.card}
+        />
 
-      <div className={styles.variationsWrapper}>{variations}</div>
-      <Button
-        type="primary"
-        size="large"
-        block
-        onClick={onNextClick}
-        className={styles.bottomButton}>
-        Далее
-      </Button>
-      <Button
-        type="default"
-        size="large"
-        block
-        onClick={showRightAnswer}
-        className={styles.bottomButton}>
-        Показать правильный ответ
-      </Button>
-    </div>
+        <div className={styles.variationsWrapper}>{variations}</div>
+        <Button
+          type="primary"
+          size="large"
+          block
+          onClick={onNextClick}
+          className={styles.bottomButton}>
+          Далее
+        </Button>
+        <Button
+          type="default"
+          size="large"
+          block
+          onClick={showRightAnswer}
+          className={styles.bottomButton}>
+          Показать правильный ответ
+        </Button>
+      </div>
+    </>
   )
 }
 
