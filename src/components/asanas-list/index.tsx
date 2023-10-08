@@ -7,6 +7,7 @@ import {Input, Typography} from 'antd'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
+import dynamic from 'next/dynamic'
 
 export interface AsanaCardsListProps {
   asanas: Asana[]
@@ -18,7 +19,7 @@ export interface AsanaCardsListProps {
   onSearchAsana: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-export const AsanasList: React.FC<AsanaCardsListProps> = ({
+const AsanasList: React.FC<AsanaCardsListProps> = ({
   asanas = [],
   size,
   className,
@@ -61,3 +62,7 @@ export const AsanasList: React.FC<AsanaCardsListProps> = ({
     </div>
   )
 }
+
+export default dynamic(() => Promise.resolve(AsanasList), {
+  ssr: false
+})

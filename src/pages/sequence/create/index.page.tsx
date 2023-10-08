@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 
 import styles from './styles.module.css'
-import {AsanasList} from 'components/asanas-list'
+import AsanasList from 'components/asanas-list'
 import PdfViewer from 'components/pdf-viewer'
 import {Asana} from 'types'
 import {Button, Modal} from 'antd'
