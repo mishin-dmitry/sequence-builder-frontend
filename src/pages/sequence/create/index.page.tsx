@@ -1,8 +1,7 @@
-'use client'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 
 import styles from './styles.module.css'
-import {AsanaCardsList} from 'components/asanas-cards-list'
+import {AsanasList} from 'components/asanas-list'
 import PdfViewer from 'components/pdf-viewer'
 import {Asana} from 'types'
 import {Button, Modal} from 'antd'
@@ -39,7 +38,8 @@ const CreateSequencePage: React.FC<PageProps> = ({
   asanas: allAsanas = []
 }) => {
   const [documentTitle, setDocumentTitle] = useState<string>('')
-  const [isModelVisible, setIsModelVisible] = useState(false)
+  const [isPdfModalVisible, setIsPdfModalVisible] = useState(false)
+  const [isAsanasModalVisible, setIsAsanasModalVisible] = useState(false)
   const [asanas, setAsanas] = useState(allAsanas)
 
   const [builderData, setBuilderData] =
@@ -48,20 +48,6 @@ const CreateSequencePage: React.FC<PageProps> = ({
   useEffect(() => {
     setAsanas(allAsanas)
   }, [allAsanas])
-
-  // Добавить асану в ряд последовательности
-  const onAsanaClick = useCallback(({id, ...restData}: Asana) => {
-    setBuilderData((prevData) => ({
-      asanas: {
-        ...prevData.asanas,
-        [`${id}`]: {
-          id,
-          ...restData
-        }
-      },
-      sequenceAsanaIds: [...(prevData?.sequenceAsanaIds ?? []), `${id}`]
-    }))
-  }, [])
 
   // Удалить асану в редактируемой последовательности
   const deleteAsanaById = useCallback((asanaIndex: number): void => {
@@ -80,10 +66,37 @@ const CreateSequencePage: React.FC<PageProps> = ({
   }, [])
 
   // Скрыть превью pdf файла
-  const hidePreview = useCallback(() => setIsModelVisible(false), [])
+  const hidePreview = useCallback(() => setIsPdfModalVisible(false), [])
 
   // Показать превью pdf файла
-  const showPreview = useCallback(() => setIsModelVisible(true), [])
+  const showPreview = useCallback(() => setIsPdfModalVisible(true), [])
+
+  // Скрыть превью pdf файла
+  const hideAsanasModal = useCallback(() => setIsAsanasModalVisible(false), [])
+
+  // Показать превью pdf файла
+  const showAsanasModal = useCallback(() => setIsAsanasModalVisible(true), [])
+
+  // Добавить асану в ряд последовательности
+  const onAsanaClick = useCallback(
+    ({id, ...restData}: Asana) => {
+      setBuilderData((prevData) => ({
+        asanas: {
+          ...prevData.asanas,
+          [`${id}`]: {
+            id,
+            ...restData
+          }
+        },
+        sequenceAsanaIds: [...(prevData?.sequenceAsanaIds ?? []), `${id}`]
+      }))
+
+      if (isMobile) {
+        hideAsanasModal()
+      }
+    },
+    [hideAsanasModal, isMobile]
+  )
 
   const pdfAsanaData = useMemo(() => {
     const {asanas, sequenceAsanaIds = []} = builderData
@@ -106,13 +119,13 @@ const CreateSequencePage: React.FC<PageProps> = ({
   }, [pdfAsanaData, documentTitle])
 
   const onDragEnd = useCallback(
-    (event: {active: {id: string}; over: {id: string}}) => {
-      const {active, over} = event
+    (event: {active: {id: string}; over: {id?: string}}) => {
+      const {active, over = {}} = event
 
-      if (active.id !== over.id) {
+      if (!!over.id && active.id !== over.id) {
         setBuilderData((prevData) => {
           const [, oldIndex] = active.id.split('-')
-          const [, newIndex] = over.id.split('-')
+          const [, newIndex] = (over.id as string).split('-')
 
           const sortedIds = arrayMove(
             prevData.sequenceAsanaIds,
@@ -158,30 +171,6 @@ const CreateSequencePage: React.FC<PageProps> = ({
     },
     []
   )
-
-  const asanasList = useMemo(
-    () => (
-      <div className={styles.listWrapper}>
-        <div className={styles.searchWrapper}>
-          <Input
-            name="search"
-            placeholder="Найти асану..."
-            allowClear
-            onChange={onSearchAsana}
-          />
-        </div>
-        <AsanaCardsList
-          asanas={asanas}
-          className={styles.list}
-          onAsanaClick={onAsanaClick}
-          size="small"
-          isMobile={isMobile}
-        />
-      </div>
-    ),
-    [asanas, isMobile, onAsanaClick, onSearchAsana]
-  )
-
   const sequenceData = useMemo(
     () =>
       (builderData.sequenceAsanaIds ?? []).map((id) => builderData.asanas[id]),
@@ -190,9 +179,7 @@ const CreateSequencePage: React.FC<PageProps> = ({
 
   return (
     <div className={clsx(styles.root, isMobile && styles.mobile)}>
-      {isMobile ? (
-        asanasList
-      ) : (
+      {!isMobile && (
         <Resizable
           style={{
             display: 'flex',
@@ -201,12 +188,19 @@ const CreateSequencePage: React.FC<PageProps> = ({
             borderRight: '1px solid #ddd'
           }}
           defaultSize={{
-            width: '370px',
+            width: '352px',
             height: '100%'
           }}
           maxWidth="535px"
           minWidth="170px">
-          {asanasList}
+          <AsanasList
+            onSearchAsana={onSearchAsana}
+            isMobile={isMobile}
+            asanas={asanas}
+            className={styles.list}
+            onAsanaClick={onAsanaClick}
+            size="small"
+          />
         </Resizable>
       )}
       <div className={styles.previewWrapper}>
@@ -222,8 +216,10 @@ const CreateSequencePage: React.FC<PageProps> = ({
             <div className={styles.sequences}>
               <Sequence
                 data={sequenceData}
+                isMobile={isMobile}
                 onDeleteAsana={deleteAsanaById}
                 onDragEnd={onDragEnd}
+                onAddAsanaButtonClick={showAsanasModal}
               />
             </div>
           </div>
@@ -258,13 +254,29 @@ const CreateSequencePage: React.FC<PageProps> = ({
           centered
           okText="Скачать"
           cancelText="Отмена"
-          open={isModelVisible}
+          open={isPdfModalVisible}
           onOk={generatePdf}
           onCancel={hidePreview}
           destroyOnClose
           width={1000}
           {...(isMobile ? {footer: null} : {})}>
           <PdfViewer sequence={pdfAsanaData} isMobile={isMobile} />
+        </Modal>
+        <Modal
+          title="Выберите асану"
+          centered
+          open={isAsanasModalVisible}
+          onCancel={hideAsanasModal}
+          destroyOnClose
+          footer={null}>
+          <AsanasList
+            onSearchAsana={onSearchAsana}
+            isMobile={isMobile}
+            asanas={asanas}
+            className={styles.list}
+            onAsanaClick={onAsanaClick}
+            size="small"
+          />
         </Modal>
       </div>
     </div>

@@ -1,23 +1,3 @@
-.listWrapper {
-  height: calc(100vh - 90px);
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-
-  .mobile & {
-    height: auto;
-  }
-}
-
-.list {
-  overflow: hidden;
-  overflow-y: scroll;
-
-  .mobile & {
-    margin: -5px 0 10px -5px !important;
-  }
-}
-
 .previewWrapper {
   flex: 1;
   display: flex;
@@ -73,16 +53,6 @@
 
 .button {
   margin-top: 20px;
-}
-
-.searchWrapper {
-  padding-right: 10px;
-  margin-bottom: 20px;
-
-  .mobile & {
-    padding-right: 0;
-    margin-bottom: 10px;
-  }
 }
 
 .scrollContainer {

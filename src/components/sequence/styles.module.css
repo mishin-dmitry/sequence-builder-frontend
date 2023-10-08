@@ -1,5 +1,7 @@
 .imageWrapper {
-  display: inline-flex;
+  display: flex;
+  flex: 1;
+  justify-content: center;
   position: relative;
 }
 
@@ -9,18 +11,13 @@
   border-radius: 8px;
   background: #f5f5f5;
 
-  &.editing {
-    border-color: lightblue;
-    background: #e1ebee !important;
+  &.mobile {
+    padding: 10px;
   }
 
-  & + .sequenceRow {
-    margin-top: 10px;
+  &:empty {
+    display: none;
   }
-}
-
-.input1 {
-  margin-bottom: 20px;
 }
 
 .sequence {
@@ -28,8 +25,8 @@
   align-items: center;
   flex-wrap: wrap;
 
-  &:empty {
-    display: none;
+  .mobile & {
+    margin: -10px 0 0 -10px;
   }
 }
 
@@ -37,4 +34,51 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 10px;
+}
+
+.deleteButton {
+  min-width: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  display: none !important;
+  position: absolute !important;
+  top: -5px !important;
+  right: -5px !important;
+  justify-content: center;
+  align-items: center;
+
+  & svg {
+    width: 13px;
+    height: 13px;
+  }
+}
+
+.sortableWrapper {
+  position: relative;
+
+  &:hover {
+    & .deleteButton {
+      display: flex !important;
+    }
+  }
+
+  .mobile & {
+    width: calc((100% - 30px) / 3);
+  }
+}
+
+.addButton {
+  border: none;
+  background-color: transparent;
+  width: calc((100% - 30px) / 3);
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0 0 10px;
+
+  & svg {
+    width: 50px;
+    height: 50px;
+  }
 }

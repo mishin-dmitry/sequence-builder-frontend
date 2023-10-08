@@ -8,9 +8,14 @@ import clsx from 'clsx'
 interface SortableItemProps {
   children: React.ReactNode
   id: string
+  className?: string
 }
 
-export const SortableItem: React.FC<SortableItemProps> = ({id, children}) => {
+export const SortableItem: React.FC<SortableItemProps> = ({
+  id,
+  children,
+  className
+}) => {
   const {
     attributes,
     listeners,
@@ -37,14 +42,15 @@ export const SortableItem: React.FC<SortableItemProps> = ({id, children}) => {
     <div
       ref={setNodeRef}
       className={clsx(
-        styles.Wrapper,
+        styles.wrapper,
         isSorting && styles.sorting,
-        isDragging && styles.dragOverlay
+        isDragging && styles.dragOverlay,
+        className
       )}
       style={style}
       {...attributes}
       {...listeners}>
-      <div className={clsx(styles.Item, isDragging && styles.dragging)}>
+      <div className={clsx(styles.item, isDragging && styles.dragging)}>
         {children}
       </div>
     </div>

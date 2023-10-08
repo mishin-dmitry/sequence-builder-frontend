@@ -5,9 +5,6 @@ import {iconsMap} from 'icons'
 
 import {
   DndContext,
-  KeyboardSensor,
-  MouseSensor,
-  PointerSensor,
   TouchSensor,
   useSensor,
   useSensors,
@@ -20,20 +17,27 @@ import {
   sortableKeyboardCoordinates
 } from '@dnd-kit/sortable'
 import {SortableItem} from 'components/sortable-item'
+import {Button} from 'antd'
+import {DeleteOutlined, PlusCircleOutlined} from '@ant-design/icons'
+import {KeyboardSensor, MouseSensor} from 'lib/sensors'
 
 import clsx from 'clsx'
 import styles from './styles.module.css'
 
 interface SequenceProps {
   data: Asana[]
+  isMobile?: boolean
   onDeleteAsana: (id: number) => void
   onDragEnd: (event: any) => void
+  onAddAsanaButtonClick?: () => void
 }
 
 export const Sequence: React.FC<SequenceProps> = ({
   data = [],
+  isMobile,
   onDeleteAsana,
-  onDragEnd
+  onDragEnd,
+  onAddAsanaButtonClick
 }) => {
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -49,40 +53,60 @@ export const Sequence: React.FC<SequenceProps> = ({
         tolerance: 5
       }
     }),
-    useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
 
   const sequence = useMemo(() => {
-    return data.map(({id, alias}, index) => {
-      const uniqueId = `${id}-${index}`
+    return (
+      <div className={clsx(styles.sequenceRow, isMobile && styles.mobile)}>
+        <div className={styles.sequence}>
+          {data.map(({id, alias}, index) => {
+            const uniqueId = `${id}-${index}`
 
-      return (
-        <SortableItem key={index} id={uniqueId}>
-          <div
-            onDoubleClick={() => onDeleteAsana(index)}
-            className={clsx(styles.imageWrapper)}>
-            <img
-              width={50}
-              height={50}
-              key={id}
-              src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                iconsMap[alias]
-              )}`}
-              alt="Изображение асаны"
-            />
-          </div>
-        </SortableItem>
-      )
-    })
-  }, [data, onDeleteAsana])
+            return (
+              <SortableItem
+                key={index}
+                id={uniqueId}
+                className={styles.sortableWrapper}>
+                <div className={clsx(styles.imageWrapper)}>
+                  <img
+                    width={70}
+                    height={70}
+                    key={id}
+                    src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                      iconsMap[alias]
+                    )}`}
+                    alt="Изображение асаны"
+                  />
+                </div>
+                <Button
+                  danger
+                  shape="circle"
+                  type="primary"
+                  data-no-dnd="true"
+                  className={styles.deleteButton}
+                  icon={<DeleteOutlined />}
+                  onClick={() => onDeleteAsana(index)}
+                />
+              </SortableItem>
+            )
+          })}
+          <button className={styles.addButton} onClick={onAddAsanaButtonClick}>
+            <PlusCircleOutlined />
+          </button>
+        </div>
+      </div>
+    )
+  }, [isMobile, data, onAddAsanaButtonClick, onDeleteAsana])
 
   const sortableContextItems = useMemo(
     () => data.map(({id}, index) => `${id}-${index}`),
     [data]
   )
+
+  if (!data.length && !isMobile) return null
 
   return (
     <DndContext
@@ -92,9 +116,7 @@ export const Sequence: React.FC<SequenceProps> = ({
       <SortableContext
         items={sortableContextItems}
         strategy={rectSortingStrategy}>
-        <div className={styles.sequenceRow}>
-          <div className={styles.sequence}>{sequence}</div>
-        </div>
+        {sequence}
       </SortableContext>
     </DndContext>
   )
