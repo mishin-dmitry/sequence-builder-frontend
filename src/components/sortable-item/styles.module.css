@@ -54,12 +54,32 @@
   }
 }
 
-.Remove {
-  visibility: hidden;
+.index {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  top: 5px;
+  left: 5px;
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  border: 1px solid black;
 }
 
-.Actions {
-  display: flex;
-  align-self: flex-start;
-  margin: -12px -10px -15px auto;
+.deleteButton {
+  min-width: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  position: absolute !important;
+  top: -5px !important;
+  right: -5px !important;
+  justify-content: center;
+  align-items: center;
+  display: flex !important;
+
+  & svg {
+    width: 13px;
+    height: 13px;
+  }
 }

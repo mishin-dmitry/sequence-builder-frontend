@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import React, {useCallback, useMemo} from 'react'
 
 import type {Asana} from 'types'
 
@@ -30,15 +30,23 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
 }) => {
   const {name, alias = '', description} = data
 
-  const isDataExists = !!description || !!alias || !!name
-
   const onAsanaClick = useCallback(() => {
     onAsanaClickProp?.(data)
   }, [data, onAsanaClickProp])
 
-  if (!isDataExists) {
-    return null
-  }
+  const image = useMemo(
+    () =>
+      iconsMap[alias] && (
+        <div className={styles.imageContainer}>
+          <img
+            src={`data:image/svg+xml;utf8,${encodeURIComponent(
+              iconsMap[alias]
+            )}`}
+          />
+        </div>
+      ),
+    [alias]
+  )
 
   const TagName = isButton ? 'button' : 'div'
 
@@ -77,15 +85,7 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
         className
       )}
       onClick={onAsanaClick}>
-      {iconsMap[alias] && (
-        <div className={styles.imageContainer}>
-          <img
-            src={`data:image/svg+xml;utf8,${encodeURIComponent(
-              iconsMap[alias]
-            )}`}
-          />
-        </div>
-      )}
+      {image}
       {!hideText && (
         <div className={styles.textContainer}>
           {name && (

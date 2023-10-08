@@ -33,10 +33,10 @@ export const AsanasList: React.FC<AsanaCardsListProps> = ({
 
     return (
       <ul className={clsx(styles.list, className)}>
-        {asanas.map((data: Asana) => (
+        {asanas.map((asana: Asana) => (
           <AsanaCard
-            data={data}
-            key={data.id}
+            data={asana}
+            key={asana.id}
             size={size}
             isMobile={isMobile}
             onAsanaClick={onAsanaClick}

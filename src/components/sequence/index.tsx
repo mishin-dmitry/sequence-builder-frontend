@@ -8,8 +8,7 @@ import {
   TouchSensor,
   useSensor,
   useSensors,
-  closestCenter,
-  PointerSensor
+  closestCenter
 } from '@dnd-kit/core'
 
 import {
@@ -17,10 +16,10 @@ import {
   rectSortingStrategy,
   sortableKeyboardCoordinates
 } from '@dnd-kit/sortable'
+
 import {SortableItem} from 'components/sortable-item'
-import {Button} from 'antd'
-import {DeleteOutlined, PlusCircleOutlined} from '@ant-design/icons'
-import {KeyboardSensor, MouseSensor} from 'lib/sensors'
+import {PlusCircleOutlined} from '@ant-design/icons'
+import {KeyboardSensor, MouseSensor, PointerSensor} from 'lib/sensors'
 
 import clsx from 'clsx'
 import styles from './styles.module.css'
@@ -44,20 +43,21 @@ export const Sequence: React.FC<SequenceProps> = ({
     useSensor(MouseSensor, {
       // Require the mouse to move by 10 pixels before activating
       activationConstraint: {
-        distance: 10
+        distance: 10,
+        delay: 100
       }
     }),
     useSensor(TouchSensor, {
       // Press delay of 250ms, with tolerance of 5px of movement
       activationConstraint: {
-        delay: 150,
+        delay: 100,
         tolerance: 5
       }
     }),
     useSensor(PointerSensor, {
       // Press delay of 250ms, with tolerance of 5px of movement
       activationConstraint: {
-        delay: 150,
+        delay: 100,
         tolerance: 5
       }
     }),
@@ -77,6 +77,9 @@ export const Sequence: React.FC<SequenceProps> = ({
               <SortableItem
                 key={index}
                 id={uniqueId}
+                index={index}
+                onDelete={onDeleteAsana}
+                isMobile={isMobile}
                 className={styles.sortableWrapper}>
                 <div className={clsx(styles.imageWrapper)}>
                   <img
@@ -89,15 +92,6 @@ export const Sequence: React.FC<SequenceProps> = ({
                     alt="Изображение асаны"
                   />
                 </div>
-                <Button
-                  danger
-                  shape="circle"
-                  type="primary"
-                  data-no-dnd="true"
-                  className={styles.deleteButton}
-                  icon={<DeleteOutlined />}
-                  onClick={() => onDeleteAsana(index)}
-                />
               </SortableItem>
             )
           })}

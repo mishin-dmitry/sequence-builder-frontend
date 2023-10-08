@@ -1,9 +1,10 @@
 // https://github.com/clauderic/dnd-kit/issues/477
-import type {MouseEvent, KeyboardEvent} from 'react'
+import type {MouseEvent, KeyboardEvent, PointerEvent} from 'react'
 
 import {
   MouseSensor as LibMouseSensor,
-  KeyboardSensor as LibKeyboardSensor
+  KeyboardSensor as LibKeyboardSensor,
+  PointerSensor as LibPointerSensor
 } from '@dnd-kit/core'
 
 export class MouseSensor extends LibMouseSensor {
@@ -22,6 +23,17 @@ export class KeyboardSensor extends LibKeyboardSensor {
     {
       eventName: 'onKeyDown' as const,
       handler: ({nativeEvent: event}: KeyboardEvent<Element>) => {
+        return shouldHandleEvent(event.target as HTMLElement)
+      }
+    }
+  ]
+}
+
+export class PointerSensor extends LibPointerSensor {
+  static activators = [
+    {
+      eventName: 'onPointerDown' as const,
+      handler: ({nativeEvent: event}: PointerEvent<Element>) => {
         return shouldHandleEvent(event.target as HTMLElement)
       }
     }

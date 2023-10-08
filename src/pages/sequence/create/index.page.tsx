@@ -16,7 +16,7 @@ import type {GetServerSideProps} from 'next/types'
 import {Resizable} from 're-resizable'
 import {Input} from 'components/input'
 import {getAsanasList} from 'api/actions'
-import {PageProps} from 'types/page-props'
+import type {PageProps} from 'types/page-props'
 
 import debounce from 'lodash.debounce'
 import clsx from 'clsx'
@@ -80,16 +80,20 @@ const CreateSequencePage: React.FC<PageProps> = ({
   // Добавить асану в ряд последовательности
   const onAsanaClick = useCallback(
     ({id, ...restData}: Asana) => {
-      setBuilderData((prevData) => ({
-        asanas: {
-          ...prevData.asanas,
-          [`${id}`]: {
-            id,
-            ...restData
-          }
-        },
-        sequenceAsanaIds: [...(prevData?.sequenceAsanaIds ?? []), `${id}`]
-      }))
+      setBuilderData((prevData) => {
+        const newData = {
+          asanas: {
+            ...prevData.asanas,
+            [`${id}`]: {
+              id,
+              ...restData
+            }
+          },
+          sequenceAsanaIds: [...(prevData?.sequenceAsanaIds ?? []), `${id}`]
+        }
+
+        return newData
+      })
 
       if (isMobile) {
         hideAsanasModal()
@@ -120,9 +124,9 @@ const CreateSequencePage: React.FC<PageProps> = ({
 
   const onDragEnd = useCallback(
     (event: {active: {id: string}; over: {id?: string}}) => {
-      const {active, over = {}} = event
+      const {active, over} = event
 
-      if (!!over.id && active.id !== over.id) {
+      if (!!over?.id && active.id !== over.id) {
         setBuilderData((prevData) => {
           const [, oldIndex] = active.id.split('-')
           const [, newIndex] = (over.id as string).split('-')
