@@ -8,7 +8,8 @@ import {
   TouchSensor,
   useSensor,
   useSensors,
-  closestCenter
+  closestCenter,
+  PointerSensor
 } from '@dnd-kit/core'
 
 import {
@@ -47,6 +48,13 @@ export const Sequence: React.FC<SequenceProps> = ({
       }
     }),
     useSensor(TouchSensor, {
+      // Press delay of 250ms, with tolerance of 5px of movement
+      activationConstraint: {
+        delay: 150,
+        tolerance: 5
+      }
+    }),
+    useSensor(PointerSensor, {
       // Press delay of 250ms, with tolerance of 5px of movement
       activationConstraint: {
         delay: 150,
