@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 
 import styles from './styles.module.css'
-import AsanasList from 'components/asanas-list'
+import {AsanasList} from 'components/asanas-list'
 import PdfViewer from 'components/pdf-viewer'
 import {Asana} from 'types'
 import {Button, Modal} from 'antd'
@@ -18,10 +18,10 @@ import {Input} from 'components/input'
 import {getAsanasList} from 'api/actions'
 import {Meta} from 'components/meta'
 import type {PageProps} from 'types/page-props'
+import {reachGoal} from 'lib/metrics'
 
 import debounce from 'lodash.debounce'
 import clsx from 'clsx'
-import {reachGoal} from 'lib/metrics'
 
 interface BuilderData {
   asanas: {

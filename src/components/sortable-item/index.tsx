@@ -6,6 +6,7 @@ import {DeleteOutlined} from '@ant-design/icons'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
+import dynamic from 'next/dynamic'
 
 interface SortableItemProps {
   children: React.ReactNode
@@ -16,7 +17,7 @@ interface SortableItemProps {
   onDelete: (id: number) => void
 }
 
-export const SortableItem: React.FC<SortableItemProps> = ({
+const SortableItem: React.FC<SortableItemProps> = ({
   id,
   children,
   className,
@@ -101,3 +102,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
     </div>
   )
 }
+
+export default dynamic(() => Promise.resolve(SortableItem), {
+  ssr: false
+})
