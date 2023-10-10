@@ -1,13 +1,12 @@
-import React, {useMemo} from 'react'
+import React from 'react'
 
 import type {Asana} from 'types'
 
 import {AsanaCard} from 'components/asana-card'
-import {Button, Input, Typography} from 'antd'
+import {Typography} from 'antd'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
-import {FilterOutlined} from '@ant-design/icons'
 
 export interface AsanaCardsListProps {
   asanas: Asana[]
