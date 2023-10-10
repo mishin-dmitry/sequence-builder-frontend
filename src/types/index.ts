@@ -4,6 +4,12 @@ export interface Asana {
   description: string
   alias: string
   searchKeys: string
+  groups: AsanaGroup[]
+}
+
+export interface AsanaGroup {
+  id: number
+  name: string
 }
 
 export interface Sequence {

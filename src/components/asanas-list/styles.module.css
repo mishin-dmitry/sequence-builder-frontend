@@ -14,24 +14,3 @@
 .asana {
   width: calc((100% - 30px) / 3) !important;
 }
-
-.listWrapper {
-  height: calc(100vh - 90px);
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-
-  &.mobile {
-    height: auto;
-  }
-}
-
-.searchWrapper {
-  padding-right: 10px;
-  margin-bottom: 20px;
-
-  .mobile & {
-    padding-right: 0;
-    margin-bottom: 10px;
-  }
-}

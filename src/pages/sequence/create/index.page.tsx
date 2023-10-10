@@ -1,11 +1,9 @@
-'use client'
-
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import styles from './styles.module.css'
 import {AsanasList} from 'components/asanas-list'
 import PdfViewer from 'components/pdf-viewer'
-import {Asana} from 'types'
+import {Asana, AsanaGroup} from 'types'
 import {Button, Modal} from 'antd'
 import {PDFDocument} from 'components/pdf-viewer/document'
 
@@ -17,13 +15,14 @@ import {arrayMove} from 'lib/array-move'
 import type {GetServerSideProps} from 'next/types'
 import {Resizable} from 're-resizable'
 import {Input} from 'components/input'
-import {getAsanasList} from 'api/actions'
+import {getAsanaGroupsList, getAsanasList} from 'api/actions'
 import {Meta} from 'components/meta'
 import type {PageProps} from 'types/page-props'
 import {reachGoal} from 'lib/metrics'
 
 import debounce from 'lodash.debounce'
 import clsx from 'clsx'
+import {SearchFilter} from 'components/serch-filter'
 
 interface BuilderData {
   asanas: {
@@ -39,12 +38,16 @@ const initialBuilderData: BuilderData = {
 
 const CreateSequencePage: React.FC<PageProps> = ({
   isMobile,
-  asanas: allAsanas = []
+  asanas: allAsanas = [],
+  asanaGroups = []
 }) => {
   const [documentTitle, setDocumentTitle] = useState<string>('')
   const [isPdfModalVisible, setIsPdfModalVisible] = useState(false)
   const [isAsanasModalVisible, setIsAsanasModalVisible] = useState(false)
   const [asanas, setAsanas] = useState(allAsanas)
+
+  const searchAsanaString = useRef<string>('')
+  const filterAsanaGroups = useRef<AsanaGroup[]>([])
 
   const [builderData, setBuilderData] =
     useState<BuilderData>(initialBuilderData)
@@ -160,11 +163,21 @@ const CreateSequencePage: React.FC<PageProps> = ({
   )
 
   const onSearchAsana = useCallback(
-    debounce((event: React.ChangeEvent<HTMLInputElement>) => {
-      const {value} = event.target
+    debounce((event: React.ChangeEvent<HTMLInputElement> | string) => {
+      const value = typeof event === 'string' ? event : event.target.value
+
+      searchAsanaString.current = value ?? ''
+
+      if (!value && filterAsanaGroups.current.length) {
+        onFilterAsana(filterAsanaGroups.current)
+
+        return
+      }
+
+      const source = filterAsanaGroups.current.length ? asanas : allAsanas
 
       const filteredAsanas = value
-        ? allAsanas.filter(({name, searchKeys}) => {
+        ? source.filter(({name, searchKeys}) => {
             const parsedSearchKeys = searchKeys?.split(',') ?? []
 
             return (
@@ -174,11 +187,11 @@ const CreateSequencePage: React.FC<PageProps> = ({
               )
             )
           })
-        : allAsanas
+        : source
 
       setAsanas(filteredAsanas)
     }, 200),
-    [allAsanas]
+    [allAsanas, asanas]
   )
 
   const onDocumentTitleChange = useCallback(
@@ -191,6 +204,36 @@ const CreateSequencePage: React.FC<PageProps> = ({
     () =>
       (builderData.sequenceAsanaIds ?? []).map((id) => builderData.asanas[id]),
     [builderData]
+  )
+
+  const onFilterAsana = useCallback(
+    (groups: AsanaGroup[] = []) => {
+      let filteredAsanas
+
+      filterAsanaGroups.current = groups
+
+      if (!groups.length && searchAsanaString.current) {
+        onSearchAsana(searchAsanaString.current)
+
+        return
+      }
+
+      const source = searchAsanaString.current ? asanas : allAsanas
+
+      // фильтр пуст
+      if (!groups.length) {
+        filteredAsanas = source
+      } else {
+        filteredAsanas = source.filter(({groups: asanaGroups}) =>
+          groups.some(({id}) =>
+            asanaGroups.some(({id: groupdId}) => groupdId === id)
+          )
+        )
+      }
+
+      setAsanas(filteredAsanas)
+    },
+    [allAsanas, asanas]
   )
 
   return (
@@ -215,13 +258,19 @@ const CreateSequencePage: React.FC<PageProps> = ({
             }}
             maxWidth="535px"
             minWidth="170px">
-            <AsanasList
-              onSearchAsana={onSearchAsana}
-              isMobile={isMobile}
-              asanas={asanas}
-              onAsanaClick={onAsanaClick}
-              size="small"
-            />
+            <div className={styles.listWrapper}>
+              <SearchFilter
+                onSearchAsana={onSearchAsana}
+                filterItems={asanaGroups}
+                onFilterAsanas={onFilterAsana}
+              />
+              <AsanasList
+                isMobile={isMobile}
+                asanas={asanas}
+                onAsanaClick={onAsanaClick}
+                size="small"
+              />
+            </div>
           </Resizable>
         )}
         <div className={styles.previewWrapper}>
@@ -290,13 +339,19 @@ const CreateSequencePage: React.FC<PageProps> = ({
             onCancel={hideAsanasModal}
             destroyOnClose
             footer={null}>
-            <AsanasList
-              onSearchAsana={onSearchAsana}
-              isMobile={isMobile}
-              asanas={asanas}
-              onAsanaClick={onAsanaClick}
-              size="small"
-            />
+            <div className={styles.listWrapper}>
+              <SearchFilter
+                onSearchAsana={onSearchAsana}
+                filterItems={asanaGroups}
+                onFilterAsanas={onFilterAsana}
+              />
+              <AsanasList
+                isMobile={isMobile}
+                asanas={asanas}
+                onAsanaClick={onAsanaClick}
+                size="small"
+              />
+            </div>
           </Modal>
         </div>
       </div>
@@ -314,10 +369,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   )
 
   const asanas = await getAsanasList()
+  const asanaGroups = await getAsanaGroupsList()
 
   asanas.sort((a, b) => (a.name > b.name ? 1 : -1))
+  asanaGroups.sort((a, b) => (a.name > b.name ? 1 : -1))
 
-  return {props: {isMobile, asanas}}
+  return {props: {isMobile, asanas, asanaGroups}}
 }
 
 export default CreateSequencePage

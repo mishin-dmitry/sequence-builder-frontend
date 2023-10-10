@@ -1,0 +1,26 @@
+.searchWrapper {
+  padding-right: 10px;
+  margin-bottom: 20px;
+  display: flex;
+
+  .mobile & {
+    padding-right: 0;
+    margin-bottom: 10px;
+  }
+}
+
+.filterIcon {
+  margin-left: 10px;
+  flex-shrink: 0;
+}
+
+.checkbox {
+  display: flex;
+  padding: 5px 12px;
+}
+
+.menu {
+  & > li {
+    padding: 0 !important;
+  }
+}

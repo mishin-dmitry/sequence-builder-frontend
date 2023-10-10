@@ -64,3 +64,14 @@
     height: auto;
   }
 }
+
+.listWrapper {
+  height: calc(100vh - 90px);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  .mobile & {
+    height: auto;
+  }
+}
