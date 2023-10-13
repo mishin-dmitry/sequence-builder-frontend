@@ -1,9 +1,12 @@
 export interface Asana {
-  id?: number
+  id: number
   name: string
   description: string
   alias: string
   searchKeys: string
+  // Признак того, что асана находится в блоке,
+  // который надо сделать на обратную сторону
+  isAsanaInRepeatingBlock?: boolean
   groups: AsanaGroup[]
 }
 

@@ -48,3 +48,12 @@ img {
   -moz-user-select: none;
   -ms-user-select: none;
 }
+
+.ant-drawer-header-title {
+  flex-direction: row-reverse;
+}
+
+.ant-drawer-close {
+  margin: 0;
+  padding: 0;
+}

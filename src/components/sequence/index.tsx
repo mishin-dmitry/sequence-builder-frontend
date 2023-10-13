@@ -28,6 +28,7 @@ interface SequenceProps {
   data: Asana[]
   isMobile?: boolean
   onDeleteAsana: (id: number) => void
+  addAsanaToRepeatingBlock: (id: number, action: 'add' | 'delete') => void
   onDragEnd: (event: any) => void
   onAddAsanaButtonClick?: () => void
 }
@@ -37,7 +38,8 @@ export const Sequence: React.FC<SequenceProps> = ({
   isMobile,
   onDeleteAsana,
   onDragEnd,
-  onAddAsanaButtonClick
+  onAddAsanaButtonClick,
+  addAsanaToRepeatingBlock
 }) => {
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -70,7 +72,7 @@ export const Sequence: React.FC<SequenceProps> = ({
     return (
       <div className={clsx(styles.sequenceRow, isMobile && styles.mobile)}>
         <div className={styles.sequence}>
-          {data.map(({id, alias}, index) => {
+          {data.map(({id, alias, isAsanaInRepeatingBlock}, index) => {
             const uniqueId = `${id}-${index}`
 
             return (
@@ -80,6 +82,8 @@ export const Sequence: React.FC<SequenceProps> = ({
                 index={index}
                 onDelete={onDeleteAsana}
                 isMobile={isMobile}
+                isAsanaInRepeatingBlock={isAsanaInRepeatingBlock}
+                addAsanaToRepeatingBlock={addAsanaToRepeatingBlock}
                 className={styles.sortableWrapper}>
                 <div className={clsx(styles.imageWrapper)}>
                   <img
@@ -105,7 +109,13 @@ export const Sequence: React.FC<SequenceProps> = ({
         </div>
       </div>
     )
-  }, [isMobile, data, onAddAsanaButtonClick, onDeleteAsana])
+  }, [
+    isMobile,
+    data,
+    onAddAsanaButtonClick,
+    onDeleteAsana,
+    addAsanaToRepeatingBlock
+  ])
 
   const sortableContextItems = useMemo(
     () => data.map(({id}, index) => `${id}-${index}`),

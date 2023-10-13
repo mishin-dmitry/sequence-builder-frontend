@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {useSortable} from '@dnd-kit/sortable'
 import {Button} from 'antd'
-import {DeleteOutlined} from '@ant-design/icons'
+import {ColumnWidthOutlined, DeleteOutlined} from '@ant-design/icons'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
@@ -13,7 +13,9 @@ interface SortableItemProps {
   index: number
   className?: string
   isMobile?: boolean
+  isAsanaInRepeatingBlock?: boolean
   onDelete: (id: number) => void
+  addAsanaToRepeatingBlock: (id: number, action: 'add' | 'delete') => void
 }
 
 export const SortableItem: React.FC<SortableItemProps> = ({
@@ -22,12 +24,14 @@ export const SortableItem: React.FC<SortableItemProps> = ({
   className,
   index,
   isMobile,
-  onDelete
+  onDelete,
+  isAsanaInRepeatingBlock,
+  addAsanaToRepeatingBlock
 }) => {
-  const [isButtonVisible, setIsButtonVisible] = useState(false)
+  const [isButtonsVisible, setIsButtonsVisible] = useState(false)
 
   const toggleButtonVisible = useCallback(
-    () => setIsButtonVisible((prevState) => !prevState),
+    () => setIsButtonsVisible((prevState) => !prevState),
     []
   )
 
@@ -45,10 +49,10 @@ export const SortableItem: React.FC<SortableItemProps> = ({
   })
 
   useEffect(() => {
-    if (isDragging && isButtonVisible) {
-      setIsButtonVisible(false)
+    if (isDragging && isButtonsVisible) {
+      setIsButtonsVisible(false)
     }
-  }, [isButtonVisible, isDragging])
+  }, [isButtonsVisible, isDragging])
 
   const style = {
     transition,
@@ -64,8 +68,8 @@ export const SortableItem: React.FC<SortableItemProps> = ({
       isMobile
         ? {onClick: toggleButtonVisible}
         : {
-            onMouseEnter: () => setIsButtonVisible(true),
-            onMouseLeave: () => setIsButtonVisible(false)
+            onMouseEnter: () => setIsButtonsVisible(true),
+            onMouseLeave: () => setIsButtonsVisible(false)
           },
     [isMobile, toggleButtonVisible]
   )
@@ -83,9 +87,34 @@ export const SortableItem: React.FC<SortableItemProps> = ({
       {...props}
       {...attributes}
       {...listeners}>
-      <div className={clsx(styles.item, isDragging && styles.dragging)}>
+      <div
+        className={clsx(
+          styles.item,
+          isDragging && styles.dragging,
+          isAsanaInRepeatingBlock && styles.blue
+        )}>
         {children}
-        {isButtonVisible && (
+        {(isButtonsVisible || isAsanaInRepeatingBlock) && (
+          <Button
+            shape="circle"
+            type="primary"
+            data-no-dnd="true"
+            className={clsx(
+              styles.rowButton,
+              !isButtonsVisible &&
+                isAsanaInRepeatingBlock &&
+                styles.singleButton
+            )}
+            icon={<ColumnWidthOutlined />}
+            onClick={() =>
+              addAsanaToRepeatingBlock(
+                index,
+                isAsanaInRepeatingBlock ? 'delete' : 'add'
+              )
+            }
+          />
+        )}
+        {isButtonsVisible && (
           <Button
             danger
             shape="circle"

@@ -24,22 +24,11 @@ import debounce from 'lodash.debounce'
 import clsx from 'clsx'
 import {SearchFilter} from 'components/serch-filter'
 
-interface BuilderData {
-  asanas: {
-    [key: string]: Asana
-  }
-  sequenceAsanaIds: string[]
-}
-
-const initialBuilderData: BuilderData = {
-  asanas: {},
-  sequenceAsanaIds: []
-}
-
 const CreateSequencePage: React.FC<PageProps> = ({
   isMobile,
   asanas: allAsanas = [],
-  asanaGroups = []
+  asanaGroups = [],
+  asanaMap = {}
 }) => {
   const [documentTitle, setDocumentTitle] = useState<string>('')
   const [isPdfModalVisible, setIsPdfModalVisible] = useState(false)
@@ -49,8 +38,7 @@ const CreateSequencePage: React.FC<PageProps> = ({
   const searchAsanaString = useRef<string>('')
   const filterAsanaGroups = useRef<AsanaGroup[]>([])
 
-  const [builderData, setBuilderData] =
-    useState<BuilderData>(initialBuilderData)
+  const [builderData, setBuilderData] = useState<Asana[]>([])
 
   useEffect(() => {
     setAsanas(allAsanas)
@@ -58,17 +46,14 @@ const CreateSequencePage: React.FC<PageProps> = ({
 
   // Удалить асану в редактируемой последовательности
   const deleteAsanaById = useCallback((asanaIndex: number): void => {
-    setBuilderData((prevData) => ({
-      ...prevData,
-      sequenceAsanaIds: (prevData.sequenceAsanaIds ?? []).filter(
-        (_, index) => index !== asanaIndex
-      )
-    }))
+    setBuilderData((prevData) =>
+      (prevData ?? []).filter((_, index) => index !== asanaIndex)
+    )
   }, [])
 
   // Очистить последовательность
   const clearSequence = useCallback(() => {
-    setBuilderData(initialBuilderData)
+    setBuilderData([])
     setDocumentTitle('')
 
     reachGoal('clear_sequence')
@@ -92,35 +77,20 @@ const CreateSequencePage: React.FC<PageProps> = ({
 
   // Добавить асану в ряд последовательности
   const onAsanaClick = useCallback(
-    ({id, ...restData}: Asana) => {
-      setBuilderData((prevData) => {
-        const newData = {
-          asanas: {
-            ...prevData.asanas,
-            [`${id}`]: {
-              id,
-              ...restData
-            }
-          },
-          sequenceAsanaIds: [...(prevData?.sequenceAsanaIds ?? []), `${id}`]
-        }
-
-        return newData
-      })
+    ({id}: Asana) => {
+      setBuilderData((prevData) => [...(prevData ?? []), asanaMap[id]])
 
       if (isMobile) {
         hideAsanasModal()
       }
     },
-    [hideAsanasModal, isMobile]
+    [asanaMap, hideAsanasModal, isMobile]
   )
 
   const pdfAsanaData = useMemo(() => {
-    const {asanas, sequenceAsanaIds = []} = builderData
-
     return {
       documentTitle,
-      asanas: sequenceAsanaIds.map((id) => asanas[id])
+      asanas: builderData
     }
   }, [builderData, documentTitle])
 
@@ -146,16 +116,9 @@ const CreateSequencePage: React.FC<PageProps> = ({
           const [, oldIndex] = active.id.split('-')
           const [, newIndex] = (over.id as string).split('-')
 
-          const sortedIds = arrayMove(
-            prevData.sequenceAsanaIds,
-            +oldIndex,
-            +newIndex
-          )
+          const sortedItems = arrayMove(prevData, +oldIndex, +newIndex)
 
-          return {
-            ...prevData,
-            sequenceAsanaIds: sortedIds
-          }
+          return sortedItems
         })
       }
     },
@@ -200,11 +163,6 @@ const CreateSequencePage: React.FC<PageProps> = ({
     },
     []
   )
-  const sequenceData = useMemo(
-    () =>
-      (builderData.sequenceAsanaIds ?? []).map((id) => builderData.asanas[id]),
-    [builderData]
-  )
 
   const onFilterAsana = useCallback(
     (groups: AsanaGroup[] = []) => {
@@ -233,7 +191,23 @@ const CreateSequencePage: React.FC<PageProps> = ({
 
       setAsanas(filteredAsanas)
     },
-    [allAsanas, asanas]
+    [allAsanas, asanas, onSearchAsana]
+  )
+
+  const addAsanaToRepeatingBlock = useCallback(
+    (asanaIndex: number, action: 'add' | 'delete') => {
+      setBuilderData((prevData) =>
+        prevData.map((asana, index) =>
+          index === asanaIndex
+            ? {
+                ...asana,
+                isAsanaInRepeatingBlock: action === 'add' ? true : false
+              }
+            : asana
+        )
+      )
+    },
+    []
   )
 
   return (
@@ -285,11 +259,12 @@ const CreateSequencePage: React.FC<PageProps> = ({
               />
               <div className={styles.sequences}>
                 <Sequence
-                  data={sequenceData}
+                  data={builderData}
                   isMobile={isMobile}
                   onDeleteAsana={deleteAsanaById}
                   onDragEnd={onDragEnd}
                   onAddAsanaButtonClick={showAsanasModal}
+                  addAsanaToRepeatingBlock={addAsanaToRepeatingBlock}
                 />
               </div>
             </div>
@@ -316,7 +291,7 @@ const CreateSequencePage: React.FC<PageProps> = ({
               size="large"
               block={isMobile}
               onClick={generatePdf}>
-              Сохранить
+              Сохранить в PDF
             </Button>
           </div>
           <Modal
@@ -374,7 +349,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   asanas.sort((a, b) => (a.name > b.name ? 1 : -1))
   asanaGroups.sort((a, b) => (a.name > b.name ? 1 : -1))
 
-  return {props: {isMobile, asanas, asanaGroups}}
+  const asanaMap = asanas.reduce((acc: Record<string, Asana>, curValue) => {
+    acc[curValue.id] = curValue
+
+    return acc
+  }, {})
+
+  return {props: {isMobile, asanas, asanaGroups, asanaMap}}
 }
 
 export default CreateSequencePage

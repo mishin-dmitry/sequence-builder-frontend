@@ -32,7 +32,6 @@ export const MobileMenu: React.FC = () => {
       </button>
       <Drawer
         open={isOpen}
-        closable={false}
         onClose={closeMenu}
         bodyStyle={{padding: '20px 0'}}
         placement="left">

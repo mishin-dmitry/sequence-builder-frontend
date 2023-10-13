@@ -64,10 +64,12 @@ export const svgToComponent = (node: any): any => {
         componentProps = {
           viewBox: node.properties?.viewBox,
           height: parseIntAttributes(node.properties?.height) || 64,
-          width: hasWidth ? parseIntAttributes(node.properties?.width) : 64,
+          width: hasWidth
+            ? parseIntAttributes(node.properties?.width + 10)
+            : 74,
           style: {
             fontSize: '12px',
-            margin: 5
+            paddingHorizontal: 5
           }
         }
         break

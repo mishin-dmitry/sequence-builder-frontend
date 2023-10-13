@@ -48,6 +48,10 @@
     }
   }
 
+  &.blue {
+    background-color: #e4f2f7;
+  }
+
   &.dragging {
     cursor: grabbing;
     opacity: 0.5;
@@ -68,12 +72,24 @@
 }
 
 .deleteButton {
+  right: -5px !important;
+}
+
+.rowButton {
+  right: 20px !important;
+
+  &.singleButton {
+    right: -5px !important;
+  }
+}
+
+.rowButton,
+.deleteButton {
   min-width: 20px !important;
   width: 20px !important;
   height: 20px !important;
   position: absolute !important;
   top: -5px !important;
-  right: -5px !important;
   justify-content: center;
   align-items: center;
   display: flex !important;

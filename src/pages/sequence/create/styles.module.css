@@ -36,7 +36,6 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 20px;
-  overflow: hidden;
 
   button + button {
     margin: 0 0 0 10px;

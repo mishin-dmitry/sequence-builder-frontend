@@ -94,23 +94,6 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
   const dropdownMenu = useMemo(
     () => ({
       items: filterItemCheckboxes,
-      // ...filterItemCheckboxes,
-      // {
-      //   key: 'clear',
-      //   label: (
-      //     <Button
-      //       key="clear"
-      //       danger
-      //       block
-      //       size="small"
-      //       onClick={() => {
-      //         setChosenFilters([])
-      //       }}>
-      //       Сбросить
-      //     </Button>
-      //   )
-      // }
-      // ]
       multiple: true,
       className: styles.menu
     }),
