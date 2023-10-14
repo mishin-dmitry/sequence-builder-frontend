@@ -79,7 +79,7 @@ import {svastikasana} from './svastikasana'
 import {padmasana} from './padmasana'
 import {ardhaBhekasana} from './ardha-bhekasana'
 import {ashvaSanchalanasana2} from './ashva-sanchalanasana-2'
-import {vasishthasana} from './vasishthasana'
+// import {vasishthasana} from './vasishthasana'
 import {ekaPadaRadjaKapotasana} from './eka-pada-radja-kapotasana'
 import {urdhvaMukhaPashimottanasana} from './urdhva-mukha-pashimottanasana'
 import {bakasana} from './bakasana'
@@ -194,7 +194,7 @@ export const iconsMap: Record<string, string> = {
   padmasana,
   ardhaBhekasana,
   ashvaSanchalanasana2,
-  vasishthasana,
+  // vasishthasana,
   ekaPadaRadjaKapotasana,
   urdhvaMukhaPashimottanasana,
   bakasana,

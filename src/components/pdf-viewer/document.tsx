@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import React from 'react'
 import {Page, Document, StyleSheet, Text, View, Font} from '@react-pdf/renderer'
 import {Asana} from 'types'
 import {createSVGPdfRendererComponent} from 'lib/svg-to-components'
@@ -35,34 +35,35 @@ export interface Sequence {
   asanas: Asana[]
 }
 
-export const PDFDocument = ({documentTitle, asanas}: Sequence): any => {
-  const preparedAsanas = useMemo(() => {
-    return asanas.reduce((acc: (Asana | Asana[])[], curValue) => {
-      const lastElement: Asana[] | Asana | null = acc.length
-        ? acc[acc.length - 1]
-        : null
+export const PDFDocument = ({
+  documentTitle,
+  asanas: asanasProp
+}: Sequence): any => {
+  const asanas = asanasProp.reduce((acc: (Asana | Asana[])[], curValue) => {
+    const lastElement: Asana[] | Asana | null = acc.length
+      ? acc[acc.length - 1]
+      : null
 
-      if (Array.isArray(lastElement) && curValue.isAsanaInRepeatingBlock) {
-        if (lastElement.length > 9) {
-          acc.push([curValue])
-
-          return acc
-        }
-
-        lastElement.push(curValue)
+    if (Array.isArray(lastElement) && curValue.isAsanaInRepeatingBlock) {
+      if (lastElement.length > 9) {
+        acc.push([curValue])
 
         return acc
       }
 
-      if (!curValue.isAsanaInRepeatingBlock) {
-        acc.push(curValue)
-      } else {
-        acc.push([curValue])
-      }
+      lastElement.push(curValue)
 
       return acc
-    }, [])
-  }, [asanas])
+    }
+
+    if (!curValue.isAsanaInRepeatingBlock) {
+      acc.push(curValue)
+    } else {
+      acc.push([curValue])
+    }
+
+    return acc
+  }, [])
 
   return (
     <Document>
@@ -72,7 +73,7 @@ export const PDFDocument = ({documentTitle, asanas}: Sequence): any => {
             <Text style={styles.documentTitle}>{documentTitle}</Text>
           )}
           <View style={styles.rowView}>
-            {preparedAsanas.map((asana: Asana | Asana[], index) => {
+            {asanas.map((asana: Asana | Asana[], index) => {
               if (Array.isArray(asana)) {
                 return (
                   <View

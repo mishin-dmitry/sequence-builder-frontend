@@ -19,10 +19,15 @@ import {getAsanaGroupsList, getAsanasList} from 'api/actions'
 import {Meta} from 'components/meta'
 import type {PageProps} from 'types/page-props'
 import {reachGoal} from 'lib/metrics'
+import {SearchFilter} from 'components/serch-filter'
+import {getItem, removeItem, setItem} from 'lib/local-storage'
+import {
+  LOCAL_STORAGE_SEQUENCE_KEY,
+  LOCAL_STORAGE_TITLE_KEY
+} from 'lib/constants'
 
 import debounce from 'lodash.debounce'
 import clsx from 'clsx'
-import {SearchFilter} from 'components/serch-filter'
 
 const CreateSequencePage: React.FC<PageProps> = ({
   isMobile,
@@ -43,6 +48,35 @@ const CreateSequencePage: React.FC<PageProps> = ({
   useEffect(() => {
     setAsanas(allAsanas)
   }, [allAsanas])
+
+  useEffect(() => {
+    const sequenceFromLS = getItem<Asana[]>(LOCAL_STORAGE_SEQUENCE_KEY)
+    const documentTitleFromLs = getItem<string>(LOCAL_STORAGE_TITLE_KEY)
+
+    if (documentTitleFromLs) {
+      setDocumentTitle(documentTitleFromLs)
+    }
+
+    if (sequenceFromLS) {
+      setBuilderData(sequenceFromLS)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!documentTitle) {
+      removeItem(LOCAL_STORAGE_TITLE_KEY)
+    } else {
+      setItem(LOCAL_STORAGE_TITLE_KEY, documentTitle)
+    }
+  }, [documentTitle])
+
+  useEffect(() => {
+    if (!builderData.length) {
+      removeItem(LOCAL_STORAGE_SEQUENCE_KEY)
+    } else {
+      setItem(LOCAL_STORAGE_SEQUENCE_KEY, builderData)
+    }
+  }, [builderData])
 
   // Удалить асану в редактируемой последовательности
   const deleteAsanaById = useCallback((asanaIndex: number): void => {

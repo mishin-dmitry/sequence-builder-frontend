@@ -124,6 +124,7 @@ export const svgToComponent = (node: any): any => {
         componentProps = {
           d: node.properties?.d,
           fill: node.properties?.fill ?? '#000000',
+          transform: node.properties?.transform,
           style: getStyleObjectFromString(node.properties?.style as string)
         }
         break
