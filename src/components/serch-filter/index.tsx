@@ -8,6 +8,7 @@ import styles from './styles.module.css'
 import type {AsanaGroup} from 'types'
 import type {CheckboxChangeEvent} from 'antd/es/checkbox'
 import debounce from 'lodash.debounce'
+import dynamic from 'next/dynamic'
 
 interface SearchFilterProps {
   onSearchAsana: (event: React.ChangeEvent<HTMLInputElement>) => void
@@ -15,7 +16,7 @@ interface SearchFilterProps {
   filterItems: AsanaGroup[]
 }
 
-export const SearchFilter: React.FC<SearchFilterProps> = ({
+const SearchFilter: React.FC<SearchFilterProps> = ({
   onSearchAsana,
   onFilterAsanas,
   filterItems
@@ -80,7 +81,7 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
             <Checkbox
               key={id}
               title={name}
-              value={isChosen}
+              checked={isChosen}
               className={styles.checkbox}
               onChange={onChange}>
               {name}
@@ -91,13 +92,25 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
     [chosenFilters, filterItems]
   )
 
+  const resetFilter = useCallback(() => setChosenFilters([]), [])
+
   const dropdownMenu = useMemo(
     () => ({
-      items: filterItemCheckboxes,
+      items: [
+        ...filterItemCheckboxes,
+        {
+          key: 'reset',
+          label: (
+            <Button key="reset" block onClick={resetFilter}>
+              Сбросить
+            </Button>
+          )
+        }
+      ],
       multiple: true,
       className: styles.menu
     }),
-    [filterItemCheckboxes]
+    [filterItemCheckboxes, resetFilter]
   )
 
   return (
@@ -109,7 +122,7 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
           allowClear
           onChange={onSearchAsana}
         />
-        <Dropdown open={isFilterDropdownOpen} menu={dropdownMenu}>
+        <Dropdown open={isFilterDropdownOpen} menu={dropdownMenu} forceRender>
           <Button
             icon={<FilterOutlined />}
             className={styles.filterIcon}
@@ -122,3 +135,7 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
     </>
   )
 }
+
+export default dynamic(() => Promise.resolve(SearchFilter), {
+  ssr: false
+})

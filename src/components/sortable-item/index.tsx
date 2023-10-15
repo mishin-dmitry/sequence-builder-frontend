@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {useSortable} from '@dnd-kit/sortable'
-import {Button} from 'antd'
+import {Button, Tooltip} from 'antd'
 import {ColumnWidthOutlined, DeleteOutlined} from '@ant-design/icons'
 
 import styles from './styles.module.css'
@@ -95,24 +95,30 @@ export const SortableItem: React.FC<SortableItemProps> = ({
         )}>
         {children}
         {(isButtonsVisible || isAsanaInRepeatingBlock) && (
-          <Button
-            shape="circle"
-            type="primary"
-            data-no-dnd="true"
-            className={clsx(
-              styles.rowButton,
-              !isButtonsVisible &&
-                isAsanaInRepeatingBlock &&
-                styles.singleButton
-            )}
-            icon={<ColumnWidthOutlined />}
-            onClick={() =>
-              addAsanaToRepeatingBlock(
-                index,
-                isAsanaInRepeatingBlock ? 'delete' : 'add'
-              )
-            }
-          />
+          <Tooltip
+            title={`${
+              isAsanaInRepeatingBlock ? 'Убрать из блока' : 'Добавить в блок'
+            } с повтором на другую сторону`}
+            style={{width: 100}}>
+            <Button
+              shape="circle"
+              type="primary"
+              data-no-dnd="true"
+              className={clsx(
+                styles.rowButton,
+                !isButtonsVisible &&
+                  isAsanaInRepeatingBlock &&
+                  styles.singleButton
+              )}
+              icon={<ColumnWidthOutlined />}
+              onClick={() =>
+                addAsanaToRepeatingBlock(
+                  index,
+                  isAsanaInRepeatingBlock ? 'delete' : 'add'
+                )
+              }
+            />
+          </Tooltip>
         )}
         {isButtonsVisible && (
           <Button

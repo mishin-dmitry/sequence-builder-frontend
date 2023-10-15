@@ -9,10 +9,12 @@
   "scripts": {
     "start": "next start -p 3000",
     "dev": "next dev",
-    "build": "next build"
+    "build": "next build",
+    "analyze": "ANALYZE=true next build"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.5",
+    "@next/bundle-analyzer": "^13.5.4",
     "@rushstack/eslint-patch": "^1.1.0",
     "@svgr/webpack": "^8.1.0",
     "@types/file-saver": "^2.0.5",
