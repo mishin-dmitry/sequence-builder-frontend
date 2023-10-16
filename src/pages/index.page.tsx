@@ -1,11 +1,12 @@
 import React, {useEffect} from 'react'
 
 import {Meta} from 'components/meta'
-import {Spinner} from 'components/spinner'
 import {Urls} from 'lib/urls'
 import {useRouter} from 'next/router'
 
-const RootPage: React.FC = () => {
+import type {PageProps} from 'types/page-props'
+
+const RootPage: React.FC<PageProps> = () => {
   const router = useRouter()
 
   useEffect(() => {
@@ -13,14 +14,11 @@ const RootPage: React.FC = () => {
   }, [router])
 
   return (
-    <>
-      <Meta
-        title="Построение последовательностей для йоги"
-        description="Создайте свой идеальный путь в йоге с нашим приложением для построения последовательностей. Планируйте, комбинируйте и улучшайте свою практику йоги с Sequoia – вашим верным спутником на пути к гармонии и благополучию."
-        keywords="Йога, построение последовательностей, асаны"
-      />
-      <Spinner />
-    </>
+    <Meta
+      title="Построение последовательностей для йоги"
+      description="Создайте свой идеальный путь в йоге с нашим приложением для построения последовательностей. Планируйте, комбинируйте и улучшайте свою практику йоги с Sequoia – вашим верным спутником на пути к гармонии и благополучию."
+      keywords="Йога, построение последовательностей, асаны"
+    />
   )
 }
 
