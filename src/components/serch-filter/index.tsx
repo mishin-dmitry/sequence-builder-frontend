@@ -1,9 +1,8 @@
 import {FilterOutlined} from '@ant-design/icons'
-import {Button, Dropdown} from 'antd'
+import {Button, Dropdown, Checkbox} from 'antd'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Input} from 'components/input'
-import Checkbox from 'components/checkbox'
 
 import styles from './styles.module.css'
 import type {AsanaGroup} from 'types'
