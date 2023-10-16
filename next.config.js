@@ -14,6 +14,16 @@ module.exports = withBundleAnalyzer({
     CDN_ORIGIN: process.env.CDN_ORIGIN
   },
 
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/sequence/create',
+        permanent: true
+      }
+    ]
+  },
+
   webpack: (config) => {
     config.module.rules.push({
       test: /\.node/,
