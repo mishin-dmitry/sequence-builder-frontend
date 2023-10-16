@@ -74,6 +74,28 @@ export const SortableItem: React.FC<SortableItemProps> = ({
     [isMobile, toggleButtonVisible]
   )
 
+  const repeatingBlockButton = useMemo(
+    () => (
+      <Button
+        shape="circle"
+        type="primary"
+        data-no-dnd="true"
+        className={clsx(
+          styles.rowButton,
+          !isButtonsVisible && isAsanaInRepeatingBlock && styles.singleButton
+        )}
+        icon={<ColumnWidthOutlined />}
+        onClick={() =>
+          addAsanaToRepeatingBlock(
+            index,
+            isAsanaInRepeatingBlock ? 'delete' : 'add'
+          )
+        }
+      />
+    ),
+    [addAsanaToRepeatingBlock, index, isAsanaInRepeatingBlock, isButtonsVisible]
+  )
+
   return (
     <div
       ref={setNodeRef}
@@ -94,32 +116,18 @@ export const SortableItem: React.FC<SortableItemProps> = ({
           isAsanaInRepeatingBlock && styles.blue
         )}>
         {children}
-        {(isButtonsVisible || isAsanaInRepeatingBlock) && (
-          <Tooltip
-            title={`${
-              isAsanaInRepeatingBlock ? 'Убрать из блока' : 'Добавить в блок'
-            } с повтором на другую сторону`}
-            style={{width: 100}}>
-            <Button
-              shape="circle"
-              type="primary"
-              data-no-dnd="true"
-              className={clsx(
-                styles.rowButton,
-                !isButtonsVisible &&
-                  isAsanaInRepeatingBlock &&
-                  styles.singleButton
-              )}
-              icon={<ColumnWidthOutlined />}
-              onClick={() =>
-                addAsanaToRepeatingBlock(
-                  index,
-                  isAsanaInRepeatingBlock ? 'delete' : 'add'
-                )
-              }
-            />
-          </Tooltip>
-        )}
+        {(isButtonsVisible || isAsanaInRepeatingBlock) &&
+          (isMobile ? (
+            repeatingBlockButton
+          ) : (
+            <Tooltip
+              title={`${
+                isAsanaInRepeatingBlock ? 'Убрать из блока' : 'Добавить в блок'
+              } с повтором на другую сторону`}
+              style={{width: 100}}>
+              {repeatingBlockButton}
+            </Tooltip>
+          ))}
         {isButtonsVisible && (
           <Button
             danger
