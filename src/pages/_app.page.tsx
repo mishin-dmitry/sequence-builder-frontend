@@ -5,9 +5,9 @@ import type {AppProps} from 'next/app'
 import {ErrorBoundary} from 'components/error-boundary'
 import {Layout} from 'components/layout'
 import {activateYandexMetrika} from 'lib/metrics'
-import {usePageLoading} from 'lib/use-page-loading'
+// import {usePageLoading} from 'lib/use-page-loading'
 
-import {Spinner} from 'components/spinner'
+// import {Spinner} from 'components/spinner'
 import 'styles/global.css'
 
 const App: React.FC<AppProps> = ({Component, pageProps = {}}) => {
