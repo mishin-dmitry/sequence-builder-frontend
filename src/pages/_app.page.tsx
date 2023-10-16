@@ -11,7 +11,7 @@ import {Spinner} from 'components/spinner'
 import 'styles/global.css'
 
 const App: React.FC<AppProps> = ({Component, pageProps = {}}) => {
-  const {isPageLoading} = usePageLoading()
+  // const {isPageLoading} = usePageLoading()
 
   useEffect(() => {
     activateYandexMetrika()
@@ -21,7 +21,8 @@ const App: React.FC<AppProps> = ({Component, pageProps = {}}) => {
     <>
       <ErrorBoundary fallback={<h1>Что то пошло не так...</h1>}>
         <Layout isMobile={pageProps.isMobile}>
-          {isPageLoading ? <Spinner /> : <Component {...pageProps} />}
+          <Component {...pageProps} />
+          {/* {isPageLoading ? <Spinner /> : <Component {...pageProps} />} */}
         </Layout>
       </ErrorBoundary>
     </>

@@ -377,15 +377,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     )
   )
 
-  let asanas: Asana[] = []
-  let asanaGroups: AsanaGroup[] = []
-
-  try {
-    asanas = await getAsanasList()
-    asanaGroups = await getAsanaGroupsList()
-  } catch (e) {
-    console.log(e)
-  }
+  const asanas = await getAsanasList()
+  const asanaGroups = await getAsanaGroupsList()
 
   asanas.sort((a, b) => (a.name > b.name ? 1 : -1))
   asanaGroups.sort((a, b) => (a.name > b.name ? 1 : -1))
