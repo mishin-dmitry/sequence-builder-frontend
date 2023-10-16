@@ -1,14 +1,14 @@
 import {FilterOutlined} from '@ant-design/icons'
-import {Button, Checkbox, Dropdown} from 'antd'
+import {Button, Dropdown} from 'antd'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Input} from 'components/input'
+import Checkbox from 'components/checkbox'
 
 import styles from './styles.module.css'
 import type {AsanaGroup} from 'types'
 import type {CheckboxChangeEvent} from 'antd/es/checkbox'
 import debounce from 'lodash.debounce'
-import dynamic from 'next/dynamic'
 
 interface SearchFilterProps {
   onSearchAsana: (event: React.ChangeEvent<HTMLInputElement>) => void
@@ -16,7 +16,7 @@ interface SearchFilterProps {
   filterItems: AsanaGroup[]
 }
 
-const SearchFilter: React.FC<SearchFilterProps> = ({
+export const SearchFilter: React.FC<SearchFilterProps> = ({
   onSearchAsana,
   onFilterAsanas,
   filterItems
@@ -122,7 +122,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
           allowClear
           onChange={onSearchAsana}
         />
-        <Dropdown open={isFilterDropdownOpen} menu={dropdownMenu} forceRender>
+        <Dropdown open={isFilterDropdownOpen} menu={dropdownMenu}>
           <Button
             icon={<FilterOutlined />}
             className={styles.filterIcon}
@@ -135,7 +135,3 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
     </>
   )
 }
-
-export default dynamic(() => Promise.resolve(SearchFilter), {
-  ssr: false
-})

@@ -19,7 +19,7 @@ import {getAsanaGroupsList, getAsanasList} from 'api/actions'
 import {Meta} from 'components/meta'
 import type {PageProps} from 'types/page-props'
 import {reachGoal} from 'lib/metrics'
-import SearchFilter from 'components/serch-filter'
+import {SearchFilter} from 'components/serch-filter'
 import {getItem, removeItem, setItem} from 'lib/local-storage'
 import {
   LOCAL_STORAGE_SEQUENCE_KEY,
