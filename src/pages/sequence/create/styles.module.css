@@ -36,7 +36,7 @@
 .actionButtons {
   display: flex;
   justify-content: flex-end;
-  margin-top: 20px;
+  margin-top: 10px;
 
   button + button {
     margin: 0 0 0 10px;
@@ -75,5 +75,15 @@
 
   .mobile & {
     height: auto;
+  }
+}
+
+.timeWrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+
+  & .settingsButton {
+    margin-right: 10px;
   }
 }

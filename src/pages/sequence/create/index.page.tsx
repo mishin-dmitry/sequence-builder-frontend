@@ -23,11 +23,23 @@ import {SearchFilter} from 'components/serch-filter'
 import {getItem, removeItem, setItem} from 'lib/local-storage'
 import {
   LOCAL_STORAGE_SEQUENCE_KEY,
+  LOCAL_STORAGE_TIME_SETTINGS,
   LOCAL_STORAGE_TITLE_KEY
 } from 'lib/constants'
 
 import debounce from 'lodash.debounce'
 import clsx from 'clsx'
+import {SettingOutlined} from '@ant-design/icons'
+import {TimeSettingsFormInputs, SequenceTimeForm} from './sequence-time-form'
+import dayjs from 'dayjs'
+
+const DEFAULT_TIME_SETTINGS = {
+  pranayamaTime: dayjs().minute(10).second(0),
+  warmUpTime: dayjs().minute(5).second(0),
+  namaskarTime: dayjs().minute(10).second(0),
+  asanaTime: dayjs().minute(0).second(30),
+  shavasanaTime: dayjs().minute(15).second(0)
+}
 
 const CreateSequencePage: React.FC<PageProps> = ({
   isMobile,
@@ -40,6 +52,16 @@ const CreateSequencePage: React.FC<PageProps> = ({
   const [isAsanasModalVisible, setIsAsanasModalVisible] = useState(false)
   const [asanas, setAsanas] = useState(allAsanas)
 
+  const [timeSettings, setTimeSettings] = useState<TimeSettingsFormInputs>(
+    DEFAULT_TIME_SETTINGS
+  )
+
+  const [isTimeSettingsVisible, setIsTimeSettingsVisible] = useState(false)
+  const [sequenceDuration, setSequenceDuration] = useState<{
+    hours?: number
+    minutes?: number
+  }>({})
+
   const searchAsanaString = useRef<string>('')
   const filterAsanaGroups = useRef<AsanaGroup[]>([])
 
@@ -51,16 +73,67 @@ const CreateSequencePage: React.FC<PageProps> = ({
 
   useEffect(() => {
     const sequenceFromLS = getItem<Asana[]>(LOCAL_STORAGE_SEQUENCE_KEY)
-    const documentTitleFromLs = getItem<string>(LOCAL_STORAGE_TITLE_KEY)
+    const documentTitleFromLS = getItem<string>(LOCAL_STORAGE_TITLE_KEY)
+    const timeSettingsFromLS = getItem<
+      Record<keyof TimeSettingsFormInputs, string>
+    >(LOCAL_STORAGE_TIME_SETTINGS)
 
-    if (documentTitleFromLs) {
-      setDocumentTitle(documentTitleFromLs)
+    if (documentTitleFromLS) {
+      setDocumentTitle(documentTitleFromLS)
     }
 
     if (sequenceFromLS) {
       setBuilderData(sequenceFromLS)
     }
+
+    setTimeSettings(
+      timeSettingsFromLS
+        ? {
+            asanaTime: dayjs(timeSettingsFromLS.asanaTime),
+            namaskarTime: dayjs(timeSettingsFromLS.namaskarTime),
+            pranayamaTime: dayjs(timeSettingsFromLS.pranayamaTime),
+            shavasanaTime: dayjs(timeSettingsFromLS.shavasanaTime),
+            warmUpTime: dayjs(timeSettingsFromLS.warmUpTime)
+          }
+        : DEFAULT_TIME_SETTINGS
+    )
   }, [])
+
+  useEffect(() => {
+    const time = Object.entries(timeSettings).reduce(
+      (acc, curValue) => {
+        const [key, time] = curValue
+
+        if (!time) return acc
+
+        const seconds = time.second()
+        const minutes = time.minute()
+
+        if (key === 'asanaTime') {
+          builderData.forEach(({isAsanaInRepeatingBlock}) => {
+            acc.seconds += isAsanaInRepeatingBlock ? seconds * 2 : seconds
+            acc.minutes += isAsanaInRepeatingBlock ? minutes * 2 : minutes
+          })
+        } else {
+          acc.seconds += seconds
+          acc.minutes += minutes
+        }
+
+        return acc
+      },
+      {minutes: 0, seconds: 0}
+    )
+
+    const hours = Math.floor(time.minutes / 60)
+    let minutes = time.minutes % 60
+
+    if (time.seconds > 60) {
+      minutes += Math.floor(time.seconds / 60)
+    }
+
+    setSequenceDuration({hours, minutes})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeSettings, builderData])
 
   useEffect(() => {
     if (!documentTitle) {
@@ -160,9 +233,7 @@ const CreateSequencePage: React.FC<PageProps> = ({
   )
 
   const onSearchAsana = useCallback(
-    debounce((event: React.ChangeEvent<HTMLInputElement> | string) => {
-      const value = typeof event === 'string' ? event : event.target.value
-
+    debounce((value: string) => {
       searchAsanaString.current = value ?? ''
 
       if (!value && filterAsanaGroups.current.length) {
@@ -244,6 +315,26 @@ const CreateSequencePage: React.FC<PageProps> = ({
     []
   )
 
+  const toggleTimeSettingsVisible = useCallback(
+    () => setIsTimeSettingsVisible((prevData) => !prevData),
+    []
+  )
+
+  const hideTimeSettingsModel = useCallback(
+    () => setIsTimeSettingsVisible(false),
+    []
+  )
+
+  const saveTimeSettings = useCallback(
+    (data: TimeSettingsFormInputs) => {
+      setTimeSettings(data)
+      hideTimeSettingsModel()
+
+      setItem(LOCAL_STORAGE_TIME_SETTINGS, data)
+    },
+    [hideTimeSettingsModel]
+  )
+
   return (
     <>
       <Meta
@@ -271,6 +362,7 @@ const CreateSequencePage: React.FC<PageProps> = ({
                 onSearchAsana={onSearchAsana}
                 filterItems={asanaGroups}
                 onFilterAsanas={onFilterAsana}
+                searchItems={asanas}
               />
               <AsanasList
                 isMobile={isMobile}
@@ -304,6 +396,23 @@ const CreateSequencePage: React.FC<PageProps> = ({
             </div>
           </div>
 
+          {!!builderData.length &&
+            (!!sequenceDuration.hours || !!sequenceDuration.minutes) && (
+              <div className={styles.timeWrapper}>
+                <Button
+                  icon={<SettingOutlined />}
+                  size="small"
+                  className={styles.settingsButton}
+                  onClick={toggleTimeSettingsVisible}
+                />
+                <div>{`Время последовательности: ${
+                  sequenceDuration.hours ? `${sequenceDuration.hours}ч` : ''
+                } ${
+                  sequenceDuration.minutes ? `${sequenceDuration.minutes}м` : ''
+                }`}</div>
+              </div>
+            )}
+
           <div className={styles.actionButtons}>
             <Button
               type="primary"
@@ -329,6 +438,28 @@ const CreateSequencePage: React.FC<PageProps> = ({
             </Button>
           </div>
           <Modal
+            centered
+            okText="Сохранить"
+            cancelText="Отмена"
+            width={300}
+            closeIcon={null}
+            footer={null}
+            open={isTimeSettingsVisible}
+            onCancel={hideTimeSettingsModel}>
+            <SequenceTimeForm
+              onSubmit={saveTimeSettings}
+              defaultValues={timeSettings}
+              footerButtons={[
+                <Button key="reset" onClick={hideTimeSettingsModel}>
+                  Отмена
+                </Button>,
+                <Button type="primary" htmlType="submit" key="submit">
+                  Сохранить
+                </Button>
+              ]}
+            />
+          </Modal>
+          <Modal
             title="Ваша последовательность"
             centered
             okText="Скачать"
@@ -346,13 +477,13 @@ const CreateSequencePage: React.FC<PageProps> = ({
             centered
             open={isAsanasModalVisible}
             onCancel={hideAsanasModal}
-            destroyOnClose
             footer={null}>
             <div className={styles.listWrapper}>
               <SearchFilter
                 onSearchAsana={onSearchAsana}
                 filterItems={asanaGroups}
                 onFilterAsanas={onFilterAsana}
+                searchItems={asanas}
               />
               <AsanasList
                 isMobile={isMobile}

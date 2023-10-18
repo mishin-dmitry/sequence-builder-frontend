@@ -27,3 +27,7 @@
     padding: 0 !important;
   }
 }
+
+.input {
+  flex: 1;
+}

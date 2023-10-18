@@ -1,29 +1,38 @@
-import {FilterOutlined} from '@ant-design/icons'
-import {Button, Dropdown, Checkbox} from 'antd'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {FilterOutlined} from '@ant-design/icons'
+import {Button, Dropdown, Checkbox, AutoComplete} from 'antd'
 
-import {Input} from 'components/input'
-
-import styles from './styles.module.css'
-import type {AsanaGroup} from 'types'
+import type {Asana, AsanaGroup} from 'types'
 import type {CheckboxChangeEvent} from 'antd/es/checkbox'
+
 import debounce from 'lodash.debounce'
+import styles from './styles.module.css'
 
 interface SearchFilterProps {
-  onSearchAsana: (event: React.ChangeEvent<HTMLInputElement>) => void
+  onSearchAsana: (value: string) => void
   onFilterAsanas: (groups: AsanaGroup[]) => void
   filterItems: AsanaGroup[]
+  searchItems: Asana[]
 }
 
 export const SearchFilter: React.FC<SearchFilterProps> = ({
   onSearchAsana,
   onFilterAsanas,
-  filterItems
+  filterItems,
+  searchItems: propsSearchItems
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false)
   const [chosenFilters, setChosenFilters] = useState<AsanaGroup[]>([])
+
+  const searchItems = useMemo(
+    () =>
+      propsSearchItems.map(({name}) => ({
+        value: name
+      })),
+    [propsSearchItems]
+  )
 
   const toggleDropdown = useCallback(
     () => setIsFilterDropdownOpen((prevState) => !prevState),
@@ -112,14 +121,23 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
     [filterItemCheckboxes, resetFilter]
   )
 
+  const onFilterOption = useCallback(
+    (value: string, option: any) =>
+      option.value.toUpperCase().indexOf(value.toUpperCase()) !== -1,
+    []
+  )
+
   return (
     <>
       <div className={styles.searchWrapper}>
-        <Input
-          name="search"
+        <AutoComplete
           placeholder="Найти асану..."
           allowClear
+          filterOption={onFilterOption}
+          options={searchItems}
           onChange={onSearchAsana}
+          size="large"
+          className={styles.input}
         />
         <Dropdown open={isFilterDropdownOpen} menu={dropdownMenu}>
           <Button
