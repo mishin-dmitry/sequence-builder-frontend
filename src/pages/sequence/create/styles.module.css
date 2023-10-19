@@ -61,6 +61,7 @@
   height: calc(100% - 50px);
   overflow: hidden;
   overflow-y: scroll;
+  flex: 1;
 
   .mobile & {
     height: auto;
