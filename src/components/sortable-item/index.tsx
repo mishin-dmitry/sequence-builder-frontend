@@ -113,7 +113,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
         className={clsx(
           styles.item,
           isDragging && styles.dragging,
-          isAsanaInRepeatingBlock && styles.blue
+          isAsanaInRepeatingBlock && styles.repeating
         )}>
         {children}
         {(isButtonsVisible || isAsanaInRepeatingBlock) &&

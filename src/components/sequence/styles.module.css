@@ -19,6 +19,13 @@
   &:empty {
     display: none;
   }
+
+  &.editing {
+    background-color: #f0f8ff;
+    border: 1px solid #7cb9e8;
+    transition-property: border, background-color;
+    transition-duration: 0.2s;
+  }
 }
 
 .sequence {

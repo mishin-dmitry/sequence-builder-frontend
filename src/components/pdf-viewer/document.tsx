@@ -18,7 +18,8 @@ const styles = StyleSheet.create({
   rowView: {
     display: 'flex',
     flexWrap: 'wrap',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    marginTop: 5
   },
   documentTitle: {
     textAlign: 'center'
@@ -32,38 +33,40 @@ Font.register({
 
 export interface Sequence {
   documentTitle?: string
-  asanas: Asana[]
+  asanas: Record<string, Asana[]>
 }
 
 export const PDFDocument = ({
   documentTitle,
   asanas: asanasProp
 }: Sequence): any => {
-  const asanas = asanasProp.reduce((acc: (Asana | Asana[])[], curValue) => {
-    const lastElement: Asana[] | Asana | null = acc.length
-      ? acc[acc.length - 1]
-      : null
+  const prepareAsanasBlock = (asanas: Asana[]): (Asana | Asana[])[] => {
+    return asanas.reduce((acc: (Asana | Asana[])[], curValue) => {
+      const lastElement: Asana[] | Asana | null = acc.length
+        ? acc[acc.length - 1]
+        : null
 
-    if (Array.isArray(lastElement) && curValue.isAsanaInRepeatingBlock) {
-      if (lastElement.length > 9) {
-        acc.push([curValue])
+      if (Array.isArray(lastElement) && curValue.isAsanaInRepeatingBlock) {
+        if (lastElement.length > 9) {
+          acc.push([curValue])
+
+          return acc
+        }
+
+        lastElement.push(curValue)
 
         return acc
       }
 
-      lastElement.push(curValue)
+      if (!curValue.isAsanaInRepeatingBlock) {
+        acc.push(curValue)
+      } else {
+        acc.push([curValue])
+      }
 
       return acc
-    }
-
-    if (!curValue.isAsanaInRepeatingBlock) {
-      acc.push(curValue)
-    } else {
-      acc.push([curValue])
-    }
-
-    return acc
-  }, [])
+    }, [])
+  }
 
   return (
     <Document>
@@ -72,7 +75,47 @@ export const PDFDocument = ({
           {!!documentTitle && (
             <Text style={styles.documentTitle}>{documentTitle}</Text>
           )}
-          <View style={styles.rowView}>
+          {Object.values(asanasProp).map((asanasBlock, index) => {
+            const asanas = prepareAsanasBlock(asanasBlock)
+
+            return (
+              <View style={styles.rowView} key={index}>
+                {asanas.map((asana: Asana | Asana[], index) => {
+                  if (Array.isArray(asana)) {
+                    return (
+                      <View
+                        key={index}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center'
+                        }}>
+                        <View
+                          style={{
+                            borderBottom: '2px solid black',
+                            paddingBottom: 5,
+                            display: 'flex',
+                            flexDirection: 'row',
+                            flexWrap: 'wrap'
+                          }}>
+                          {asana.map(({alias}) =>
+                            iconsMap[alias]
+                              ? createSVGPdfRendererComponent(iconsMap[alias])
+                              : undefined
+                          )}
+                        </View>
+                        <Text style={{fontSize: 10}}>Смена сторон</Text>
+                      </View>
+                    )
+                  } else {
+                    return iconsMap[asana.alias]
+                      ? createSVGPdfRendererComponent(iconsMap[asana.alias])
+                      : undefined
+                  }
+                })}
+              </View>
+            )
+          })}
+          {/* <View style={styles.rowView}>
             {asanas.map((asana: Asana | Asana[], index) => {
               if (Array.isArray(asana)) {
                 return (
@@ -105,7 +148,7 @@ export const PDFDocument = ({
                   : undefined
               }
             })}
-          </View>
+          </View> */}
         </View>
       </Page>
     </Document>

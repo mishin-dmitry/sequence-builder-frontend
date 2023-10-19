@@ -24,7 +24,7 @@
   }
 }
 
-.sequences {
+.sequenceBlocks {
   flex: 1;
   margin-top: 20px;
 
@@ -85,5 +85,17 @@
 
   & .settingsButton {
     margin-right: 10px;
+  }
+}
+
+.addBlockButton {
+  margin-top: 10px;
+}
+
+.blockWrapper {
+  cursor: pointer;
+
+  & + .blockWrapper {
+    margin-top: 10px;
   }
 }

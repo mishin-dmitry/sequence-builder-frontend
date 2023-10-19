@@ -22,6 +22,7 @@ import {reachGoal} from 'lib/metrics'
 import {SearchFilter} from 'components/serch-filter'
 import {getItem, removeItem, setItem} from 'lib/local-storage'
 import {
+  LOCAL_STORAGE_EDITING_BLOCK,
   LOCAL_STORAGE_SEQUENCE_KEY,
   LOCAL_STORAGE_TIME_SETTINGS,
   LOCAL_STORAGE_TITLE_KEY
@@ -32,6 +33,7 @@ import clsx from 'clsx'
 import {SettingOutlined} from '@ant-design/icons'
 import {TimeSettingsFormInputs, SequenceTimeForm} from './sequence-time-form'
 import dayjs from 'dayjs'
+import type {DragStartEvent, DragEndEvent} from '@dnd-kit/core'
 
 const DEFAULT_TIME_SETTINGS = {
   pranayamaTime: dayjs().minute(10).second(0),
@@ -51,12 +53,21 @@ const CreateSequencePage: React.FC<PageProps> = ({
   const [isPdfModalVisible, setIsPdfModalVisible] = useState(false)
   const [isAsanasModalVisible, setIsAsanasModalVisible] = useState(false)
   const [asanas, setAsanas] = useState(allAsanas)
+  const [isTimeSettingsVisible, setIsTimeSettingsVisible] = useState(false)
+  const [editingBlock, setEditingBlock] = useState('0')
+  const [builderData, setBuilderData] = useState<Record<string, Asana[]>>({})
+
+  const builderLength = useMemo(() => {
+    return Object.values(builderData).reduce(
+      (acc, curValue) => (acc += curValue.length),
+      0
+    )
+  }, [builderData])
 
   const [timeSettings, setTimeSettings] = useState<TimeSettingsFormInputs>(
     DEFAULT_TIME_SETTINGS
   )
 
-  const [isTimeSettingsVisible, setIsTimeSettingsVisible] = useState(false)
   const [sequenceDuration, setSequenceDuration] = useState<{
     hours?: number
     minutes?: number
@@ -65,18 +76,25 @@ const CreateSequencePage: React.FC<PageProps> = ({
   const searchAsanaString = useRef<string>('')
   const filterAsanaGroups = useRef<AsanaGroup[]>([])
 
-  const [builderData, setBuilderData] = useState<Asana[]>([])
-
   useEffect(() => {
     setAsanas(allAsanas)
   }, [allAsanas])
 
   useEffect(() => {
-    const sequenceFromLS = getItem<Asana[]>(LOCAL_STORAGE_SEQUENCE_KEY)
+    const sequenceFromLS = getItem<Record<string, Asana[]>>(
+      LOCAL_STORAGE_SEQUENCE_KEY
+    )
+
     const documentTitleFromLS = getItem<string>(LOCAL_STORAGE_TITLE_KEY)
+    const editingBlockFromLS = getItem<string>(LOCAL_STORAGE_EDITING_BLOCK)
+
     const timeSettingsFromLS = getItem<
       Record<keyof TimeSettingsFormInputs, string>
     >(LOCAL_STORAGE_TIME_SETTINGS)
+
+    if (editingBlockFromLS) {
+      setEditingBlock(editingBlockFromLS)
+    }
 
     if (documentTitleFromLS) {
       setDocumentTitle(documentTitleFromLS)
@@ -110,9 +128,11 @@ const CreateSequencePage: React.FC<PageProps> = ({
         const minutes = time.minute()
 
         if (key === 'asanaTime') {
-          builderData.forEach(({isAsanaInRepeatingBlock}) => {
-            acc.seconds += isAsanaInRepeatingBlock ? seconds * 2 : seconds
-            acc.minutes += isAsanaInRepeatingBlock ? minutes * 2 : minutes
+          Object.values(builderData).forEach((asanasBlock) => {
+            asanasBlock.forEach(({isAsanaInRepeatingBlock}) => {
+              acc.seconds += isAsanaInRepeatingBlock ? seconds * 2 : seconds
+              acc.minutes += isAsanaInRepeatingBlock ? minutes * 2 : minutes
+            })
           })
         } else {
           acc.seconds += seconds
@@ -144,24 +164,41 @@ const CreateSequencePage: React.FC<PageProps> = ({
   }, [documentTitle])
 
   useEffect(() => {
-    if (!builderData.length) {
+    if (!editingBlock) {
+      removeItem(LOCAL_STORAGE_EDITING_BLOCK)
+    } else {
+      setItem(LOCAL_STORAGE_EDITING_BLOCK, editingBlock)
+    }
+  }, [editingBlock])
+
+  useEffect(() => {
+    if (!builderLength) {
       removeItem(LOCAL_STORAGE_SEQUENCE_KEY)
     } else {
       setItem(LOCAL_STORAGE_SEQUENCE_KEY, builderData)
     }
-  }, [builderData])
+  }, [builderData, builderLength])
 
   // Удалить асану в редактируемой последовательности
-  const deleteAsanaById = useCallback((asanaIndex: number): void => {
-    setBuilderData((prevData) =>
-      (prevData ?? []).filter((_, index) => index !== asanaIndex)
-    )
-  }, [])
+  const deleteAsanaById = useCallback(
+    (asanaIndex: number, blockId: string): void => {
+      setBuilderData((prevData) => {
+        return {
+          ...prevData,
+          [blockId]: (prevData[blockId] ?? []).filter(
+            (_, index) => index !== asanaIndex
+          )
+        }
+      })
+    },
+    []
+  )
 
   // Очистить последовательность
   const clearSequence = useCallback(() => {
-    setBuilderData([])
+    setBuilderData({})
     setDocumentTitle('')
+    setEditingBlock('0')
 
     reachGoal('clear_sequence')
   }, [])
@@ -185,13 +222,27 @@ const CreateSequencePage: React.FC<PageProps> = ({
   // Добавить асану в ряд последовательности
   const onAsanaClick = useCallback(
     ({id}: Asana) => {
-      setBuilderData((prevData) => [...(prevData ?? []), asanaMap[id]])
+      // Если слетел редактируемый блок
+      if (!editingBlock) {
+        const blockIds = Object.keys(builderData)
+
+        // Если вообще нет блоков асан, то добавим редактируемый блок - 0
+        // Иначе найдем последний
+        setEditingBlock(!blockIds.length ? '0' : blockIds[blockIds.length - 1])
+      }
+
+      setBuilderData((prevData) => {
+        return {
+          ...prevData,
+          [editingBlock]: [...(prevData[editingBlock] ?? []), asanaMap[id]]
+        }
+      })
 
       if (isMobile) {
         hideAsanasModal()
       }
     },
-    [asanaMap, hideAsanasModal, isMobile]
+    [asanaMap, builderData, editingBlock, hideAsanasModal, isMobile]
   )
 
   const pdfAsanaData = useMemo(() => {
@@ -215,21 +266,39 @@ const CreateSequencePage: React.FC<PageProps> = ({
   }, [pdfAsanaData, documentTitle])
 
   const onDragEnd = useCallback(
-    (event: {active: {id: string}; over: {id?: string}}) => {
+    (event: DragEndEvent) => {
       const {active, over} = event
 
       if (!!over?.id && active.id !== over.id) {
         setBuilderData((prevData) => {
-          const [, oldIndex] = active.id.split('-')
+          const [, oldIndex] = (active.id as string).split('-')
           const [, newIndex] = (over.id as string).split('-')
 
-          const sortedItems = arrayMove(prevData, +oldIndex, +newIndex)
+          const sortedItems = arrayMove(
+            prevData[editingBlock],
+            +oldIndex,
+            +newIndex
+          )
 
-          return sortedItems
+          return {
+            ...prevData,
+            [editingBlock]: sortedItems
+          }
         })
       }
     },
-    []
+    [editingBlock]
+  )
+
+  const onDragStart = useCallback(
+    ({active}: DragStartEvent) => {
+      const {containerId} = active.data.current?.sortable ?? {}
+
+      if (containerId && containerId !== editingBlock) {
+        setEditingBlock(containerId)
+      }
+    },
+    [editingBlock]
   )
 
   const onSearchAsana = useCallback(
@@ -300,17 +369,20 @@ const CreateSequencePage: React.FC<PageProps> = ({
   )
 
   const addAsanaToRepeatingBlock = useCallback(
-    (asanaIndex: number, action: 'add' | 'delete') => {
-      setBuilderData((prevData) =>
-        prevData.map((asana, index) =>
-          index === asanaIndex
-            ? {
-                ...asana,
-                isAsanaInRepeatingBlock: action === 'add' ? true : false
-              }
-            : asana
-        )
-      )
+    (asanaIndex: number, action: 'add' | 'delete', blockId: string) => {
+      setBuilderData((prevData) => {
+        return {
+          ...prevData,
+          [blockId]: prevData[blockId].map((asana, index) =>
+            index === asanaIndex
+              ? {
+                  ...asana,
+                  isAsanaInRepeatingBlock: action === 'add' ? true : false
+                }
+              : asana
+          )
+        }
+      })
     },
     []
   )
@@ -334,6 +406,76 @@ const CreateSequencePage: React.FC<PageProps> = ({
     },
     [hideTimeSettingsModel]
   )
+
+  const deleteAsanasBlock = useCallback(
+    (id: string) => {
+      setBuilderData((prevData) => {
+        delete prevData[id]
+
+        return {...prevData}
+      })
+
+      if (editingBlock === id) {
+        const blockIds = Object.keys(builderData)
+
+        // Если вообще нет блоков асан, то добавим редактируемый блок - 0
+        // Иначе найдем последний
+        setEditingBlock(!blockIds.length ? '0' : blockIds[blockIds.length - 1])
+      }
+    },
+    [builderData, editingBlock]
+  )
+
+  const addAsanasBlock = useCallback(() => {
+    let nextEditingBlockId = '0'
+
+    Object.keys(builderData).forEach((key) => {
+      if (+key >= +nextEditingBlockId) {
+        nextEditingBlockId = `${+key + 1}`
+      }
+    })
+
+    setEditingBlock(nextEditingBlockId)
+
+    setBuilderData((prevData) => {
+      return {
+        ...prevData,
+        [nextEditingBlockId]: []
+      }
+    })
+  }, [builderData])
+
+  const sequenceBlocks = useMemo(() => {
+    return Object.keys(builderData).map((key, index) => (
+      <div
+        key={index}
+        className={styles.blockWrapper}
+        onClick={() => setEditingBlock(key)}>
+        <Sequence
+          id={key}
+          data={builderData[key]}
+          isMobile={isMobile}
+          onDeleteAsana={deleteAsanaById}
+          onDeleteBlock={deleteAsanasBlock}
+          onDragEnd={onDragEnd}
+          onDragStart={onDragStart}
+          onAddAsanaButtonClick={showAsanasModal}
+          addAsanaToRepeatingBlock={addAsanaToRepeatingBlock}
+          isEditing={editingBlock === key}
+        />
+      </div>
+    ))
+  }, [
+    addAsanaToRepeatingBlock,
+    deleteAsanaById,
+    editingBlock,
+    isMobile,
+    builderData,
+    deleteAsanasBlock,
+    onDragEnd,
+    onDragStart,
+    showAsanasModal
+  ])
 
   return (
     <>
@@ -383,20 +525,17 @@ const CreateSequencePage: React.FC<PageProps> = ({
                 onChange={onDocumentTitleChange}
                 name="documentTitle"
               />
-              <div className={styles.sequences}>
-                <Sequence
-                  data={builderData}
-                  isMobile={isMobile}
-                  onDeleteAsana={deleteAsanaById}
-                  onDragEnd={onDragEnd}
-                  onAddAsanaButtonClick={showAsanasModal}
-                  addAsanaToRepeatingBlock={addAsanaToRepeatingBlock}
-                />
-              </div>
+              <div className={styles.sequenceBlocks}>{sequenceBlocks}</div>
+              <Button
+                block
+                className={styles.addBlockButton}
+                onClick={addAsanasBlock}>
+                Добавить блок асан
+              </Button>
             </div>
           </div>
 
-          {!!builderData.length &&
+          {!!builderLength &&
             (!!sequenceDuration.hours || !!sequenceDuration.minutes) && (
               <div className={styles.timeWrapper}>
                 <Button

@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import React, {useCallback, useMemo} from 'react'
 
 import type {Asana} from 'types'
 import {iconsMap} from 'icons'
@@ -20,6 +20,7 @@ import {
 import {SortableItem} from 'components/sortable-item'
 import {PlusCircleOutlined} from '@ant-design/icons'
 import {KeyboardSensor, MouseSensor, PointerSensor} from 'lib/sensors'
+import {Button} from 'antd'
 
 import clsx from 'clsx'
 import styles from './styles.module.css'
@@ -27,20 +28,55 @@ import styles from './styles.module.css'
 interface SequenceProps {
   data: Asana[]
   isMobile?: boolean
-  onDeleteAsana: (id: number) => void
-  addAsanaToRepeatingBlock: (id: number, action: 'add' | 'delete') => void
+  id: string
+  isEditing: boolean
+  onDeleteAsana: (id: number, blockId: string) => void
+  onDeleteBlock: (id: string) => void
+  addAsanaToRepeatingBlock: (
+    id: number,
+    action: 'add' | 'delete',
+    blockId: string
+  ) => void
   onDragEnd: (event: any) => void
+  onDragStart: (event: any) => void
   onAddAsanaButtonClick?: () => void
 }
 
 export const Sequence: React.FC<SequenceProps> = ({
   data = [],
   isMobile,
-  onDeleteAsana,
+  id,
   onDragEnd,
+  onDragStart,
   onAddAsanaButtonClick,
-  addAsanaToRepeatingBlock
+  addAsanaToRepeatingBlock: addAsanaToRepeatingBlockProp,
+  onDeleteAsana: onDeleteAsanaProp,
+  onDeleteBlock: onDeleteBlockProp,
+  isEditing
 }) => {
+  const onDeleteBlock = useCallback(
+    (event: React.SyntheticEvent) => {
+      event.stopPropagation()
+
+      onDeleteBlockProp(id)
+    },
+    [onDeleteBlockProp, id]
+  )
+
+  const onDeleteAsana = useCallback(
+    (asanaId: number) => {
+      onDeleteAsanaProp(asanaId, id)
+    },
+    [onDeleteAsanaProp, id]
+  )
+
+  const addAsanaToRepeatingBlock = useCallback(
+    (asanaId: number, action: 'add' | 'delete') => {
+      addAsanaToRepeatingBlockProp(asanaId, action, id)
+    },
+    [addAsanaToRepeatingBlockProp, id]
+  )
+
   const sensors = useSensors(
     useSensor(MouseSensor, {
       // Require the mouse to move by 10 pixels before activating
@@ -70,7 +106,12 @@ export const Sequence: React.FC<SequenceProps> = ({
 
   const sequence = useMemo(() => {
     return (
-      <div className={clsx(styles.sequenceRow, isMobile && styles.mobile)}>
+      <div
+        className={clsx(
+          styles.sequenceRow,
+          isMobile && styles.mobile,
+          isEditing && styles.editing
+        )}>
         <div className={styles.sequence}>
           {data.map(({id, alias, isAsanaInRepeatingBlock}, index) => {
             const uniqueId = `${id}-${index}`
@@ -107,12 +148,19 @@ export const Sequence: React.FC<SequenceProps> = ({
             </button>
           )}
         </div>
+        <div className={styles.buttonWrapper}>
+          <Button danger onClick={onDeleteBlock}>
+            Удалить блок асан
+          </Button>
+        </div>
       </div>
     )
   }, [
     isMobile,
+    isEditing,
     data,
     onAddAsanaButtonClick,
+    onDeleteBlock,
     onDeleteAsana,
     addAsanaToRepeatingBlock
   ])
@@ -122,14 +170,15 @@ export const Sequence: React.FC<SequenceProps> = ({
     [data]
   )
 
-  if (!data.length && !isMobile) return null
-
   return (
     <DndContext
+      id={id}
       sensors={sensors}
       collisionDetection={closestCenter}
+      onDragStart={onDragStart}
       onDragEnd={onDragEnd}>
       <SortableContext
+        id={id}
         items={sortableContextItems}
         strategy={rectSortingStrategy}>
         {sequence}

@@ -40,6 +40,7 @@
   width: 100px;
   height: 100px;
   border-radius: 8px;
+  border: 2px solid transparent;
   -webkit-tap-highlight-color: transparent;
 
   &:hover {
@@ -48,8 +49,9 @@
     }
   }
 
-  &.blue {
-    background-color: #e4f2f7;
+  &.repeating {
+    border-color: #7798fc;
+    transition: border-color 0.2s;
   }
 
   &.dragging {
