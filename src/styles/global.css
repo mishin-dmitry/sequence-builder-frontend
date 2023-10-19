@@ -57,3 +57,7 @@ img {
   margin: 0;
   padding: 0;
 }
+
+input {
+  font-size: 16px !important;
+}
