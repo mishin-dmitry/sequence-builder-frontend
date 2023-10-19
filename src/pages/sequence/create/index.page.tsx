@@ -580,7 +580,7 @@ const CreateSequencePage: React.FC<PageProps> = ({
             centered
             okText="Сохранить"
             cancelText="Отмена"
-            width={305}
+            width={310}
             closeIcon={null}
             footer={null}
             open={isTimeSettingsVisible}
