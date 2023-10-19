@@ -4,6 +4,7 @@
 
 .row {
   justify-content: space-between;
+  flex-wrap: nowrap;
 }
 
 .row + .row {
