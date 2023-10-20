@@ -111,6 +111,11 @@ import {easyVasishthasana} from './easy-vasishthasana'
 import {ekaPadaBakasana} from './eka-pada-bakasana'
 import {ardhaPadmaPadangushthasana} from './ardha-padma-padangushthasana'
 import {ekaPadaSarvangasana} from './eka-pada-sarvangasana'
+import {hastaPadangushthasana1} from './utthita-hasta-padangushthasana-1'
+import {rombergasana} from './rombergasana'
+import {rudrasana} from './rudrasana'
+import {vamadevasana} from './vamadevasana'
+import {parivrittaVamadevasana} from './parivritta-vamadevasana'
 
 export const iconsMap: Record<string, string> = {
   adhomukhaShvanasana,
@@ -225,5 +230,10 @@ export const iconsMap: Record<string, string> = {
   easyVasishthasana,
   ekaPadaBakasana,
   ardhaPadmaPadangushthasana,
-  ekaPadaSarvangasana
+  ekaPadaSarvangasana,
+  hastaPadangushthasana1,
+  rombergasana,
+  rudrasana,
+  vamadevasana,
+  parivrittaVamadevasana
 }
