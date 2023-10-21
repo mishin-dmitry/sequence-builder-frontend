@@ -116,6 +116,10 @@ import {rombergasana} from './rombergasana'
 import {rudrasana} from './rudrasana'
 import {vamadevasana} from './vamadevasana'
 import {parivrittaVamadevasana} from './parivritta-vamadevasana'
+import {vrishchikasana} from './vrishchikasana'
+import {ekaPadaRadjaKapotasana2} from './eka-pada-radja-kapotasana-2'
+import {baddhaUtthitaHastaPadangushthasana} from './baddha-utthita-hasta-padangushthasana'
+import {ekaPadaBhudjangasana} from './eka-pada-bhudjangasana'
 
 export const iconsMap: Record<string, string> = {
   adhomukhaShvanasana,
@@ -235,5 +239,9 @@ export const iconsMap: Record<string, string> = {
   rombergasana,
   rudrasana,
   vamadevasana,
-  parivrittaVamadevasana
+  parivrittaVamadevasana,
+  vrishchikasana,
+  ekaPadaRadjaKapotasana2,
+  baddhaUtthitaHastaPadangushthasana,
+  ekaPadaBhudjangasana
 }
