@@ -39,7 +39,7 @@ import {kaundiniasana} from './kaundiniasana'
 import {urdhvaDhanurasana} from './urdhva-dhanurasana'
 import {badhaKonasana} from './badha-konasana'
 import {pashchimatanasana} from './pashchimatanasana'
-import {ekaPadaPashchimatanasana} from './eka-pada-pashchimatanasana'
+import {ardhaVirasana} from './ardha-virasana'
 import {gomukhasana} from './gomukhasana'
 import {karnaPidasana} from './karna-pidasana'
 import {titibhasana} from './titibhasana'
@@ -159,7 +159,7 @@ export const iconsMap: Record<string, string> = {
   urdhvaDhanurasana,
   badhaKonasana,
   pashchimatanasana,
-  ekaPadaPashchimatanasana,
+  ardhaVirasana,
   gomukhasana,
   karnaPidasana,
   titibhasana,
