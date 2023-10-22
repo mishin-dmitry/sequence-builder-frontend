@@ -79,7 +79,7 @@ import {svastikasana} from './svastikasana'
 import {padmasana} from './padmasana'
 import {ardhaBhekasana} from './ardha-bhekasana'
 import {ashvaSanchalanasana2} from './ashva-sanchalanasana-2'
-// import {vasishthasana} from './vasishthasana'
+import {vasishthasana} from './vasishthasana'
 import {ekaPadaRadjaKapotasana} from './eka-pada-radja-kapotasana'
 import {urdhvaMukhaPashimottanasana} from './urdhva-mukha-pashimottanasana'
 import {bakasana} from './bakasana'
@@ -120,6 +120,21 @@ import {vrishchikasana} from './vrishchikasana'
 import {ekaPadaRadjaKapotasana2} from './eka-pada-radja-kapotasana-2'
 import {baddhaUtthitaHastaPadangushthasana} from './baddha-utthita-hasta-padangushthasana'
 import {ekaPadaBhudjangasana} from './eka-pada-bhudjangasana'
+import {badhaParivrittaUtthitaHastaPadangushthasana} from './badha-parivritta-utthita-hasta-padangushthasana'
+import {ekapadaHastaMardjariasana2} from './ekapada-hasta-mardjariasana-2'
+import {ekapadaPithasana} from './ekapada-pithasana'
+import {sukhaNavasana} from './sukha-navasana'
+import {ekapadaArdhaPinchaMayurasana} from './ekapada-ardha-pincha-mayurasana'
+import {kamatkarasana} from './kamatkarasana'
+import {utthanPrishthasana} from './utthan-prishthasana'
+import {padangushthasana} from './padangushthasana'
+import {ardhaPavanamuktasana} from './ardha-pavanamuktasana'
+import {malasana} from './malasana'
+import {suptaMatsiendrasana} from './supta-matsiendrasana'
+import {radjaBhudjangasana} from './radja-bhudjangasana'
+import {chaturanga} from './chaturanga'
+import {bhaktiVirabhadrasana} from './bhakti-virabhadrasana'
+import {parshvaBakasana} from './parshva-bakasana'
 
 export const iconsMap: Record<string, string> = {
   adhomukhaShvanasana,
@@ -203,7 +218,7 @@ export const iconsMap: Record<string, string> = {
   padmasana,
   ardhaBhekasana,
   ashvaSanchalanasana2,
-  // vasishthasana,
+  vasishthasana,
   ekaPadaRadjaKapotasana,
   urdhvaMukhaPashimottanasana,
   bakasana,
@@ -243,5 +258,20 @@ export const iconsMap: Record<string, string> = {
   vrishchikasana,
   ekaPadaRadjaKapotasana2,
   baddhaUtthitaHastaPadangushthasana,
-  ekaPadaBhudjangasana
+  ekaPadaBhudjangasana,
+  badhaParivrittaUtthitaHastaPadangushthasana,
+  ekapadaHastaMardjariasana2,
+  ekapadaPithasana,
+  sukhaNavasana,
+  ekapadaArdhaPinchaMayurasana,
+  kamatkarasana,
+  utthanPrishthasana,
+  padangushthasana,
+  ardhaPavanamuktasana,
+  malasana,
+  suptaMatsiendrasana,
+  radjaBhudjangasana,
+  chaturanga,
+  bhaktiVirabhadrasana,
+  parshvaBakasana
 }
