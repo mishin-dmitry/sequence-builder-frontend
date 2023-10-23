@@ -1,11 +1,12 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 
-import {getAsanasList} from 'api/actions'
+import {getAsanasList} from 'api'
 import {getRandomItem} from 'lib/get-random-item'
 import {PageProps} from 'types/page-props'
 import {Spinner} from 'components/spinner'
 import {AsanaCard} from 'components/asana-card'
 import {Button} from 'antd'
+import {Meta} from 'components/meta'
 
 import type {Asana} from 'types'
 import type {GetServerSideProps} from 'next'
@@ -14,7 +15,6 @@ import styles from './styles.module.css'
 import sampleSize from 'lodash.samplesize'
 import shuffle from 'lodash.shuffle'
 import clsx from 'clsx'
-import {Meta} from 'components/meta'
 
 const VARIATIONS_LENGTH = 4
 

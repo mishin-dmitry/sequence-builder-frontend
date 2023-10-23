@@ -1,0 +1,21 @@
+.pageWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 8px 24px rgba(149 157 165/ 0.2);
+  max-width: 400px;
+}
+
+.title {
+  margin: 0 0 30px !important;
+  font-size: 24px !important;
+}
