@@ -1,9 +1,11 @@
 .row {
   flex: 1;
+  flex-wrap: nowrap;
 }
 
 .link {
   color: rgba(255 255 255/ 0.65);
+  margin-left: 20px;
 
   &:hover {
     color: #fff;
