@@ -1,37 +1,32 @@
-import React, {useCallback, useEffect} from 'react'
+import React, {useEffect} from 'react'
 
 import {Meta} from 'components/meta'
-
-import {LoginForm, type LoginFormInputs} from './login-form'
-import {useLogin} from './hooks'
 import {useUser} from 'context/user'
 
-import {type UseFormSetError} from 'react-hook-form'
 import {Spinner} from 'components/spinner'
 import {useRouter} from 'next/router'
 import {Urls} from 'lib/urls'
+import {useLogout} from './hooks'
 
-const LoginPage: React.FC = () => {
-  const {login} = useLogin()
+const LogoutPage: React.FC = () => {
   const {isFetching, isAuthorized} = useUser()
+  const {logout} = useLogout()
 
   const router = useRouter()
 
-  const onSubmit = useCallback(
-    async (
-      values: LoginFormInputs,
-      setError: UseFormSetError<LoginFormInputs>
-    ) => {
-      await login(values, setError)
-    },
-    [login]
-  )
-
   useEffect(() => {
-    if (!isFetching && isAuthorized) {
-      router.push(Urls.CREATE_SEQUENCE)
+    const logoutUser = async (): Promise<void> => {
+      await logout()
+
+      router.push(Urls.LOGIN)
     }
-  }, [isAuthorized, isFetching, router])
+
+    if (!isFetching && isAuthorized) {
+      logoutUser()
+    } else {
+      router.replace(Urls.CREATE_SEQUENCE)
+    }
+  }, [isAuthorized, isFetching, logout, router])
 
   return (
     <>
@@ -40,10 +35,9 @@ const LoginPage: React.FC = () => {
         description="Создайте свой идеальный путь в йоге с нашим приложением для построения последовательностей. Планируйте, комбинируйте и улучшайте свою практику йоги с Sequoia – вашим верным спутником на пути к гармонии и благополучию."
         keywords="Йога, построение последовательностей, асаны"
       />
-      {isFetching && <Spinner />}
-      {!isAuthorized && !isFetching && <LoginForm onSubmit={onSubmit} />}
+      <Spinner />
     </>
   )
 }
 
-export default LoginPage
+export default LogoutPage

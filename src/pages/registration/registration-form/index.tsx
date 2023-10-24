@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 
 import {FormCard} from 'components/form-card'
 import {
@@ -9,8 +9,10 @@ import {
 } from 'react-hook-form'
 import {Input} from 'components/input'
 import {Button} from 'antd'
+import {Urls} from 'lib/urls'
 
 import styles from './styles.module.css'
+import Link from 'next/link'
 
 export interface RegistrationFormInputs {
   email: string
@@ -47,8 +49,13 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
     await onSubmitProp(data, setError)
   }
 
+  const footer = useMemo(
+    () => <Link href={Urls.LOGIN}>Уже зарегистрирован</Link>,
+    []
+  )
+
   return (
-    <FormCard title="Регистрация">
+    <FormCard title="Регистрация" footer={footer}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Controller
           name="email"
@@ -71,6 +78,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
               label="Почта"
               placeholder="Введите почту..."
               errorMessage={fieldState.error?.message}
+              autoComplete="username"
             />
           )}
         />
@@ -95,6 +103,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
               placeholder="Введите пароль..."
               type="password"
               asPassword
+              autoComplete="new-password"
             />
           )}
         />
@@ -120,6 +129,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
               errorMessage={fieldState.error?.message}
               type="password"
               asPassword
+              autoComplete="new-password"
             />
           )}
         />

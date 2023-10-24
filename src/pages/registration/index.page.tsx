@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import React, {useCallback, useEffect} from 'react'
 
 import {Meta} from 'components/meta'
 
@@ -8,9 +8,16 @@ import {
 } from './registration-form'
 import {useRegister} from './hooks'
 import {type UseFormSetError} from 'react-hook-form'
+import {useUser} from 'context/user'
+import {Spinner} from 'components/spinner'
+import {useRouter} from 'next/router'
+import {Urls} from 'lib/urls'
 
 const RegistrationPage: React.FC = () => {
   const {registerUser} = useRegister()
+  const {isFetching, isAuthorized} = useUser()
+
+  const router = useRouter()
 
   const onSubmit = useCallback(
     async (
@@ -22,6 +29,12 @@ const RegistrationPage: React.FC = () => {
     [registerUser]
   )
 
+  useEffect(() => {
+    if (!isFetching && isAuthorized) {
+      router.push(Urls.CREATE_SEQUENCE)
+    }
+  }, [isAuthorized, isFetching, router])
+
   return (
     <>
       <Meta
@@ -29,7 +42,8 @@ const RegistrationPage: React.FC = () => {
         description="Создайте свой идеальный путь в йоге с нашим приложением для построения последовательностей. Планируйте, комбинируйте и улучшайте свою практику йоги с Sequoia – вашим верным спутником на пути к гармонии и благополучию."
         keywords="Йога, построение последовательностей, асаны"
       />
-      <RegistrationForm onSubmit={onSubmit} />
+      {isFetching && <Spinner />}
+      {!isAuthorized && !isFetching && <RegistrationForm onSubmit={onSubmit} />}
     </>
   )
 }

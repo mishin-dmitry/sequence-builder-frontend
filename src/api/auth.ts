@@ -7,7 +7,6 @@ import {HttpMethod, request} from './request'
 export interface RegisterUserRequest {
   email: string
   password: string
-  token: string
 }
 
 export const registerUser = request.bind<
@@ -23,3 +22,9 @@ export const login = request.bind<
   [RegisterUserRequest],
   Promise<User>
 >(null, HttpMethod.POST, 'api/auth/login')
+
+export const logout = request.bind<null, string, [], Promise<void>>(
+  null,
+  HttpMethod.POST,
+  'api/auth/logout'
+)

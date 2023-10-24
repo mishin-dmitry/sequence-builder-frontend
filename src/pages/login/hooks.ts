@@ -2,27 +2,27 @@ import {useCallback} from 'react'
 import {login as loginAction, type RegisterUserRequest} from 'api'
 import {type UseFormSetError} from 'react-hook-form'
 import {type LoginFormInputs} from './login-form'
-import {notification} from 'antd'
+import {useUser} from 'context/user'
 
 interface UseLogin {
   login: (
     data: RegisterUserRequest,
     setError: UseFormSetError<LoginFormInputs>
-  ) => void
+  ) => Promise<void>
 }
 
 export const useLogin = (): UseLogin => {
+  const {updateUser} = useUser()
+
   const login = useCallback(
     async (
       values: RegisterUserRequest,
       setError: UseFormSetError<LoginFormInputs>
     ) => {
       try {
-        await loginAction(values)
+        const user = await loginAction(values)
 
-        notification['success']({
-          message: 'Пользователь успешно аутентифицирован'
-        })
+        updateUser(user)
       } catch (error) {
         if (error instanceof Error) {
           if (error.message === 'Invalid password or email') {
@@ -33,7 +33,7 @@ export const useLogin = (): UseLogin => {
         }
       }
     },
-    []
+    [updateUser]
   )
 
   return {

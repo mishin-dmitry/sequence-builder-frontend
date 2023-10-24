@@ -1,0 +1,16 @@
+.row {
+  flex: 1;
+}
+
+.link {
+  color: rgba(255 255 255/ 0.65);
+
+  &:hover {
+    color: #fff;
+  }
+}
+
+/* remove ellipsis */
+.menu {
+  flex: auto;
+}

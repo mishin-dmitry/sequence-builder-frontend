@@ -3,22 +3,27 @@ import {registerUser as registerUserAction, type RegisterUserRequest} from 'api'
 import {type UseFormSetError} from 'react-hook-form'
 import {type RegistrationFormInputs} from './registration-form'
 import {notification} from 'antd'
+import {useUser} from 'context/user'
 
 interface UseRegister {
   registerUser: (
     data: RegisterUserRequest,
     setError: UseFormSetError<RegistrationFormInputs>
-  ) => void
+  ) => Promise<void>
 }
 
 export const useRegister = (): UseRegister => {
+  const {updateUser} = useUser()
+
   const registerUser = useCallback(
     async (
       values: RegisterUserRequest,
       setError: UseFormSetError<RegistrationFormInputs>
     ) => {
       try {
-        await registerUserAction(values)
+        const user = await registerUserAction(values)
+
+        updateUser(user)
 
         notification['success']({
           message: 'Пользователь успешно зарегистрирован'
@@ -33,7 +38,7 @@ export const useRegister = (): UseRegister => {
         }
       }
     },
-    []
+    [updateUser]
   )
 
   return {

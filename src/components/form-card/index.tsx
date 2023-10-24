@@ -4,16 +4,25 @@ import {Typography} from 'antd'
 
 import styles from './styles.module.css'
 
-export const FormCard: React.FC<PropsWithChildren & {title: string}> = ({
+interface FormCardProps extends PropsWithChildren {
+  title: string
+  footer?: React.ReactNode
+}
+
+export const FormCard: React.FC<FormCardProps> = ({
   children,
-  title
+  title,
+  footer
 }) => (
   <div className={styles.pageWrapper}>
     <div className={styles.card}>
-      <Typography.Title level={1} className={styles.title}>
-        {title}
-      </Typography.Title>
-      {children}
+      <div className={styles.main}>
+        <Typography.Title level={1} className={styles.title}>
+          {title}
+        </Typography.Title>
+        {children}
+      </div>
+      {footer && <div className={styles.footer}>{footer}</div>}
     </div>
   </div>
 )
