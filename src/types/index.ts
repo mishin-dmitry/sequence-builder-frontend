@@ -17,5 +17,7 @@ export interface AsanaGroup {
 
 export interface Sequence {
   title?: string
-  asanas: Exclude<Asana, 'id'>[]
+  description?: string
+  isPublic?: boolean
+  blocks: {asanaId: number; inRepeatingBlock: boolean}[][]
 }

@@ -3,8 +3,8 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import styles from './styles.module.css'
 import {AsanasList} from 'components/asanas-list'
 import PdfViewer from 'components/pdf-viewer'
-import {Asana, AsanaGroup} from 'types'
-import {Button, Modal} from 'antd'
+import type {Asana, AsanaGroup, Sequence as SequenceType} from 'types'
+import {Button, Checkbox, Modal} from 'antd'
 import {PDFDocument} from 'components/pdf-viewer/document'
 
 import {saveAs} from 'file-saver'
@@ -34,6 +34,9 @@ import {SettingOutlined} from '@ant-design/icons'
 import {TimeSettingsFormInputs, SequenceTimeForm} from './sequence-time-form'
 import dayjs from 'dayjs'
 import type {DragStartEvent, DragEndEvent} from '@dnd-kit/core'
+import {useSequence} from '../hooks'
+import {Textarea} from 'components/textarea'
+import {type CheckboxChangeEvent} from 'antd/es/checkbox'
 
 const DEFAULT_TIME_SETTINGS = {
   pranayamaTime: dayjs().minute(10).second(0),
@@ -50,12 +53,30 @@ const CreateSequencePage: React.FC<PageProps> = ({
   asanaMap = {}
 }) => {
   const [documentTitle, setDocumentTitle] = useState<string>('')
+  const [description, setDescription] = useState<string>('')
   const [isPdfModalVisible, setIsPdfModalVisible] = useState(false)
   const [isAsanasModalVisible, setIsAsanasModalVisible] = useState(false)
   const [asanas, setAsanas] = useState(allAsanas)
   const [isTimeSettingsVisible, setIsTimeSettingsVisible] = useState(false)
   const [editingBlock, setEditingBlock] = useState('0')
   const [builderData, setBuilderData] = useState<Record<string, Asana[]>>({})
+  const [isPublic, setIsPublic] = useState(false)
+
+  const {createSequence} = useSequence()
+
+  const onSaveButtonClick = useCallback(async () => {
+    const data: SequenceType = {
+      title: documentTitle,
+      blocks: Object.values(builderData).map((block) =>
+        block.map(({id, isAsanaInRepeatingBlock = false}) => ({
+          asanaId: id,
+          inRepeatingBlock: isAsanaInRepeatingBlock
+        }))
+      )
+    }
+
+    await createSequence(data)
+  }, [builderData, createSequence, documentTitle])
 
   const builderLength = useMemo(() => {
     return Object.values(builderData).reduce(
@@ -338,6 +359,13 @@ const CreateSequencePage: React.FC<PageProps> = ({
     []
   )
 
+  const onDescriptionChange = useCallback(
+    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setDescription(event.target.value)
+    },
+    []
+  )
+
   const onFilterAsana = useCallback(
     (groups: AsanaGroup[] = []) => {
       let filteredAsanas
@@ -445,6 +473,10 @@ const CreateSequencePage: React.FC<PageProps> = ({
     })
   }, [builderData])
 
+  const onCheckboxChange = useCallback((event: CheckboxChangeEvent) => {
+    setIsPublic(event.target.checked)
+  }, [])
+
   const sequenceBlocks = useMemo(() => {
     return Object.keys(builderData).map((key, index) => (
       <div
@@ -525,6 +557,14 @@ const CreateSequencePage: React.FC<PageProps> = ({
                 onChange={onDocumentTitleChange}
                 name="documentTitle"
               />
+              <Textarea
+                name="description"
+                label="Описание последовательности"
+                placeholder="Введите описание вашей последовательности..."
+                className={styles.textarea}
+                value={description}
+                onChange={onDescriptionChange}
+              />
               <div className={styles.sequenceBlocks}>{sequenceBlocks}</div>
               <Button
                 block
@@ -537,43 +577,48 @@ const CreateSequencePage: React.FC<PageProps> = ({
 
           {!!builderLength &&
             (!!sequenceDuration.hours || !!sequenceDuration.minutes) && (
-              <div className={styles.timeWrapper}>
-                <Button
-                  icon={<SettingOutlined />}
-                  size="small"
-                  className={styles.settingsButton}
-                  onClick={toggleTimeSettingsVisible}
-                />
-                <div>{`Время последовательности: ${
-                  sequenceDuration.hours ? `${sequenceDuration.hours}ч` : ''
-                } ${
-                  sequenceDuration.minutes ? `${sequenceDuration.minutes}м` : ''
-                }`}</div>
+              <div className={styles.bottomRow}>
+                <div className={styles.timeWrapper}>
+                  <Button
+                    icon={<SettingOutlined />}
+                    size="small"
+                    className={styles.settingsButton}
+                    onClick={toggleTimeSettingsVisible}
+                  />
+                  <div>{`Время последовательности: ${
+                    sequenceDuration.hours ? `${sequenceDuration.hours}ч` : ''
+                  } ${
+                    sequenceDuration.minutes
+                      ? `${sequenceDuration.minutes}м`
+                      : ''
+                  }`}</div>
+                </div>
+                <Checkbox checked={isPublic} onChange={onCheckboxChange}>
+                  Видна другим
+                </Checkbox>
               </div>
             )}
 
           <div className={styles.actionButtons}>
             <Button
-              type="primary"
               size="large"
               block={isMobile}
               danger
               onClick={clearSequence}>
               Очистить
             </Button>
-            <Button
-              type="primary"
-              size="large"
-              block={isMobile}
-              onClick={showPreview}>
+            <Button size="large" block={isMobile} onClick={showPreview}>
               Посмотреть результат
+            </Button>
+            <Button size="large" block={isMobile} onClick={generatePdf}>
+              Скачать в PDF
             </Button>
             <Button
               type="primary"
               size="large"
               block={isMobile}
-              onClick={generatePdf}>
-              Сохранить в PDF
+              onClick={onSaveButtonClick}>
+              Сохранить
             </Button>
           </div>
           <Modal

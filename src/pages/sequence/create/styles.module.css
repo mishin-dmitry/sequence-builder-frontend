@@ -82,11 +82,17 @@
 .timeWrapper {
   display: flex;
   align-items: center;
-  margin-top: 10px;
 
   & .settingsButton {
     margin-right: 10px;
   }
+}
+
+.bottomRow {
+  display: flex;
+  margin-top: 10px;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .addBlockButton {
@@ -99,4 +105,8 @@
   & + .blockWrapper {
     margin-top: 10px;
   }
+}
+
+.textarea {
+  margin-top: 10px;
 }
