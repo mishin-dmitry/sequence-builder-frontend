@@ -67,6 +67,8 @@ const CreateSequencePage: React.FC<PageProps> = ({
   const onSaveButtonClick = useCallback(async () => {
     const data: SequenceType = {
       title: documentTitle,
+      description,
+      isPublic,
       blocks: Object.values(builderData).map((block) =>
         block.map(({id, isAsanaInRepeatingBlock = false}) => ({
           asanaId: id,
@@ -76,7 +78,7 @@ const CreateSequencePage: React.FC<PageProps> = ({
     }
 
     await createSequence(data)
-  }, [builderData, createSequence, documentTitle])
+  }, [builderData, createSequence, description, documentTitle, isPublic])
 
   const builderLength = useMemo(() => {
     return Object.values(builderData).reduce(
