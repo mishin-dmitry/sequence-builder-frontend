@@ -15,9 +15,27 @@ export interface AsanaGroup {
   name: string
 }
 
-export interface Sequence {
+interface BaseSequence {
+  id?: number
   title?: string
   description?: string
   isPublic?: boolean
+}
+
+export interface SequenceRequest extends BaseSequence {
   blocks: {asanaId: number; inRepeatingBlock: boolean}[][]
+}
+
+export interface Sequence extends BaseSequence {
+  userId: number
+  blocks: {
+    id: number
+    asanas: {
+      id: number
+      alias: string
+      options: {
+        inRepeatingBlock: boolean
+      }
+    }[]
+  }[]
 }

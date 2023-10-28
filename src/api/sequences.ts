@@ -1,47 +1,36 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 
-import type {Sequence} from 'types'
+import type {Sequence, SequenceRequest} from 'types'
 import {HttpMethod, request} from './request'
 
 export const createSequence = request.bind<
   null,
   string,
-  [Sequence],
+  [SequenceRequest],
   Promise<Sequence>
 >(null, HttpMethod.POST, 'api/sequences/create')
 
-export const updateSequence = request.bind<
-  null,
-  string,
-  [Sequence],
-  Promise<Sequence>
->(null, HttpMethod.PUT, 'api/sequences/update')
+export const updateSequence = (
+  id: string,
+  data: SequenceRequest
+): Promise<Sequence> => request(HttpMethod.PUT, `api/sequences/${id}`, data)
 
-export const deleteSequence = request.bind<
-  null,
-  string,
-  [{id: number}],
-  Promise<void>
->(null, HttpMethod.DELETE, 'api/sequences/delete')
+export const deleteSequence = (id: number): Promise<void> =>
+  request(HttpMethod.DELETE, `api/sequences/${id}`)
 
-export const getSequence = request.bind<
-  null,
-  string,
-  [{id: number}],
-  Promise<Sequence>
->(null, HttpMethod.GET, 'api/sequences/get')
+export const getSequence = (
+  id: string,
+  headers?: Record<string, string>
+): Promise<Sequence> =>
+  request(HttpMethod.GET, `api/sequences/${id}`, undefined, headers)
 
-export const getUserSequence = request.bind<
-  null,
-  string,
-  [],
-  Promise<Sequence[]>
->(null, HttpMethod.GET, 'api/sequences/getUserSequences')
+export const getUserSequences = (
+  headers?: Record<string, string>
+): Promise<Sequence[]> =>
+  request(HttpMethod.GET, 'api/sequences-list/my', undefined, headers)
 
-export const getGlobalSequence = request.bind<
-  null,
-  string,
-  [],
-  Promise<Sequence[]>
->(null, HttpMethod.GET, 'api/sequences/getGlobalSequences')
+export const getPublicSequences = (
+  headers?: Record<string, string>
+): Promise<Sequence[]> =>
+  request(HttpMethod.GET, 'api/sequences-list/public', undefined, headers)

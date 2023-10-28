@@ -4,11 +4,11 @@ import {Drawer, Menu, Row} from 'antd'
 import {LoginOutlined, LogoutOutlined, MenuOutlined} from '@ant-design/icons'
 import {NAV_MENU_LINKS} from 'lib/nav-menu-links'
 import {Urls} from 'lib/urls'
+import {useRouter} from 'next/router'
 
 import styles from './styles.module.css'
 import Link from 'next/link'
 import clsx from 'clsx'
-import {useRouter} from 'next/router'
 import dynamic from 'next/dynamic'
 
 interface MobileMenuProps {
@@ -25,14 +25,16 @@ const MobileMenu: React.FC<MobileMenuProps> = ({isAuthorized}) => {
 
   const links = useMemo(
     () =>
-      NAV_MENU_LINKS.map(({title, href}) => (
+      NAV_MENU_LINKS.filter(({forAuthorized}) =>
+        forAuthorized ? isAuthorized : true
+      ).map(({title, href}) => (
         <Menu.Item onClick={closeMenu} key={href}>
           <Link href={href} as={href}>
             {title}
           </Link>
         </Menu.Item>
       )),
-    [closeMenu]
+    [closeMenu, isAuthorized]
   )
 
   return (

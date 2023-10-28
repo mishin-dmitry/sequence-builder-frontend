@@ -1,12 +1,12 @@
 import React from 'react'
 
 import {Layout as AntdLayout} from 'antd'
+import {useUser} from 'context/user'
 import MobileMenu from 'components/mobile-menu'
 import DesktopMenu from 'components/desktop-menu'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
-import {useUser} from 'context/user'
 
 export interface LayoutProps {
   children: React.ReactNode

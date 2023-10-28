@@ -1,20 +1,3 @@
-.previewWrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding-left: 10px;
-  min-width: 0;
-  justify-content: space-between;
-  height: calc(100vh - 85px);
-  overflow: hidden;
-
-  .mobile & {
-    padding-left: 0;
-    height: auto;
-    flex: 1 1 auto;
-  }
-}
-
 .root {
   display: flex;
   width: 100%;
@@ -24,48 +7,8 @@
   }
 }
 
-.sequenceBlocks {
-  flex: 1;
-  margin-top: 20px;
-
-  &:empty {
-    display: none;
-  }
-}
-
-.actionButtons {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 10px;
-
-  button + button {
-    margin: 0 0 0 10px;
-  }
-
-  .mobile & {
-    flex-direction: column;
-
-    button + button {
-      margin: 10px 0 0;
-    }
-  }
-}
-
 .button {
   margin-top: 20px;
-}
-
-.scrollContainer {
-  display: flex;
-  flex-direction: column;
-  height: calc(100% - 50px);
-  overflow: hidden;
-  overflow-y: scroll;
-  flex: 1;
-
-  .mobile & {
-    height: auto;
-  }
 }
 
 .listWrapper {
@@ -77,36 +20,4 @@
   .mobile & {
     height: auto;
   }
-}
-
-.timeWrapper {
-  display: flex;
-  align-items: center;
-
-  & .settingsButton {
-    margin-right: 10px;
-  }
-}
-
-.bottomRow {
-  display: flex;
-  margin-top: 10px;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.addBlockButton {
-  margin-top: 10px;
-}
-
-.blockWrapper {
-  cursor: pointer;
-
-  & + .blockWrapper {
-    margin-top: 10px;
-  }
-}
-
-.textarea {
-  margin-top: 10px;
 }

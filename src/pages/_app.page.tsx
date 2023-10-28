@@ -8,6 +8,7 @@ import {activateYandexMetrika} from 'lib/metrics'
 import {usePageLoading} from 'lib/use-page-loading'
 import {ProvideUser} from 'context/user'
 import {Spinner} from 'components/spinner'
+import {ProvideAsanas} from 'context/asanas'
 
 import 'styles/global.css'
 
@@ -21,11 +22,13 @@ const App: React.FC<AppProps> = ({Component, pageProps = {}}) => {
   return (
     <>
       <ErrorBoundary fallback={<h1>Что то пошло не так...</h1>}>
-        <ProvideUser>
-          <Layout isMobile={pageProps.isMobile}>
-            {isPageLoading ? <Spinner /> : <Component {...pageProps} />}
-          </Layout>
-        </ProvideUser>
+        <ProvideAsanas>
+          <ProvideUser>
+            <Layout isMobile={pageProps.isMobile}>
+              {isPageLoading ? <Spinner /> : <Component {...pageProps} />}
+            </Layout>
+          </ProvideUser>
+        </ProvideAsanas>
       </ErrorBoundary>
     </>
   )

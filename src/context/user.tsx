@@ -1,4 +1,3 @@
-import {getUser} from 'api'
 import React, {
   useState,
   type PropsWithChildren,
@@ -7,6 +6,8 @@ import React, {
   useCallback,
   useEffect
 } from 'react'
+
+import {getUser} from 'api'
 
 import {type User} from 'types/user'
 
@@ -28,7 +29,7 @@ const UserContext = React.createContext(initialData)
 
 export const ProvideUser: React.FC<PropsWithChildren> = ({children}) => {
   const [user, setUser] = useState<User | null>(null)
-  const [isFetching, setIsFetching] = useState(false)
+  const [isFetching, setIsFetching] = useState(true)
 
   const updateUser = useCallback(setUser, [setUser])
 
