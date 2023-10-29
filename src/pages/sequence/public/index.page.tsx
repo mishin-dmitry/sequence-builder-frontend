@@ -34,7 +34,7 @@ const PublicSequencesPage: React.FC<PageProps> = ({
 
   const onShow = useCallback(
     (id: number) => {
-      router.push(`${Urls.EDIT_SEQUENCE}/${id}`)
+      router.push(`${Urls.VIEW_SEQUENCE}/${id}`)
     },
     [router]
   )

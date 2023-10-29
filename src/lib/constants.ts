@@ -1,4 +1,6 @@
 export const LOCAL_STORAGE_SEQUENCE_KEY = 'sequence'
 export const LOCAL_STORAGE_TITLE_KEY = 'title'
+export const LOCAL_STORAGE_DESCRIPTION_KEY = 'description'
+export const LOCAL_STORAGE_IS_PUBLIC_KEY = 'isPublic'
 export const LOCAL_STORAGE_TIME_SETTINGS = 'timeSettings'
 export const LOCAL_STORAGE_EDITING_BLOCK = 'editingBlock'

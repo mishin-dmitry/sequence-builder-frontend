@@ -123,15 +123,17 @@ export const Sequence: React.FC<SequenceProps> = ({
                 addAsanaToRepeatingBlock={addAsanaToRepeatingBlock}
                 className={styles.sortableWrapper}>
                 <div className={clsx(styles.imageWrapper)}>
-                  <img
-                    width={70}
-                    height={70}
-                    key={id}
-                    src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                      iconsMap[alias]
-                    )}`}
-                    alt="Изображение асаны"
-                  />
+                  {iconsMap[alias] && (
+                    <img
+                      width={70}
+                      height={70}
+                      key={id}
+                      src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                        iconsMap[alias]
+                      )}`}
+                      alt="Изображение асаны"
+                    />
+                  )}
                 </div>
               </SortableItem>
             )

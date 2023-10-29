@@ -70,50 +70,56 @@ export const SequenceTable: React.FC<SequenceTableProps> = ({
         render: ({id, title}: {id: number; title: string}) => (
           <div className={styles.buttons}>
             {typeof onDelete === 'function' && (
-              <Popconfirm
-                title="Удалить последовательность"
-                onConfirm={async () => {
-                  setIsConfirmLoading(true)
+              <Tooltip title="Удалить">
+                <Popconfirm
+                  title="Удалить последовательность"
+                  onConfirm={async () => {
+                    setIsConfirmLoading(true)
 
-                  try {
-                    await onDelete(id)
-                  } catch {
-                  } finally {
-                    setIsConfirmLoading(false)
-                  }
-                }}
-                okText="Удалить"
-                cancelText="Отменить"
-                okButtonProps={{loading: isConfirmLoading}}
-                description={`Вы действительно хотите удалить последовательность ${
-                  title ?? ''
-                }?`}>
-                <Button
-                  danger
-                  type="primary"
-                  size="small"
-                  disabled={isConfirmLoading}>
-                  <DeleteOutlined />
-                </Button>
-              </Popconfirm>
+                    try {
+                      await onDelete(id)
+                    } catch {
+                    } finally {
+                      setIsConfirmLoading(false)
+                    }
+                  }}
+                  okText="Удалить"
+                  cancelText="Отменить"
+                  okButtonProps={{loading: isConfirmLoading}}
+                  description={`Вы действительно хотите удалить последовательность ${
+                    title ?? ''
+                  }?`}>
+                  <Button
+                    danger
+                    type="primary"
+                    size="small"
+                    disabled={isConfirmLoading}>
+                    <DeleteOutlined />
+                  </Button>
+                </Popconfirm>
+              </Tooltip>
             )}
             {typeof onEdit === 'function' && (
-              <Button
-                type="primary"
-                disabled={isConfirmLoading}
-                size="small"
-                onClick={() => onEdit(id)}>
-                <EditOutlined />
-              </Button>
+              <Tooltip title="Редактировать">
+                <Button
+                  type="primary"
+                  disabled={isConfirmLoading}
+                  size="small"
+                  onClick={() => onEdit(id)}>
+                  <EditOutlined />
+                </Button>
+              </Tooltip>
             )}
             {typeof onShow === 'function' && (
-              <Button
-                type="primary"
-                disabled={isConfirmLoading}
-                size="small"
-                onClick={() => onShow(id)}>
-                <EyeOutlined />
-              </Button>
+              <Tooltip title="Посмотреть">
+                <Button
+                  type="primary"
+                  disabled={isConfirmLoading}
+                  size="small"
+                  onClick={() => onShow(id)}>
+                  <EyeOutlined />
+                </Button>
+              </Tooltip>
             )}
           </div>
         )

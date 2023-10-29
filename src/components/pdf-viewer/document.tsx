@@ -32,14 +32,10 @@ Font.register({
 })
 
 export interface Sequence {
-  documentTitle?: string
   asanas: Record<string, Asana[]>
 }
 
-export const PDFDocument = ({
-  documentTitle,
-  asanas: asanasProp
-}: Sequence): any => {
+export const PDFDocument = ({asanas: asanasProp}: Sequence): any => {
   const prepareAsanasBlock = (asanas: Asana[]): (Asana | Asana[])[] => {
     return asanas.reduce((acc: (Asana | Asana[])[], curValue) => {
       const lastElement: Asana[] | Asana | null = acc.length
@@ -72,9 +68,6 @@ export const PDFDocument = ({
     <Document>
       <Page orientation="landscape" style={styles.page}>
         <View style={styles.columnView}>
-          {!!documentTitle && (
-            <Text style={styles.documentTitle}>{documentTitle}</Text>
-          )}
           {Object.values(asanasProp).map((asanasBlock, index) => {
             const asanas = prepareAsanasBlock(asanasBlock)
 
@@ -115,40 +108,6 @@ export const PDFDocument = ({
               </View>
             )
           })}
-          {/* <View style={styles.rowView}>
-            {asanas.map((asana: Asana | Asana[], index) => {
-              if (Array.isArray(asana)) {
-                return (
-                  <View
-                    key={index}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}>
-                    <View
-                      style={{
-                        borderBottom: '2px solid black',
-                        paddingBottom: 5,
-                        display: 'flex',
-                        flexDirection: 'row',
-                        flexWrap: 'wrap'
-                      }}>
-                      {asana.map(({alias}) =>
-                        iconsMap[alias]
-                          ? createSVGPdfRendererComponent(iconsMap[alias])
-                          : undefined
-                      )}
-                    </View>
-                    <Text style={{fontSize: 10}}>Смена сторон</Text>
-                  </View>
-                )
-              } else {
-                return iconsMap[asana.alias]
-                  ? createSVGPdfRendererComponent(iconsMap[asana.alias])
-                  : undefined
-              }
-            })}
-          </View> */}
         </View>
       </Page>
     </Document>

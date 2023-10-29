@@ -24,6 +24,7 @@ import {LOCAL_STORAGE_TIME_SETTINGS} from 'lib/constants'
 import dayjs from 'dayjs'
 import styles from './styles.module.css'
 import PdfViewer from 'components/pdf-viewer'
+import {ConfirmButton} from 'components/confirm-button'
 
 interface SequenceEditorProps {
   isMobile: boolean
@@ -33,7 +34,9 @@ interface SequenceEditorProps {
   description?: string
   isPublic?: boolean
   asanasListNode: React.ReactNode
+  isViewMode?: boolean
   onSave: () => Promise<void>
+  onDelete?: () => Promise<void>
   onChange: (data: Record<string, Asana[]>) => void
   onChangeEditingBlock: (id: string) => void
   onChangeTitle: (title: string) => void
@@ -62,15 +65,20 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   onChangeDescription,
   onChangePublic,
   isPublic,
-  asanasListNode
+  asanasListNode,
+  onDelete,
+  isViewMode
 }) => {
   const [isPdfModalVisible, setIsPdfModalVisible] = useState(false)
   const [isAsanasModalVisible, setIsAsanasModalVisible] = useState(false)
   const [isTimeSettingsVisible, setIsTimeSettingsVisible] = useState(false)
+  const [isInputEmpty, setIsInputEmpty] = useState(false)
+
   const [sequenceDuration, setSequenceDuration] = useState<{
     hours?: number
     minutes?: number
   }>({})
+
   const [timeSettings, setTimeSettings] = useState<TimeSettingsFormInputs>(
     DEFAULT_TIME_SETTINGS
   )
@@ -142,14 +150,24 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   const {isAuthorized} = useUser()
 
   const onSaveButtonClick = useCallback(async () => {
-    await onSave()
-  }, [onSave])
+    if (!title) {
+      setIsInputEmpty(true)
 
-  const onDocumentTitleChange = useCallback(
+      return
+    }
+
+    await onSave()
+  }, [onSave, title])
+
+  const onTitleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.value && isInputEmpty) {
+        setIsInputEmpty(false)
+      }
+
       onChangeTitle(event.target.value)
     },
-    [onChangeTitle]
+    [isInputEmpty, onChangeTitle]
   )
 
   const onDescriptionChange = useCallback(
@@ -361,10 +379,9 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
 
   const pdfAsanaData = useMemo(() => {
     return {
-      documentTitle: title,
       asanas: data
     }
-  }, [title, data])
+  }, [data])
 
   // Сгенерировать pdf файл
   const generatePdf = useCallback(async () => {
@@ -383,15 +400,18 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     <div className={styles.previewWrapper}>
       <div className={styles.scrollContainer}>
         <div>
-          <Input
-            placeholder="Введите название вашей последовательности..."
-            label="Название последовательности"
-            value={title}
-            onChange={onDocumentTitleChange}
-            name="documentTitle"
-          />
-          {isAuthorized && (
-            <>
+          {isAuthorized && !isViewMode && (
+            <div className={styles.controls}>
+              <Input
+                placeholder="Введите название вашей последовательности..."
+                label="Название последовательности"
+                value={title}
+                onChange={onTitleChange}
+                name="title"
+                errorMessage={
+                  isInputEmpty ? 'Введите название последовательности' : ''
+                }
+              />
               <Textarea
                 name="description"
                 label="Описание последовательности"
@@ -409,27 +429,31 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
                   <QuestionCircleOutlined />
                 </Tooltip>
               </div>
-            </>
+            </div>
           )}
           <div className={styles.sequenceBlocks}>{sequenceBlocks}</div>
-          <Button
-            block
-            className={styles.withTopMargin}
-            onClick={addAsanasBlock}>
-            Добавить блок асан
-          </Button>
+          {!isViewMode && (
+            <Button
+              block
+              className={styles.withTopMargin}
+              onClick={addAsanasBlock}>
+              Добавить блок асан
+            </Button>
+          )}
         </div>
       </div>
 
       {!!builderLength &&
         (!!sequenceDuration.hours || !!sequenceDuration.minutes) && (
           <div className={styles.timeWrapper}>
-            <Button
-              icon={<SettingOutlined />}
-              size="small"
-              className={styles.settingsButton}
-              onClick={toggleTimeSettingsVisible}
-            />
+            {!isViewMode && (
+              <Button
+                icon={<SettingOutlined />}
+                size="small"
+                className={styles.settingsButton}
+                onClick={toggleTimeSettingsVisible}
+              />
+            )}
             <div>{`Время последовательности: ${
               sequenceDuration.hours ? `${sequenceDuration.hours}ч` : ''
             } ${
@@ -439,19 +463,37 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
         )}
 
       <div className={styles.actionButtons}>
-        <Button size="large" block={isMobile} danger onClick={clearSequence}>
-          Очистить
-        </Button>
+        {!isViewMode &&
+          (typeof onDelete === 'function' ? (
+            <ConfirmButton
+              title="Удалить последовательность"
+              description="Вы действительно хотите удалить последовательность?"
+              onClick={onDelete}
+              size="large"
+              okText="Удалить">
+              Удалить
+            </ConfirmButton>
+          ) : (
+            <ConfirmButton
+              title="Очистить последовательность"
+              description="Вы действительно хотите очистить последовательность?"
+              size="large"
+              okText="Очистить"
+              onClick={clearSequence}>
+              Очистить
+            </ConfirmButton>
+          ))}
         <Button size="large" block={isMobile} onClick={showPreview}>
           Посмотреть результат
         </Button>
         <Button size="large" block={isMobile} onClick={generatePdf}>
           Скачать в PDF
         </Button>
-        {isAuthorized && (
+        {isAuthorized && !isViewMode && (
           <Button
             type="primary"
             size="large"
+            disabled={!builderLength || isInputEmpty}
             block={isMobile}
             onClick={onSaveButtonClick}>
             Сохранить

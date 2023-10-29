@@ -1,12 +1,12 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 
-import {getAsanasList} from 'api'
 import {getRandomItem} from 'lib/get-random-item'
 import {PageProps} from 'types/page-props'
 import {Spinner} from 'components/spinner'
 import {AsanaCard} from 'components/asana-card'
 import {Button} from 'antd'
 import {Meta} from 'components/meta'
+import {useAsanas} from 'context/asanas'
 
 import type {Asana} from 'types'
 import type {GetServerSideProps} from 'next'
@@ -18,11 +18,13 @@ import clsx from 'clsx'
 
 const VARIATIONS_LENGTH = 4
 
-const QuizPage: React.FC<PageProps> = ({asanas, isMobile}) => {
+const QuizPage: React.FC<PageProps> = ({isMobile}) => {
   const [rightAnswer, setRightAnswer] = useState<Asana | null>(null)
   const [selectedAnswer, setSelectedAnswer] = useState<Asana | null>(null)
   const [showedAnswer, setShowedAnswer] = useState<Asana | null>(null)
   const [quizVariations, setQuizVariations] = useState<Asana[]>([])
+
+  const {asanas} = useAsanas()
 
   const prepareVariations = useCallback(() => {
     const variations = sampleSize(asanas, VARIATIONS_LENGTH)
@@ -131,11 +133,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     )
   )
 
-  const asanas = await getAsanasList()
-
-  asanas.sort((a, b) => (a.name > b.name ? 1 : -1))
-
-  return {props: {isMobile, asanas}}
+  return {props: {isMobile}}
 }
 
 export default QuizPage

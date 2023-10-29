@@ -58,6 +58,18 @@
   }
 }
 
+.sequenceRow {
+  padding: 10px;
+  border: 1px solid lightgray;
+  border-radius: 8px;
+  background: #f5f5f5;
+  display: flex;
+
+  &.mobile {
+    padding: 10px;
+  }
+}
+
 .controls {
   margin-bottom: 20px;
 }
@@ -77,5 +89,43 @@
     button + button {
       margin: 10px 0 0;
     }
+  }
+}
+
+.sequence {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: -10px 0 0 -10px;
+}
+
+.imageWrapper {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  position: relative;
+  margin: 10px 0 0 10px;
+
+  & img {
+    pointer-events: none;
+  }
+
+  flex-grow: 1;
+  align-items: center;
+  padding: 10px;
+  background-color: #fff;
+  outline: none;
+  box-sizing: border-box;
+  list-style: none;
+  transform-origin: 50% 50%;
+  white-space: nowrap;
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+
+  &.repeating {
+    border-color: #7798fc;
+    transition: border-color 0.2s;
   }
 }

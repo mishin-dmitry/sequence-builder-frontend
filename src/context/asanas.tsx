@@ -30,7 +30,7 @@ export const ProvideAsanas: React.FC<PropsWithChildren> = ({children}) => {
   const [asanas, setAsanas] = useState<Asana[]>([])
   const [asanaGroups, setAsanaGroups] = useState<AsanaGroup[]>([])
   const [asanasMap, setAsanasMap] = useState({})
-  const [isFetching, setIsFetching] = useState(false)
+  const [isFetching, setIsFetching] = useState(true)
 
   useEffect(() => {
     const loadData = async (): Promise<void> => {

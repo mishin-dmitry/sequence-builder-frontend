@@ -10,7 +10,9 @@ import {SearchFilter} from 'components/serch-filter'
 import {getItem, removeItem, setItem} from 'lib/local-storage'
 
 import {
+  LOCAL_STORAGE_DESCRIPTION_KEY,
   LOCAL_STORAGE_EDITING_BLOCK,
+  LOCAL_STORAGE_IS_PUBLIC_KEY,
   LOCAL_STORAGE_SEQUENCE_KEY,
   LOCAL_STORAGE_TITLE_KEY
 } from 'lib/constants'
@@ -19,13 +21,22 @@ import {AsanasList} from 'components/asanas-list'
 import {useSequence} from '../hooks'
 import {useAsanas} from 'context/asanas'
 import {SequenceEditor} from 'components/sequence-editor'
+import {useUser} from 'context/user'
+import {Urls} from 'lib/urls'
+import {Spinner} from 'components/spinner'
+import {useRouter} from 'next/router'
 
 import styles from './styles.module.css'
 import debounce from 'lodash.debounce'
 import clsx from 'clsx'
 
 const CreateSequencePage: React.FC<PageProps> = ({isMobile}) => {
-  const {asanas: allAsanas, asanaGroups, asanasMap, isFetching} = useAsanas()
+  const {
+    asanas: allAsanas,
+    asanaGroups,
+    asanasMap,
+    isFetching: isAsanasFetching
+  } = useAsanas()
   const [asanas, setAsanas] = useState(allAsanas)
   const [editingBlock, setEditingBlock] = useState('0')
   const [builderData, setBuilderData] = useState<Record<string, Asana[]>>({})
@@ -34,6 +45,17 @@ const CreateSequencePage: React.FC<PageProps> = ({isMobile}) => {
   const [isPublic, setIsPublic] = useState(false)
 
   const {createSequence} = useSequence()
+  const {isAuthorized, isFetching: isUserFetching} = useUser()
+
+  const router = useRouter()
+
+  const clearLocalStorage = useCallback(() => {
+    removeItem(LOCAL_STORAGE_SEQUENCE_KEY)
+    removeItem(LOCAL_STORAGE_EDITING_BLOCK)
+    removeItem(LOCAL_STORAGE_TITLE_KEY)
+    removeItem(LOCAL_STORAGE_DESCRIPTION_KEY)
+    removeItem(LOCAL_STORAGE_IS_PUBLIC_KEY)
+  }, [])
 
   // Сохранить последовательность
   const onSave = useCallback(async () => {
@@ -49,8 +71,22 @@ const CreateSequencePage: React.FC<PageProps> = ({isMobile}) => {
       )
     }
 
-    await createSequence(data)
-  }, [builderData, createSequence, description, isPublic, title])
+    const {id} = (await createSequence(data)) || {}
+
+    clearLocalStorage()
+
+    if (id) {
+      router.push(`${Urls.EDIT_SEQUENCE}/${id}`)
+    }
+  }, [
+    builderData,
+    clearLocalStorage,
+    createSequence,
+    description,
+    isPublic,
+    router,
+    title
+  ])
 
   const builderLength = useMemo(() => {
     return Object.values(builderData).reduce(
@@ -72,7 +108,7 @@ const CreateSequencePage: React.FC<PageProps> = ({isMobile}) => {
     )
 
     const editingBlockFromLS = getItem<string>(LOCAL_STORAGE_EDITING_BLOCK)
-    const documentTitleFromLS = getItem<string>(LOCAL_STORAGE_TITLE_KEY)
+    const titleFromLS = getItem<string>(LOCAL_STORAGE_TITLE_KEY)
 
     if (sequenceFromLS) {
       setBuilderData(sequenceFromLS)
@@ -82,10 +118,24 @@ const CreateSequencePage: React.FC<PageProps> = ({isMobile}) => {
       setEditingBlock(editingBlockFromLS)
     }
 
-    if (documentTitleFromLS) {
-      setTitle(documentTitleFromLS)
+    if (titleFromLS) {
+      setTitle(titleFromLS)
     }
-  }, [])
+
+    if (isAuthorized) {
+      const isPublicFromLS = getItem<boolean>(LOCAL_STORAGE_IS_PUBLIC_KEY)
+
+      const descriptionFromLS = getItem<string>(LOCAL_STORAGE_DESCRIPTION_KEY)
+
+      if (descriptionFromLS) {
+        setDescription(descriptionFromLS)
+      }
+
+      if (isPublicFromLS) {
+        setIsPublic(isPublicFromLS)
+      }
+    }
+  }, [isAuthorized])
 
   useEffect(() => {
     if (!title) {
@@ -94,6 +144,18 @@ const CreateSequencePage: React.FC<PageProps> = ({isMobile}) => {
       setItem(LOCAL_STORAGE_TITLE_KEY, title)
     }
   }, [title])
+
+  useEffect(() => {
+    if (!description) {
+      removeItem(LOCAL_STORAGE_DESCRIPTION_KEY)
+    } else {
+      setItem(LOCAL_STORAGE_DESCRIPTION_KEY, description)
+    }
+  }, [description])
+
+  useEffect(() => {
+    setItem(LOCAL_STORAGE_IS_PUBLIC_KEY, isPublic)
+  }, [isPublic])
 
   useEffect(() => {
     if (!builderLength) {
@@ -193,6 +255,8 @@ const CreateSequencePage: React.FC<PageProps> = ({isMobile}) => {
     [allAsanas, asanas, onSearchAsana]
   )
 
+  const shouldShowSpinner = isUserFetching || isAsanasFetching
+
   return (
     <>
       <Meta
@@ -201,67 +265,72 @@ const CreateSequencePage: React.FC<PageProps> = ({isMobile}) => {
         keywords="Йога, построение последовательностей, асаны"
       />
       <div className={clsx(styles.root, isMobile && styles.mobile)}>
-        {!isMobile && (
-          <Resizable
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRight: '1px solid #ddd'
-            }}
-            defaultSize={{
-              width: '352px',
-              height: '100%'
-            }}
-            maxWidth="535px"
-            minWidth="170px">
-            <div className={styles.listWrapper}>
-              <SearchFilter
-                onSearchAsana={onSearchAsana}
-                filterItems={asanaGroups}
-                onFilterAsanas={onFilterAsana}
-                searchItems={asanas}
-              />
-              <AsanasList
-                isMobile={isMobile}
-                asanas={asanas}
-                onAsanaClick={onAsanaClick}
-                size="small"
-                isLoading={isFetching}
-              />
-            </div>
-          </Resizable>
+        {shouldShowSpinner ? (
+          <Spinner />
+        ) : (
+          <>
+            {!isMobile && (
+              <Resizable
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRight: '1px solid #ddd'
+                }}
+                defaultSize={{
+                  width: '352px',
+                  height: '100%'
+                }}
+                maxWidth="535px"
+                minWidth="170px">
+                <div className={styles.listWrapper}>
+                  <SearchFilter
+                    onSearchAsana={onSearchAsana}
+                    filterItems={asanaGroups}
+                    onFilterAsanas={onFilterAsana}
+                    searchItems={asanas}
+                  />
+                  <AsanasList
+                    isMobile={isMobile}
+                    asanas={asanas}
+                    onAsanaClick={onAsanaClick}
+                    size="small"
+                  />
+                </div>
+              </Resizable>
+            )}
+            <SequenceEditor
+              isMobile={isMobile}
+              onSave={onSave}
+              data={builderData}
+              onChange={setBuilderData}
+              editingBlock={editingBlock}
+              onChangeEditingBlock={setEditingBlock}
+              title={title}
+              onChangeTitle={setTitle}
+              description={description}
+              onChangeDescription={setDescription}
+              isPublic={isPublic}
+              onChangePublic={setIsPublic}
+              asanasListNode={
+                <div className={styles.listWrapper}>
+                  <SearchFilter
+                    onSearchAsana={onSearchAsana}
+                    filterItems={asanaGroups}
+                    onFilterAsanas={onFilterAsana}
+                    searchItems={asanas}
+                  />
+                  <AsanasList
+                    isMobile={isMobile}
+                    asanas={asanas}
+                    onAsanaClick={onAsanaClick}
+                    size="small"
+                  />
+                </div>
+              }
+            />
+          </>
         )}
-        <SequenceEditor
-          isMobile={isMobile}
-          onSave={onSave}
-          data={builderData}
-          onChange={setBuilderData}
-          editingBlock={editingBlock}
-          onChangeEditingBlock={setEditingBlock}
-          title={title}
-          onChangeTitle={setTitle}
-          description={description}
-          onChangeDescription={setDescription}
-          isPublic={isPublic}
-          onChangePublic={setIsPublic}
-          asanasListNode={
-            <div className={styles.listWrapper}>
-              <SearchFilter
-                onSearchAsana={onSearchAsana}
-                filterItems={asanaGroups}
-                onFilterAsanas={onFilterAsana}
-                searchItems={asanas}
-              />
-              <AsanasList
-                isMobile={isMobile}
-                asanas={asanas}
-                onAsanaClick={onAsanaClick}
-                size="small"
-              />
-            </div>
-          }
-        />
       </div>
     </>
   )
