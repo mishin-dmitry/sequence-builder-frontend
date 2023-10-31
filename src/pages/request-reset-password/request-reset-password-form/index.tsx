@@ -1,12 +1,7 @@
 import React, {useMemo} from 'react'
 
 import {FormCard} from 'components/form-card'
-import {
-  type SubmitHandler,
-  useForm,
-  Controller,
-  UseFormSetError
-} from 'react-hook-form'
+import {type SubmitHandler, useForm, Controller} from 'react-hook-form'
 import {Input} from 'components/input'
 import {Button} from 'antd'
 import {Urls} from 'lib/urls'
@@ -14,36 +9,32 @@ import {Urls} from 'lib/urls'
 import styles from './styles.module.css'
 import Link from 'next/link'
 
-export interface LoginFormInputs {
+export interface RequestResetPasswordFormInputs {
   email: string
-  password: string
 }
 
-interface LoginFormProps {
-  onSubmit: (
-    values: LoginFormInputs,
-    setError: UseFormSetError<LoginFormInputs>
-  ) => Promise<void>
+interface RequestResetPasswordFormProps {
+  onSubmit: (values: RequestResetPasswordFormInputs) => Promise<void>
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({
-  onSubmit: onSubmitProp
-}) => {
+export const RequestResetPasswordForm: React.FC<
+  RequestResetPasswordFormProps
+> = ({onSubmit: onSubmitProp}) => {
   const {
     control,
     handleSubmit,
-    setError,
     formState: {isSubmitting, isDirty, isValid, isLoading}
-  } = useForm<LoginFormInputs>({
+  } = useForm<RequestResetPasswordFormInputs>({
     mode: 'onBlur',
     defaultValues: {
-      email: '',
-      password: ''
+      email: ''
     }
   })
 
-  const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
-    await onSubmitProp(data, setError)
+  const onSubmit: SubmitHandler<RequestResetPasswordFormInputs> = async (
+    data
+  ) => {
+    await onSubmitProp(data)
   }
 
   const footer = useMemo(
@@ -52,7 +43,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   )
 
   return (
-    <FormCard title="Войти" footer={footer}>
+    <FormCard title="Восстановление пароля" footer={footer}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Controller
           name="email"
@@ -79,30 +70,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             />
           )}
         />
-        <Controller
-          name="password"
-          rules={{
-            required: {
-              value: true,
-              message: 'Введите пароль'
-            }
-          }}
-          control={control}
-          render={({field, fieldState}) => (
-            <Input
-              {...field}
-              label="Пароль"
-              errorMessage={fieldState.error?.message}
-              placeholder="Введите пароль..."
-              type="current-password"
-              asPassword
-              autoComplete="current-password"
-            />
-          )}
-        />
-        <Link href={Urls.RESET_PASSWORD} className={styles.link}>
-          Забыли пароль?
-        </Link>
         <div className={styles.buttonWrapper}>
           <Button
             type="primary"
@@ -110,7 +77,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             htmlType="submit"
             disabled={!isDirty || !isValid}
             className={styles.button}>
-            Войти
+            Продолжить
           </Button>
         </div>
       </form>

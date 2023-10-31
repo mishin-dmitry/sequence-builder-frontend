@@ -6,6 +6,16 @@ export {
   getUserSequences,
   getPublicSequences
 } from './sequences'
+
+export {
+  registerUser,
+  login,
+  logout,
+  type RegisterUserRequest,
+  getRecoveryLink,
+  updatePassword,
+  type UpdatePasswordRequest
+} from './auth'
+
 export {getAsanasList, getAsanaGroupsList} from './data'
-export {registerUser, login, logout, type RegisterUserRequest} from './auth'
 export {getUser} from './user'

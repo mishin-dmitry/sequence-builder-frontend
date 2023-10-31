@@ -37,6 +37,7 @@ const CreateSequencePage: React.FC<PageProps> = ({isMobile}) => {
     asanasMap,
     isFetching: isAsanasFetching
   } = useAsanas()
+
   const [asanas, setAsanas] = useState(allAsanas)
   const [editingBlock, setEditingBlock] = useState('0')
   const [builderData, setBuilderData] = useState<Record<string, Asana[]>>({})
