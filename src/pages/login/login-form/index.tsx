@@ -100,7 +100,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             />
           )}
         />
-        <Link href={Urls.RESET_PASSWORD} className={styles.link}>
+        <Link href={Urls.REQUEST_RESET_PASSWORD} className={styles.link}>
           Забыли пароль?
         </Link>
         <div className={styles.buttonWrapper}>

@@ -7,6 +7,6 @@ export enum Urls {
   QUIZ = '/quiz',
   LOGIN = '/login',
   REGISTRATION = '/registration',
-  RESET_PASSWORD = '/reset-password',
+  REQUEST_RESET_PASSWORD = '/request-reset-password',
   LOGOUT = '/logout'
 }
