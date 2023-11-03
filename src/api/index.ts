@@ -1,3 +1,5 @@
+export {sendFeedback, type SendFeedbackRequest} from './feedback'
+
 export {
   createSequence,
   updateSequence,

@@ -20,7 +20,7 @@ export const Textarea: React.FC<TextareaProps> = ({
   return (
     <div className={className}>
       {!!label && <Label htmlFor={name}>{label}</Label>}
-      <AntdInput.TextArea {...textareaProps} />
+      <AntdInput.TextArea {...textareaProps} size="large" />
     </div>
   )
 }

@@ -18,5 +18,6 @@ export const NAV_MENU_LINKS: NavMenuLink[] = [
     href: Urls.PUBLIC_SEQUENCES,
     forAuthorized: true
   },
-  {title: 'Учить асаны', href: Urls.QUIZ}
+  {title: 'Учить асаны', href: Urls.QUIZ},
+  {title: 'Обратная связь', href: Urls.FEEDBACK}
 ]
