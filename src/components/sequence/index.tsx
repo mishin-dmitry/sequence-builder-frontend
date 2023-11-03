@@ -26,7 +26,7 @@ import clsx from 'clsx'
 import styles from './styles.module.css'
 
 interface SequenceProps {
-  data: Asana[]
+  data: (Asana & {count?: number})[]
   isMobile?: boolean
   id: string
   isEditing: boolean
@@ -113,7 +113,7 @@ export const Sequence: React.FC<SequenceProps> = ({
           isEditing && styles.editing
         )}>
         <div className={styles.sequence}>
-          {data.map(({id, alias, isAsanaInRepeatingBlock}, index) => {
+          {data.map(({id, alias, isAsanaInRepeatingBlock, count}, index) => {
             const uniqueId = `${id}-${index}`
 
             return (
@@ -121,21 +121,30 @@ export const Sequence: React.FC<SequenceProps> = ({
                 key={index}
                 id={uniqueId}
                 index={index}
+                count={count}
                 onDelete={onDeleteAsana}
                 isMobile={isMobile}
                 isAsanaInRepeatingBlock={isAsanaInRepeatingBlock}
                 addAsanaToRepeatingBlock={addAsanaToRepeatingBlock}
                 className={styles.sortableWrapper}>
-                <div className={clsx(styles.imageWrapper)}>
-                  <img
-                    width={70}
-                    height={70}
-                    key={id}
-                    src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                      iconsMap[alias]
-                    )}`}
-                    alt="Изображение асаны"
-                  />
+                <div
+                  className={clsx(
+                    styles.imageWrapper,
+                    (alias === 'empty' || alias === 'separator') && styles.empty
+                  )}>
+                  {iconsMap[alias] && (
+                    <img
+                      width={70}
+                      height={70}
+                      key={id}
+                      src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                        iconsMap[alias]
+                      )}`}
+                      alt="Изображение асаны"
+                    />
+                  )}
+                  {alias === 'empty' && <span>Пустое место</span>}
+                  {alias === 'separator' && <span>Разделитель</span>}
                 </div>
               </SortableItem>
             )

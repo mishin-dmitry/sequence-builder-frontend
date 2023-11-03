@@ -1,5 +1,13 @@
 import React from 'react'
-import {Page, Document, StyleSheet, Text, View, Font} from '@react-pdf/renderer'
+import {
+  Page,
+  Document,
+  StyleSheet,
+  Text,
+  View,
+  Font,
+  Svg
+} from '@react-pdf/renderer'
 import {Asana} from 'types'
 import {createSVGPdfRendererComponent} from 'lib/svg-to-components'
 import {iconsMap} from 'icons'
@@ -97,19 +105,31 @@ export const PDFDocument = ({
                             flexDirection: 'row',
                             flexWrap: 'wrap'
                           }}>
-                          {asana.map(({alias}) =>
-                            iconsMap[alias]
-                              ? createSVGPdfRendererComponent(iconsMap[alias])
-                              : undefined
-                          )}
+                          {asana.map(({alias}) => {
+                            if (alias === 'empty') {
+                              return <Svg width={70} height={70} key={index} />
+                            } else if (alias === 'separator') {
+                              return <Svg width={10} height={70} key={index} />
+                            } else {
+                              return iconsMap[alias]
+                                ? createSVGPdfRendererComponent(iconsMap[alias])
+                                : undefined
+                            }
+                          })}
                         </View>
                         <Text style={{fontSize: 10}}>Смена сторон</Text>
                       </View>
                     )
                   } else {
-                    return iconsMap[asana.alias]
-                      ? createSVGPdfRendererComponent(iconsMap[asana.alias])
-                      : undefined
+                    if (asana.alias === 'empty') {
+                      return <Svg width={70} height={70} key={index} />
+                    } else if (asana.alias === 'separator') {
+                      return <Svg width={10} height={70} key={index} />
+                    } else {
+                      return iconsMap[asana.alias]
+                        ? createSVGPdfRendererComponent(iconsMap[asana.alias])
+                        : undefined
+                    }
                   }
                 })}
               </View>

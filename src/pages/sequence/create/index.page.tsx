@@ -446,25 +446,39 @@ const CreateSequencePage: React.FC<PageProps> = ({
   }, [builderData])
 
   const sequenceBlocks = useMemo(() => {
-    return Object.keys(builderData).map((key, index) => (
-      <div
-        key={index}
-        className={styles.blockWrapper}
-        onClick={() => setEditingBlock(key)}>
-        <Sequence
-          id={key}
-          data={builderData[key]}
-          isMobile={isMobile}
-          onDeleteAsana={deleteAsanaById}
-          onDeleteBlock={deleteAsanasBlock}
-          onDragEnd={onDragEnd}
-          onDragStart={onDragStart}
-          onAddAsanaButtonClick={showAsanasModal}
-          addAsanaToRepeatingBlock={addAsanaToRepeatingBlock}
-          isEditing={editingBlock === key}
-        />
-      </div>
-    ))
+    let lastIndex = 0
+
+    return Object.keys(builderData).map((key, index) => {
+      const dataWithIndexes = builderData[key].map((data) => {
+        if (data.alias === 'separator') {
+          return data
+        }
+
+        lastIndex += 1
+
+        return {...data, count: lastIndex}
+      })
+
+      return (
+        <div
+          key={index}
+          className={styles.blockWrapper}
+          onClick={() => setEditingBlock(key)}>
+          <Sequence
+            id={key}
+            data={dataWithIndexes}
+            isMobile={isMobile}
+            onDeleteAsana={deleteAsanaById}
+            onDeleteBlock={deleteAsanasBlock}
+            onDragEnd={onDragEnd}
+            onDragStart={onDragStart}
+            onAddAsanaButtonClick={showAsanasModal}
+            addAsanaToRepeatingBlock={addAsanaToRepeatingBlock}
+            isEditing={editingBlock === key}
+          />
+        </div>
+      )
+    })
   }, [
     addAsanaToRepeatingBlock,
     deleteAsanaById,

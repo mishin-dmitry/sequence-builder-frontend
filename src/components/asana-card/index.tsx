@@ -39,6 +39,7 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
       iconsMap[alias] && (
         <div className={styles.imageContainer}>
           <img
+            alt="Изображение асаны"
             loading="lazy"
             src={`data:image/svg+xml;utf8,${encodeURIComponent(
               iconsMap[alias]
@@ -51,38 +52,13 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
 
   const TagName = isButton ? 'button' : 'div'
 
-  // if (isLink && href) {
-  //   return (
-  //     <Link
-  //       href={href}
-  //       className={clsx(styles.card, styles.link, isMobile && styles.mobile)}>
-  //       {iconsMap[alias] && (
-  //         <div className={styles.imageContainer}>
-  //           <img
-  //             src={`data:image/svg+xml;utf8,${encodeURIComponent(
-  //               iconsMap[alias]
-  //             )}`}
-  //           />
-  //         </div>
-  //       )}
-  //       {!hideText && (
-  //         <div className={styles.textContainer}>
-  //           <Typography.Title level={2}>{name}</Typography.Title>
-  //           {!!description && size === 'default' && (
-  //             <Typography>{description}</Typography>
-  //           )}
-  //         </div>
-  //       )}
-  //     </Link>
-  //   )
-  // }
-
   return (
     <TagName
       className={clsx(
         styles.card,
         styles[size],
         isMobile && styles.mobile,
+        (alias === 'empty' || alias === 'separator') && styles.empty,
         className
       )}
       onClick={onAsanaClick}>

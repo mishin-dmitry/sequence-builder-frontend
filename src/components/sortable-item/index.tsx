@@ -11,6 +11,7 @@ interface SortableItemProps {
   children: React.ReactNode
   id: string
   index: number
+  count?: number
   className?: string
   isMobile?: boolean
   isAsanaInRepeatingBlock?: boolean
@@ -23,6 +24,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
   children,
   className,
   index,
+  count,
   isMobile,
   onDelete,
   isAsanaInRepeatingBlock,
@@ -103,6 +105,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
         styles.wrapper,
         isSorting && styles.sorting,
         isDragging && styles.dragOverlay,
+        isMobile && styles.mobile,
         className
       )}
       style={style}
@@ -139,7 +142,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
             onClick={() => onDelete(index)}
           />
         )}
-        <span className={styles.index}>{index + 1}</span>
+        {count && <span className={styles.index}>{count}</span>}
       </div>
     </div>
   )
