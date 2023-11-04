@@ -29,7 +29,7 @@ export const AsanasList: React.FC<AsanaCardsListProps> = ({
   }
 
   return (
-    <ul className={clsx(styles.list, className)}>
+    <ul className={clsx(styles.list, isMobile && styles.mobile, className)}>
       {asanas.map((asana: Asana) => (
         <AsanaCard
           data={asana}
@@ -37,7 +37,7 @@ export const AsanasList: React.FC<AsanaCardsListProps> = ({
           size={size}
           isMobile={isMobile}
           onAsanaClick={onAsanaClick}
-          className={isMobile ? styles.asana : undefined}
+          className={styles.asana}
         />
       ))}
     </ul>

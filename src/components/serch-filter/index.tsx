@@ -7,18 +7,21 @@ import type {CheckboxChangeEvent} from 'antd/es/checkbox'
 
 import debounce from 'lodash.debounce'
 import styles from './styles.module.css'
+import clsx from 'clsx'
 
 interface SearchFilterProps {
   onSearchAsana: (value: string) => void
   onFilterAsanas: (groups: AsanaGroup[]) => void
   filterItems: AsanaGroup[]
   searchItems: Asana[]
+  isMobile?: boolean
 }
 
 export const SearchFilter: React.FC<SearchFilterProps> = ({
   onSearchAsana,
   onFilterAsanas,
   filterItems,
+  isMobile,
   searchItems: propsSearchItems
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -129,7 +132,7 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
 
   return (
     <>
-      <div className={styles.searchWrapper}>
+      <div className={clsx(styles.searchWrapper, isMobile && styles.mobile)}>
         <AutoComplete
           placeholder="Найти асану..."
           allowClear

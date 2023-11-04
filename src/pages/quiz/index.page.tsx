@@ -125,11 +125,13 @@ const QuizPage: React.FC<PageProps> = ({asanas, isMobile}) => {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const UA = context.req.headers['user-agent']
 
-  const isMobile = Boolean(
-    UA?.match(
-      /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
-    )
-  )
+  const isMobile = true
+
+  // Boolean(
+  //   UA?.match(
+  //     /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
+  //   )
+  // )
 
   const asanas = await getAsanasList()
 

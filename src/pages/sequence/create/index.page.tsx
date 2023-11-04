@@ -368,8 +368,13 @@ const CreateSequencePage: React.FC<PageProps> = ({
     [allAsanas, asanas, onSearchAsana]
   )
 
-  const addAsanaToRepeatingBlock = useCallback(
-    (asanaIndex: number, action: 'add' | 'delete', blockId: string) => {
+  const addAsanaToBlock = useCallback(
+    (
+      asanaIndex: number,
+      block: 'repeating' | 'dynamic',
+      action: 'add' | 'delete',
+      blockId: string
+    ) => {
       setBuilderData((prevData) => {
         return {
           ...prevData,
@@ -377,10 +382,28 @@ const CreateSequencePage: React.FC<PageProps> = ({
             index === asanaIndex
               ? {
                   ...asana,
-                  isAsanaInRepeatingBlock: action === 'add' ? true : false
+                  ...(block === 'repeating'
+                    ? {isAsanaInRepeatingBlock: action === 'add' ? true : false}
+                    : {isAsanaInDynamicBlock: action === 'add' ? true : false})
                 }
               : asana
           )
+        }
+      })
+    },
+    []
+  )
+
+  const copyAsana = useCallback(
+    (asana: Asana, index: number, blockId: string) => {
+      setBuilderData((prevData) => {
+        const newSequence = [...prevData[blockId]]
+
+        newSequence.splice(index, 0, asana)
+
+        return {
+          ...prevData,
+          [blockId]: newSequence
         }
       })
     },
@@ -473,22 +496,24 @@ const CreateSequencePage: React.FC<PageProps> = ({
             onDragEnd={onDragEnd}
             onDragStart={onDragStart}
             onAddAsanaButtonClick={showAsanasModal}
-            addAsanaToRepeatingBlock={addAsanaToRepeatingBlock}
+            addAsanaToBlock={addAsanaToBlock}
             isEditing={editingBlock === key}
+            copyAsana={copyAsana}
           />
         </div>
       )
     })
   }, [
-    addAsanaToRepeatingBlock,
-    deleteAsanaById,
-    editingBlock,
-    isMobile,
     builderData,
+    isMobile,
+    deleteAsanaById,
     deleteAsanasBlock,
     onDragEnd,
     onDragStart,
-    showAsanasModal
+    showAsanasModal,
+    addAsanaToBlock,
+    editingBlock,
+    copyAsana
   ])
 
   return (
@@ -519,6 +544,7 @@ const CreateSequencePage: React.FC<PageProps> = ({
                 filterItems={asanaGroups}
                 onFilterAsanas={onFilterAsana}
                 searchItems={asanas}
+                isMobile={isMobile}
               />
               <AsanasList
                 isMobile={isMobile}
@@ -630,6 +656,7 @@ const CreateSequencePage: React.FC<PageProps> = ({
             centered
             open={isAsanasModalVisible}
             onCancel={hideAsanasModal}
+            className={isMobile ? styles.modal : undefined}
             footer={null}>
             <div className={styles.listWrapper}>
               <SearchFilter
@@ -637,6 +664,7 @@ const CreateSequencePage: React.FC<PageProps> = ({
                 filterItems={asanaGroups}
                 onFilterAsanas={onFilterAsana}
                 searchItems={asanas}
+                isMobile={isMobile}
               />
               <AsanasList
                 isMobile={isMobile}

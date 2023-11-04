@@ -32,14 +32,16 @@ interface SequenceProps {
   isEditing: boolean
   onDeleteAsana: (id: number, blockId: string) => void
   onDeleteBlock: (id: string) => void
-  addAsanaToRepeatingBlock: (
+  addAsanaToBlock: (
     id: number,
+    block: 'repeating' | 'dynamic',
     action: 'add' | 'delete',
     blockId: string
   ) => void
   onDragEnd: (event: any) => void
   onDragStart: (event: any) => void
   onAddAsanaButtonClick?: () => void
+  copyAsana: (asana: Asana, index: number, blockId: string) => void
 }
 
 export const Sequence: React.FC<SequenceProps> = ({
@@ -49,10 +51,11 @@ export const Sequence: React.FC<SequenceProps> = ({
   onDragEnd,
   onDragStart,
   onAddAsanaButtonClick,
-  addAsanaToRepeatingBlock: addAsanaToRepeatingBlockProp,
+  addAsanaToBlock: addAsanaToBlockProp,
   onDeleteAsana: onDeleteAsanaProp,
   onDeleteBlock: onDeleteBlockProp,
-  isEditing
+  isEditing,
+  copyAsana
 }) => {
   const onDeleteBlock = useCallback(
     (event: React.SyntheticEvent) => {
@@ -70,11 +73,15 @@ export const Sequence: React.FC<SequenceProps> = ({
     [onDeleteAsanaProp, id]
   )
 
-  const addAsanaToRepeatingBlock = useCallback(
-    (asanaId: number, action: 'add' | 'delete') => {
-      addAsanaToRepeatingBlockProp(asanaId, action, id)
+  const addAsanaToBlock = useCallback(
+    (
+      asanaId: number,
+      block: 'repeating' | 'dynamic',
+      action: 'add' | 'delete'
+    ) => {
+      addAsanaToBlockProp(asanaId, block, action, id)
     },
-    [addAsanaToRepeatingBlockProp, id]
+    [addAsanaToBlockProp, id]
   )
 
   const sensors = useSensors(
@@ -113,8 +120,16 @@ export const Sequence: React.FC<SequenceProps> = ({
           isEditing && styles.editing
         )}>
         <div className={styles.sequence}>
-          {data.map(({id, alias, isAsanaInRepeatingBlock, count}, index) => {
-            const uniqueId = `${id}-${index}`
+          {data.map((asana, index) => {
+            const {
+              id: asanaId,
+              alias,
+              isAsanaInRepeatingBlock,
+              isAsanaInDynamicBlock,
+              count
+            } = asana
+
+            const uniqueId = `${asanaId}-${index}`
 
             return (
               <SortableItem
@@ -125,7 +140,9 @@ export const Sequence: React.FC<SequenceProps> = ({
                 onDelete={onDeleteAsana}
                 isMobile={isMobile}
                 isAsanaInRepeatingBlock={isAsanaInRepeatingBlock}
-                addAsanaToRepeatingBlock={addAsanaToRepeatingBlock}
+                isAsanaInDynamicBlock={isAsanaInDynamicBlock}
+                addAsanasToBlock={addAsanaToBlock}
+                copyAsana={() => copyAsana(asana, index, id)}
                 className={styles.sortableWrapper}>
                 <div
                   className={clsx(
@@ -171,7 +188,9 @@ export const Sequence: React.FC<SequenceProps> = ({
     onAddAsanaButtonClick,
     onDeleteBlock,
     onDeleteAsana,
-    addAsanaToRepeatingBlock
+    addAsanaToBlock,
+    id,
+    copyAsana
   ])
 
   const sortableContextItems = useMemo(

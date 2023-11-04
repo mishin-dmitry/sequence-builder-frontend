@@ -1,16 +1,32 @@
 .list {
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  margin: -10px 0 0 -10px;
-  overflow: hidden;
-  overflow-y: scroll;
+  padding: 0 10px 10px;
+  margin: -10px 0 0;
+  column-gap: 10px;
 
-  .mobile & {
+  &.mobile {
+    column-count: 3;
     margin: 0;
+    padding: 0;
+    column-gap: 5px;
+
+    & .asana {
+      width: 85px;
+
+      &:not(:first-child) {
+        margin-top: 5px;
+      }
+    }
+  }
+
+  &:not(.mobile) {
+    columns: 160px;
+    overflow: hidden;
+    overflow-y: scroll;
   }
 }
 
 .asana {
-  width: calc((100% - 30px) / 3) !important;
+  &:not(:first-child) {
+    margin-top: 10px;
+  }
 }
