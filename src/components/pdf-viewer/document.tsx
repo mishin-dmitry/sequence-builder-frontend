@@ -59,9 +59,9 @@ export const PDFDocument = ({
     return asanas.reduce(
       (acc: Accumulator, curValue) => {
         // Если последний элемент в аккумуляторе массив, то будем пушить в него
-        const lastElement: Asana[] | Asana | null = acc.asanas.length
-          ? acc.asanas[acc.asanas.length - 1]
-          : null
+        const lastElement: any =
+          // const lastElement: Asana[] | Asana | null = acc.asanas
+          acc.asanas.length ? acc.asanas[acc.asanas.length - 1] : null
 
         const hasOnlyRepeatingBlock =
           curValue.isAsanaInRepeatingBlock && !curValue.isAsanaInDynamicBlock
@@ -121,7 +121,7 @@ export const PDFDocument = ({
           if (isMatrix) {
             lastElement[0].push(curValue)
           } else {
-            acc.asanas.push([[curValue]])
+            acc.asanas.push([[curValue]] as any)
           }
         }
 
