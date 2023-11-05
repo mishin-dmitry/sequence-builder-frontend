@@ -17,9 +17,9 @@
 
 .sequenceRow {
   padding: 10px;
-  border: 1px solid lightgray;
+  border: 1px solid var(--sequence-row-border-color);
   border-radius: 8px;
-  background: #f5f5f5;
+  background: var(--sequence-row-bg);
 
   &.mobile {
     padding: 10px;
@@ -30,8 +30,8 @@
   }
 
   &.editing {
-    background-color: #f0f8ff;
-    border: 1px solid #7cb9e8;
+    background-color: var(--sequence-row-editing-bg);
+    border: 1px solid var(--sequence-row-editing-border-color);
     transition-property: border, background-color;
     transition-duration: 0.2s;
   }
@@ -73,6 +73,7 @@
   justify-content: center;
   align-items: center;
   margin: 10px 0 0 -10px;
+  color: var(--text-color);
 
   & svg {
     width: 50px;

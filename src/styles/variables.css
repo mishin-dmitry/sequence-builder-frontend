@@ -1,0 +1,31 @@
+:root {
+  --text-color: rgba(0 0 0 / 0.88);
+  --switcher-bg: #2d2c35;
+  --switcher-circle-bg: #ffd371;
+  --switcher-sun-color: #997f44;
+  --switcher-moon-color: #b1b0b5;
+  --switcher-circle-position: 5px;
+  --card-bg: #fff;
+  --sequence-row-bg: #f5f5f5;
+  --sequence-row-border-color: #d9d9d9;
+  --sequence-row-editing-border-color: #7cb9e8;
+  --sequence-row-editing-bg: #f0f8ff;
+  --danger-color: #e23c39;
+  --success-color: #70c040;
+}
+
+[data-theme='dark'] {
+  --text-color: rgba(255 255 255 / 0.85);
+  --switcher-bg: #2d2c35;
+  --switcher-circle-bg: #7190ff;
+  --switcher-sun-color: #b1b0b5;
+  --switcher-moon-color: #dce3ff;
+  --switcher-circle-position: 30px;
+  --card-bg: #141414;
+  --sequence-row-bg: #000;
+  --sequence-row-border-color: #424242;
+  --sequence-row-editing-border-color: #111d2c;
+  --sequence-row-editing-bg: #111d2c;
+  --danger-color: #e86e6b;
+  --success-color: #8fd460;
+}

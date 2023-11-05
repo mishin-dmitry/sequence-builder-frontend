@@ -34,6 +34,7 @@ import {SettingOutlined} from '@ant-design/icons'
 import {TimeSettingsFormInputs, SequenceTimeForm} from './sequence-time-form'
 import dayjs from 'dayjs'
 import type {DragStartEvent, DragEndEvent} from '@dnd-kit/core'
+import {useTheme} from 'context/theme'
 
 const DEFAULT_TIME_SETTINGS = {
   pranayamaTime: dayjs().minute(10).second(0),
@@ -56,6 +57,8 @@ const CreateSequencePage: React.FC<PageProps> = ({
   const [isTimeSettingsVisible, setIsTimeSettingsVisible] = useState(false)
   const [editingBlock, setEditingBlock] = useState('0')
   const [builderData, setBuilderData] = useState<Record<string, Asana[]>>({})
+
+  const {isDarkTheme} = useTheme()
 
   const builderLength = useMemo(() => {
     return Object.values(builderData).reduce(
@@ -530,7 +533,7 @@ const CreateSequencePage: React.FC<PageProps> = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              borderRight: '1px solid #ddd'
+              borderRight: `1px solid ${isDarkTheme ? '#424242' : '#ddd'}`
             }}
             defaultSize={{
               width: '352px',

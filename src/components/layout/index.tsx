@@ -2,6 +2,7 @@ import React from 'react'
 
 import {Layout as AntdLayout} from 'antd'
 import {MobileMenu} from 'components/mobile-menu'
+import {ThemeSwitcher} from 'components/theme-switcher'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
@@ -12,12 +13,11 @@ export interface LayoutProps {
 }
 
 export const Layout: React.FC<LayoutProps> = ({children, isMobile}) => (
-  <AntdLayout className={styles.layout}>
+  <AntdLayout className={clsx(styles.layout, isMobile && styles.mobile)}>
     <AntdLayout.Header className={styles.header}>
       {isMobile && <MobileMenu />}
+      <ThemeSwitcher />
     </AntdLayout.Header>
-    <main className={clsx(styles.main, isMobile && styles.mobile)}>
-      {children}
-    </main>
+    <main className={styles.main}>{children}</main>
   </AntdLayout>
 )

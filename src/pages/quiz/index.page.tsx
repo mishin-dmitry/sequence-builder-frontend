@@ -135,7 +135,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   asanas.sort((a, b) => (a.name > b.name ? 1 : -1))
 
-  return {props: {isMobile, asanas}}
+  return {
+    props: {
+      isMobile,
+      asanas: asanas.filter(
+        ({alias}) => alias !== 'empty' && alias !== 'separator'
+      )
+    }
+  }
 }
 
 export default QuizPage

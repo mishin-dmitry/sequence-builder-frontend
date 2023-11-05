@@ -2,6 +2,12 @@
   padding: 0 10px 10px;
   margin: -10px 0 0;
   column-gap: 10px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   &.mobile {
     column-count: 3;

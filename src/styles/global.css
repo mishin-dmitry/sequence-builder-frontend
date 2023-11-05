@@ -1,3 +1,5 @@
+@import url('./variables.css');
+
 * {
   box-sizing: border-box;
 }
@@ -15,6 +17,7 @@ body {
   min-width: 320px;
   min-height: 100%;
   text-rendering: optimizeLegibility;
+  color: var(--text-color);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-moothing: grayscale;
   -webkit-tap-highlight-color: transparent;

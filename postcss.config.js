@@ -10,7 +10,7 @@ module.exports = {
         'nesting-rules': true,
         'focus-visible-pseudo-class': {}
       },
-      importFrom: 'src/styles/variables.css'
+      importFrom: ['./src/styles/variables.css']
     }
   }
 }

@@ -4,7 +4,7 @@
   justify-content: space-between;
   padding: 10px;
   border-radius: 8px;
-  background-color: #fff;
+  background-color: var(--card-bg);
   width: 350px;
   outline: none;
   flex-shrink: 0;

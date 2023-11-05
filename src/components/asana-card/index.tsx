@@ -8,6 +8,7 @@ import {iconsMap} from 'icons'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
+import {useTheme} from 'context/theme'
 
 interface AsanaCardProps {
   data: Asana
@@ -28,6 +29,7 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
   isButton = true,
   className
 }) => {
+  const {isDarkTheme} = useTheme()
   const {name, alias = '', description} = data
 
   const onAsanaClick = useCallback(() => {
@@ -42,12 +44,17 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
             alt="Изображение асаны"
             loading="lazy"
             src={`data:image/svg+xml;utf8,${encodeURIComponent(
-              iconsMap[alias]
+              iconsMap[alias].replaceAll(
+                '$COLOR',
+                isDarkTheme
+                  ? 'rgba(255, 255, 255, 0.85)'
+                  : 'rgba(0, 0, 0, 0.88)'
+              )
             )}`}
           />
         </div>
       ),
-    [alias]
+    [alias, isDarkTheme]
   )
 
   const TagName = isButton ? 'button' : 'div'

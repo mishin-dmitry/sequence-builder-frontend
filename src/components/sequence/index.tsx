@@ -21,6 +21,7 @@ import {SortableItem} from 'components/sortable-item'
 import {PlusCircleOutlined} from '@ant-design/icons'
 import {KeyboardSensor, MouseSensor, PointerSensor} from 'lib/sensors'
 import {Button} from 'antd'
+import {useTheme} from 'context/theme'
 
 import clsx from 'clsx'
 import styles from './styles.module.css'
@@ -57,6 +58,8 @@ export const Sequence: React.FC<SequenceProps> = ({
   isEditing,
   copyAsana
 }) => {
+  const {isDarkTheme} = useTheme()
+
   const onDeleteBlock = useCallback(
     (event: React.SyntheticEvent) => {
       event.stopPropagation()
@@ -155,7 +158,12 @@ export const Sequence: React.FC<SequenceProps> = ({
                       height={70}
                       key={id}
                       src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                        iconsMap[alias]
+                        iconsMap[alias].replaceAll(
+                          '$COLOR',
+                          isDarkTheme
+                            ? 'rgba(255, 255, 255, 0.85)'
+                            : 'rgba(0, 0, 0, 0.88)'
+                        )
                       )}`}
                       alt="Изображение асаны"
                     />
@@ -190,6 +198,7 @@ export const Sequence: React.FC<SequenceProps> = ({
     onDeleteAsana,
     addAsanaToBlock,
     id,
+    isDarkTheme,
     copyAsana
   ])
 

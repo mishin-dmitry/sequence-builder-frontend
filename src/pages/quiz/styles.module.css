@@ -3,6 +3,8 @@
   flex-direction: column;
   align-items: center;
   flex: 1;
+  padding: 10px;
+  width: 100%;
 }
 
 .card {
@@ -10,7 +12,7 @@
 }
 
 .variationsWrapper {
-  margin-top: 20px;
+  margin: 20px 0;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -18,10 +20,20 @@
 }
 
 .variation {
-  &.success {
-    background-color: #70c040 !important;
-    color: #fff !important;
+  & > span {
+    overflow: hidden;
+    width: 100%;
+    text-overflow: ellipsis;
+  }
+
+  &.success,
+  &.danger {
     border: none !important;
+    color: #fff !important;
+  }
+
+  &.success {
+    background-color: var(--success-color) !important;
   }
 
   &.readonly {
@@ -33,9 +45,7 @@
   }
 
   &.danger {
-    color: #fff !important;
-    border: none !important;
-    background-color: #e23c39 !important;
+    background-color: var(--danger-color) !important;
   }
 }
 

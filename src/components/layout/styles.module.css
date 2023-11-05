@@ -2,10 +2,6 @@
   flex: 1 1 auto;
   position: relative;
   display: flex;
-
-  &:not(.mobile) {
-    overflow: hidden;
-  }
 }
 
 .footer {
@@ -14,9 +10,22 @@
 }
 
 .layout {
-  max-height: 100vh;
+  &:not(.mobile) {
+    max-height: 100vh;
+
+    & .main {
+      overflow: hidden;
+    }
+
+    & .header {
+      justify-content: flex-end;
+    }
+  }
 }
 
 .header {
   padding: 0 15px !important;
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
 }

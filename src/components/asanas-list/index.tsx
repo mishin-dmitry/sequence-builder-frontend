@@ -25,7 +25,11 @@ export const AsanasList: React.FC<AsanaCardsListProps> = ({
   onAsanaClick
 }) => {
   if (!asanas.length) {
-    return <Typography.Paragraph>Список пуст</Typography.Paragraph>
+    return (
+      <div className={clsx(styles.list, isMobile && styles.mobile, className)}>
+        <Typography.Paragraph>Список пуст</Typography.Paragraph>
+      </div>
+    )
   }
 
   return (
