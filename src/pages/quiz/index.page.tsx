@@ -18,7 +18,7 @@ import {Meta} from 'components/meta'
 
 const VARIATIONS_LENGTH = 4
 
-const QuizPage: React.FC<PageProps> = ({asanas, isMobile}) => {
+const QuizPage: React.FC<PageProps> = ({asanas}) => {
   const [rightAnswer, setRightAnswer] = useState<Asana | null>(null)
   const [selectedAnswer, setSelectedAnswer] = useState<Asana | null>(null)
   const [showedAnswer, setShowedAnswer] = useState<Asana | null>(null)
@@ -93,7 +93,6 @@ const QuizPage: React.FC<PageProps> = ({asanas, isMobile}) => {
       />
       <div className={styles.pageWrapper}>
         <AsanaCard
-          isMobile={isMobile}
           data={rightAnswer}
           hideText
           isButton={false}
@@ -131,6 +130,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     )
   )
 
+  const theme = context.req.cookies.seq_theme || 'light'
+
   const asanas = await getAsanasList()
 
   asanas.sort((a, b) => (a.name > b.name ? 1 : -1))
@@ -138,6 +139,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       isMobile,
+      theme,
       asanas: asanas.filter(
         ({alias}) => alias !== 'empty' && alias !== 'separator'
       )

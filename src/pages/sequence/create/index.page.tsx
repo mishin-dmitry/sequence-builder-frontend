@@ -687,6 +687,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     )
   )
 
+  const theme = context.req.cookies.seq_theme || 'light'
+
   const asanas = await getAsanasList()
   const asanaGroups = await getAsanaGroupsList()
 
@@ -699,7 +701,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return acc
   }, {})
 
-  return {props: {isMobile, asanas, asanaGroups, asanaMap}}
+  return {props: {isMobile, theme, asanas, asanaGroups, asanaMap}}
 }
 
 export default CreateSequencePage

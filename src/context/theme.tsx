@@ -6,7 +6,7 @@ import React, {
   useEffect
 } from 'react'
 
-import {ConfigProvider, theme} from 'antd'
+import {ConfigProvider, theme as antdTheme} from 'antd'
 import {getItem, setItem} from 'lib/local-storage'
 import {LOCAL_STORAGE_THEME_PREFERENCE} from 'lib/constants'
 
@@ -22,61 +22,64 @@ const initialContext: UseTheme = {
 
 const ThemeContext = React.createContext<UseTheme>(initialContext)
 
-export const ProvideTheme: React.FC<PropsWithChildren> = ({children}) => {
-  const [isDarkTheme, setIsDarkTheme] = useState(false)
+export const ProvideTheme: React.FC<
+  PropsWithChildren & {initialTheme: 'dark' | 'light'}
+> = ({children, initialTheme}) => {
+  const [theme, setTheme] = useState(initialTheme)
 
-  const {defaultAlgorithm, darkAlgorithm} = theme
+  const {defaultAlgorithm, darkAlgorithm} = antdTheme
 
   useEffect(() => {
-    const themeFromLS = getItem(LOCAL_STORAGE_THEME_PREFERENCE)
+    const themeFromLS = getItem<'dark' | 'light'>(
+      LOCAL_STORAGE_THEME_PREFERENCE
+    )
 
     if (themeFromLS) {
-      if (themeFromLS === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark')
-      }
-
-      setIsDarkTheme(themeFromLS === 'dark')
+      setTheme(themeFromLS)
     } else {
       const isDarkTheme = window.matchMedia(
         '(prefers-color-scheme: dark)'
       ).matches
 
-      if (isDarkTheme) {
-        document.documentElement.setAttribute('data-theme', 'dark')
-      }
-
-      setIsDarkTheme(isDarkTheme)
+      setTheme(isDarkTheme ? 'dark' : 'light')
     }
   }, [])
 
   const toggleTheme = useCallback(() => {
-    setIsDarkTheme((prevState) => {
-      const isDark = !prevState
+    setTheme((prevState) => {
+      const isDark = prevState === 'light'
 
       if (isDark) {
         document.documentElement.setAttribute('data-theme', 'dark')
+        document.cookie = 'seq_theme=dark'
       } else {
         document.documentElement.removeAttribute('data-theme')
+        document.cookie = 'seq_theme=light'
       }
 
       setItem(LOCAL_STORAGE_THEME_PREFERENCE, isDark ? 'dark' : 'light')
 
-      return isDark
+      return isDark ? 'dark' : 'light'
     })
   }, [])
 
   const value = useMemo(
     () => ({
-      isDarkTheme,
+      isDarkTheme: theme === 'dark',
       toggleTheme
     }),
-    [isDarkTheme, toggleTheme]
+    [theme, toggleTheme]
   )
 
   return (
     <ThemeContext.Provider value={value}>
       <ConfigProvider
-        theme={{algorithm: isDarkTheme ? darkAlgorithm : defaultAlgorithm}}>
+        theme={{
+          token: {
+            motion: false
+          },
+          algorithm: theme === 'dark' ? darkAlgorithm : defaultAlgorithm
+        }}>
         {children}
       </ConfigProvider>
     </ThemeContext.Provider>
