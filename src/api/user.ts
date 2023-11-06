@@ -4,9 +4,5 @@
 import type {User} from 'types'
 import {HttpMethod, request} from './request'
 
-export const getUser = request.bind<
-  null,
-  string,
-  [],
-  Promise<User & {isFound: boolean}>
->(null, HttpMethod.GET, 'api/user/getUser')
+export const getUser = (headers): Promise<User> =>
+  request(HttpMethod.GET, 'api/user/getUser', undefined, headers)

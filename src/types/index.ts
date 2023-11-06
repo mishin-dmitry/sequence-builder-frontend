@@ -31,6 +31,7 @@ export interface SequenceRequest extends BaseSequence {
 
 export interface Sequence extends BaseSequence {
   userId: number
+  isFound?: boolean
   blocks: {
     id: number
     asanas: {

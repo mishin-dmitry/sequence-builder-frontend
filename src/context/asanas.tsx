@@ -1,12 +1,6 @@
-import React, {
-  useMemo,
-  type PropsWithChildren,
-  useContext,
-  useState,
-  useEffect
-} from 'react'
+'use client'
 
-import {getAsanaGroupsList, getAsanasList} from 'api'
+import React, {useMemo, type PropsWithChildren, useContext} from 'react'
 
 import type {Asana, AsanaGroup} from 'types'
 
@@ -14,59 +8,31 @@ interface AsanasContext {
   asanas: Asana[]
   asanaGroups: AsanaGroup[]
   asanasMap: Record<string, Asana>
-  isFetching: boolean
 }
 
 const initialData: AsanasContext = {
   asanas: [],
   asanaGroups: [],
-  asanasMap: {},
-  isFetching: true
+  asanasMap: {}
 }
 
 const AsanasContext = React.createContext(initialData)
 
-export const ProvideAsanas: React.FC<PropsWithChildren> = ({children}) => {
-  const [asanas, setAsanas] = useState<Asana[]>([])
-  const [asanaGroups, setAsanaGroups] = useState<AsanaGroup[]>([])
-  const [asanasMap, setAsanasMap] = useState({})
-  const [isFetching, setIsFetching] = useState(true)
+interface ProvideAsanasProps extends PropsWithChildren {
+  asanas: Asana[]
+  asanaGroups: AsanaGroup[]
+  asanasMap: Record<string, Asana>
+}
 
-  useEffect(() => {
-    const loadData = async (): Promise<void> => {
-      setIsFetching(true)
-
-      try {
-        const asanas = await getAsanasList()
-        const asanaGroups = await getAsanaGroupsList()
-
-        asanas.sort((a, b) => (a.name > b.name ? 1 : -1))
-        asanaGroups.sort((a, b) => (a.name > b.name ? 1 : -1))
-
-        const asanasMap = asanas.reduce(
-          (acc: Record<string, Asana>, curValue) => {
-            acc[curValue.id] = curValue
-
-            return acc
-          },
-          {}
-        )
-
-        setAsanas(asanas)
-        setAsanaGroups(asanaGroups)
-        setAsanasMap(asanasMap)
-      } catch {
-      } finally {
-        setIsFetching(false)
-      }
-    }
-
-    loadData()
-  }, [])
-
+export const ProvideAsanas: React.FC<ProvideAsanasProps> = ({
+  children,
+  asanas,
+  asanaGroups,
+  asanasMap
+}) => {
   const value = useMemo<AsanasContext>(
-    () => ({asanas, asanaGroups, asanasMap, isFetching}),
-    [asanaGroups, asanas, asanasMap, isFetching]
+    () => ({asanas, asanaGroups, asanasMap}),
+    [asanaGroups, asanas, asanasMap]
   )
 
   return (

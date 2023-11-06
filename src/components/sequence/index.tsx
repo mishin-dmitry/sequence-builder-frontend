@@ -21,14 +21,13 @@ import {SortableItem} from 'components/sortable-item'
 import {PlusCircleOutlined} from '@ant-design/icons'
 import {KeyboardSensor, MouseSensor, PointerSensor} from 'lib/sensors'
 import {ConfirmButton} from 'components/confirm-button'
-import {useTheme} from 'context/theme'
+import {useSettings} from 'context/settings'
 
 import clsx from 'clsx'
 import styles from './styles.module.css'
 
 interface SequenceProps {
   data: (Asana & {count?: number})[]
-  isMobile?: boolean
   id: string
   isEditing: boolean
   onDeleteAsana: (id: number, blockId: string) => void
@@ -47,7 +46,6 @@ interface SequenceProps {
 
 export const Sequence: React.FC<SequenceProps> = ({
   data = [],
-  isMobile,
   id,
   onDragEnd,
   onDragStart,
@@ -58,7 +56,7 @@ export const Sequence: React.FC<SequenceProps> = ({
   isEditing,
   copyAsana
 }) => {
-  const {isDarkTheme} = useTheme()
+  const {isDarkTheme, isMobile} = useSettings()
 
   const onDeleteBlock = useCallback(
     () => onDeleteBlockProp(id),
@@ -132,7 +130,6 @@ export const Sequence: React.FC<SequenceProps> = ({
                 index={index}
                 count={count}
                 onDelete={onDeleteAsana}
-                isMobile={isMobile}
                 isAsanaInRepeatingBlock={isAsanaInRepeatingBlock}
                 isAsanaInDynamicBlock={isAsanaInDynamicBlock}
                 addAsanasToBlock={addAsanaToBlock}

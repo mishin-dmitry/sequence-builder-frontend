@@ -8,7 +8,10 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 })
 
 module.exports = withBundleAnalyzer({
-  pageExtensions: ['page.tsx', 'page.ts'],
+  // pageExtensions: ['page.tsx', 'page.ts'],
+  experimental: {
+    appDir: true
+  },
   env: {
     API_ORIGIN: process.env.API_ORIGIN,
     CDN_ORIGIN: process.env.CDN_ORIGIN

@@ -15,6 +15,7 @@ import {pdf} from '@react-pdf/renderer'
 import {SequenceTimeForm, TimeSettingsFormInputs} from './sequence-time-form'
 import {getItem, setItem} from 'lib/local-storage'
 import {ConfirmButton} from 'components/confirm-button'
+import {useSettings} from 'context/settings'
 
 import {type CheckboxChangeEvent} from 'antd/es/checkbox'
 import type {DragStartEvent, DragEndEvent} from '@dnd-kit/core'
@@ -27,7 +28,6 @@ import styles from './styles.module.css'
 import PdfViewer from 'components/pdf-viewer'
 
 interface SequenceEditorProps {
-  isMobile: boolean
   data: Record<string, Asana[]>
   editingBlock: string
   title: string
@@ -53,7 +53,6 @@ const DEFAULT_TIME_SETTINGS = {
 }
 
 export const SequenceEditor: React.FC<SequenceEditorProps> = ({
-  isMobile,
   onSave,
   data,
   onChange,
@@ -74,6 +73,8 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   const [isAsanasModalVisible, setIsAsanasModalVisible] = useState(false)
   const [isTimeSettingsVisible, setIsTimeSettingsVisible] = useState(false)
   const [isInputEmpty, setIsInputEmpty] = useState(false)
+
+  const {isMobile} = useSettings()
 
   const [sequenceDuration, setSequenceDuration] = useState<{
     hours?: number
@@ -327,7 +328,6 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
         <Sequence
           id={key}
           data={data[key]}
-          isMobile={isMobile}
           onDeleteAsana={deleteAsanaById}
           onDeleteBlock={deleteAsanasBlock}
           onDragEnd={onDragEnd}

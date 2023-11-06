@@ -1,0 +1,33 @@
+.main {
+  flex: 1 1 auto;
+  position: relative;
+  display: flex;
+  overflow: hidden;
+}
+
+.footer {
+  text-align: center;
+  padding: 20px;
+}
+
+.layout {
+  max-height: 100vh;
+  min-height: 100% !important;
+}
+
+.header {
+  padding: 0 15px !important;
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+}
+
+body[data-mobile='true'] {
+  & .layout {
+    max-height: auto;
+  }
+
+  & .main {
+    overflow: auto;
+  }
+}

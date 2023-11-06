@@ -2,12 +2,13 @@ import React from 'react'
 
 import SunIcon from './sun.svg'
 import MoonIcon from './moon.svg'
-import {useTheme} from 'context/theme'
+
+import {useSettings} from 'context/settings'
 
 import styles from './styles.module.css'
 
 export const ThemeSwitcher: React.FC = () => {
-  const {toggleTheme} = useTheme()
+  const {toggleTheme} = useSettings()
 
   return (
     <div className={styles.switcher} onClick={toggleTheme}>

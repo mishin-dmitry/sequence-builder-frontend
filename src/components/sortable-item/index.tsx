@@ -2,12 +2,15 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {useSortable} from '@dnd-kit/sortable'
 import {Button, Tooltip} from 'antd'
+
 import {
   ArrowLeftOutlined,
   CopyOutlined,
   DeleteOutlined,
   RetweetOutlined
 } from '@ant-design/icons'
+
+import {useSettings} from 'context/settings'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
@@ -18,7 +21,6 @@ interface SortableItemProps {
   index: number
   count?: number
   className?: string
-  isMobile?: boolean
   isAsanaInRepeatingBlock?: boolean
   isAsanaInDynamicBlock?: boolean
   onDelete: (id: number) => void
@@ -36,7 +38,6 @@ export const SortableItem: React.FC<SortableItemProps> = ({
   className,
   index,
   count,
-  isMobile,
   onDelete,
   isAsanaInRepeatingBlock,
   isAsanaInDynamicBlock,
@@ -44,6 +45,8 @@ export const SortableItem: React.FC<SortableItemProps> = ({
   copyAsana
 }) => {
   const [isButtonsVisible, setIsButtonsVisible] = useState(false)
+
+  const {isMobile} = useSettings()
 
   const toggleButtonVisible = useCallback(
     () => setIsButtonsVisible((prevState) => !prevState),

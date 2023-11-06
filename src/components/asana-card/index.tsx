@@ -3,9 +3,8 @@ import React, {useCallback, useMemo} from 'react'
 import type {Asana} from 'types'
 
 import {Typography} from 'antd'
-import {isMobile as _isMobile} from 'lib/is-mobile'
 import {iconsMap} from 'icons'
-import {useTheme} from 'context/theme'
+import {useSettings} from 'context/settings'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
@@ -27,7 +26,7 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
   isButton = true,
   className
 }) => {
-  const {isDarkTheme} = useTheme()
+  const {isDarkTheme} = useSettings()
   const {name, alias = '', description} = data
 
   const onAsanaClick = useCallback(() => {

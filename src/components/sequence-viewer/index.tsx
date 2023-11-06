@@ -6,7 +6,7 @@ import {PDFDocument} from 'components/pdf-viewer/document'
 import {saveAs} from 'file-saver'
 import {pdf} from '@react-pdf/renderer'
 import {iconsMap} from 'icons'
-import {useTheme} from 'context/theme'
+import {useSettings} from 'context/settings'
 
 import type {Asana} from 'types'
 
@@ -15,19 +15,17 @@ import PdfViewer from 'components/pdf-viewer'
 import clsx from 'clsx'
 
 interface SequenceViewerProps {
-  isMobile: boolean
   data: Record<string, Asana[]>
   title: string
 }
 
 export const SequenceViewer: React.FC<SequenceViewerProps> = ({
-  isMobile,
   data,
   title
 }) => {
   const [isPdfModalVisible, setIsPdfModalVisible] = useState(false)
 
-  const {isDarkTheme} = useTheme()
+  const {isDarkTheme, isMobile} = useSettings()
   // Скрыть превью pdf файла
   const hidePreview = useCallback(() => setIsPdfModalVisible(false), [])
 
