@@ -3,7 +3,6 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {getRandomItem} from 'lib/get-random-item'
-import {PageProps} from 'types/page-props'
 import {Spinner} from 'components/spinner'
 import {AsanaCard} from 'components/asana-card'
 import {Button} from 'antd'
@@ -18,7 +17,7 @@ import clsx from 'clsx'
 
 const VARIATIONS_LENGTH = 4
 
-const QuizPage: React.FC<PageProps> = () => {
+const QuizPage: React.FC = () => {
   const [rightAnswer, setRightAnswer] = useState<Asana | null>(null)
   const [selectedAnswer, setSelectedAnswer] = useState<Asana | null>(null)
   const [showedAnswer, setShowedAnswer] = useState<Asana | null>(null)

@@ -3,7 +3,6 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import type {Asana, AsanaGroup, SequenceRequest} from 'types'
-import type {PageProps} from 'types/page-props'
 
 import {Resizable} from 're-resizable'
 import {SearchFilter} from 'components/serch-filter'
@@ -29,7 +28,7 @@ import {useSettings} from 'context/settings'
 import styles from './styles.module.css'
 import debounce from 'lodash.debounce'
 
-const CreateSequencePage: React.FC<PageProps> = () => {
+const CreateSequencePage: React.FC = () => {
   const {asanas: allAsanas, asanaGroups, asanasMap} = useAsanas()
   const {isMobile} = useSettings()
 
