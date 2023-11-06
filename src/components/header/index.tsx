@@ -7,15 +7,15 @@ import {MobileMenu} from './mobile-menu'
 import {DesktopMenu} from './desktop-menu'
 import {ThemeSwitcher} from 'components/theme-switcher'
 import {LoginLink} from 'components/login-link'
+import {useUser} from 'context/user'
+import {useSettings} from 'context/settings'
 
 import styles from './styles.module.css'
 
-interface HeaderProps {
-  isAuthorized: boolean
-  isMobile: boolean
-}
+export const Header: React.FC = () => {
+  const {isAuthorized} = useUser()
+  const {isMobile} = useSettings()
 
-export const Header: React.FC<HeaderProps> = ({isAuthorized, isMobile}) => {
   return (
     <Layout.Header className={styles.header}>
       {isMobile ? (

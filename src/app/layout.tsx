@@ -59,9 +59,9 @@ const RootLayout: React.FC<PropsWithChildren> = async ({children}) => {
           asanasMap={asanasMap}>
           <ProvideSettings theme={theme} isMobile={isMobile}>
             <StyledComponentsRegistry>
-              <body>
+              <body {...(isMobile ? {'data-mobile': true} : {})}>
                 <Layout className={styles.layout}>
-                  <Header isAuthorized={isFound} isMobile={isMobile} />
+                  <Header />
                   <main className={styles.main}>{children}</main>
                 </Layout>
               </body>
