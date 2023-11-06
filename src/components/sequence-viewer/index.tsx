@@ -6,6 +6,7 @@ import {PDFDocument} from 'components/pdf-viewer/document'
 import {saveAs} from 'file-saver'
 import {pdf} from '@react-pdf/renderer'
 import {iconsMap} from 'icons'
+import {useTheme} from 'context/theme'
 
 import type {Asana} from 'types'
 
@@ -26,6 +27,7 @@ export const SequenceViewer: React.FC<SequenceViewerProps> = ({
 }) => {
   const [isPdfModalVisible, setIsPdfModalVisible] = useState(false)
 
+  const {isDarkTheme} = useTheme()
   // Скрыть превью pdf файла
   const hidePreview = useCallback(() => setIsPdfModalVisible(false), [])
 
@@ -39,31 +41,49 @@ export const SequenceViewer: React.FC<SequenceViewerProps> = ({
   const sequenceBlocks = useMemo(() => {
     return Object.keys(data).map((key, index) => (
       <div key={index} className={styles.blockWrapper}>
-        <div className={clsx(styles.sequenceRow, isMobile && styles.mobile)}>
+        <div className={styles.sequenceRow}>
           <div className={styles.sequence}>
-            {data[key].map(({id, alias, isAsanaInRepeatingBlock}, index) => (
-              <div
-                className={clsx(
-                  styles.imageWrapper,
-                  isAsanaInRepeatingBlock && styles.repeating
-                )}
-                key={index}>
-                <img
-                  width={70}
-                  height={70}
-                  key={id}
-                  src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                    iconsMap[alias]
-                  )}`}
-                  alt="Изображение асаны"
-                />
-              </div>
-            ))}
+            {data[key].map(
+              (
+                {id, alias, isAsanaInRepeatingBlock, isAsanaInDynamicBlock},
+                index
+              ) => (
+                <div
+                  className={clsx(
+                    styles.imageWrapper,
+                    isAsanaInRepeatingBlock &&
+                      !isAsanaInDynamicBlock &&
+                      styles.repeating,
+                    !isAsanaInRepeatingBlock &&
+                      isAsanaInDynamicBlock &&
+                      styles.dynamic,
+                    isAsanaInRepeatingBlock &&
+                      isAsanaInDynamicBlock &&
+                      styles.bothBlocks
+                  )}
+                  key={index}>
+                  <img
+                    width={70}
+                    height={70}
+                    key={id}
+                    src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                      iconsMap[alias].replaceAll(
+                        '$COLOR',
+                        isDarkTheme
+                          ? 'rgba(255, 255, 255, 0.85)'
+                          : 'rgba(0, 0, 0, 0.88)'
+                      )
+                    )}`}
+                    alt="Изображение асаны"
+                  />
+                </div>
+              )
+            )}
           </div>
         </div>
       </div>
     ))
-  }, [data, isMobile])
+  }, [data, isDarkTheme])
 
   const pdfAsanaData = useMemo(() => {
     return {
@@ -87,6 +107,14 @@ export const SequenceViewer: React.FC<SequenceViewerProps> = ({
   return (
     <div className={styles.previewWrapper}>
       <div className={styles.scrollContainer}>
+        <div className={styles.repeat}>
+          <span />
+          Повторить асану на другую сторону
+        </div>
+        <div className={styles.dynamic}>
+          <span />
+          Сделать асану в динамике
+        </div>
         <div className={styles.sequenceBlocks}>{sequenceBlocks}</div>
       </div>
 
@@ -109,7 +137,7 @@ export const SequenceViewer: React.FC<SequenceViewerProps> = ({
         destroyOnClose
         width={1000}
         {...(isMobile ? {footer: null} : {})}>
-        <PdfViewer sequence={pdfAsanaData} isMobile={isMobile} />
+        <PdfViewer sequence={pdfAsanaData} />
       </Modal>
     </div>
   )

@@ -12,6 +12,7 @@ import {useUser} from 'context/user'
 import {Spinner} from 'components/spinner'
 import {useRouter} from 'next/router'
 import {Urls} from 'lib/urls'
+import {type GetServerSideProps} from 'next'
 
 const RegistrationPage: React.FC = () => {
   const {registerUser} = useRegister()
@@ -46,6 +47,20 @@ const RegistrationPage: React.FC = () => {
       {!isAuthorized && !isFetching && <RegistrationForm onSubmit={onSubmit} />}
     </>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const UA = context.req.headers['user-agent']
+
+  const isMobile = Boolean(
+    UA?.match(
+      /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
+    )
+  )
+
+  const theme = context.req.cookies.seq_theme || 'light'
+
+  return {props: {isMobile, theme}}
 }
 
 export default RegistrationPage

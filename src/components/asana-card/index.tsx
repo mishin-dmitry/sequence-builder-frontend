@@ -5,6 +5,7 @@ import type {Asana} from 'types'
 import {Typography} from 'antd'
 import {isMobile as _isMobile} from 'lib/is-mobile'
 import {iconsMap} from 'icons'
+import {useTheme} from 'context/theme'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
@@ -14,7 +15,6 @@ interface AsanaCardProps {
   size?: 'default' | 'small'
   isButton?: boolean
   hideText?: boolean
-  isMobile: boolean
   className?: string
   onAsanaClick?: (asana: Asana) => void
 }
@@ -23,11 +23,11 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
   data,
   onAsanaClick: onAsanaClickProp,
   size = 'default',
-  isMobile,
   hideText,
   isButton = true,
   className
 }) => {
+  const {isDarkTheme} = useTheme()
   const {name, alias = '', description} = data
 
   const onAsanaClick = useCallback(() => {
@@ -39,50 +39,30 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
       iconsMap[alias] && (
         <div className={styles.imageContainer}>
           <img
+            alt="Изображение асаны"
             loading="lazy"
             src={`data:image/svg+xml;utf8,${encodeURIComponent(
-              iconsMap[alias]
+              iconsMap[alias].replaceAll(
+                '$COLOR',
+                isDarkTheme
+                  ? 'rgba(255, 255, 255, 0.85)'
+                  : 'rgba(0, 0, 0, 0.88)'
+              )
             )}`}
           />
         </div>
       ),
-    [alias]
+    [alias, isDarkTheme]
   )
 
   const TagName = isButton ? 'button' : 'div'
-
-  // if (isLink && href) {
-  //   return (
-  //     <Link
-  //       href={href}
-  //       className={clsx(styles.card, styles.link, isMobile && styles.mobile)}>
-  //       {iconsMap[alias] && (
-  //         <div className={styles.imageContainer}>
-  //           <img
-  //             src={`data:image/svg+xml;utf8,${encodeURIComponent(
-  //               iconsMap[alias]
-  //             )}`}
-  //           />
-  //         </div>
-  //       )}
-  //       {!hideText && (
-  //         <div className={styles.textContainer}>
-  //           <Typography.Title level={2}>{name}</Typography.Title>
-  //           {!!description && size === 'default' && (
-  //             <Typography>{description}</Typography>
-  //           )}
-  //         </div>
-  //       )}
-  //     </Link>
-  //   )
-  // }
 
   return (
     <TagName
       className={clsx(
         styles.card,
         styles[size],
-        isMobile && styles.mobile,
+        (alias === 'empty' || alias === 'separator') && styles.empty,
         className
       )}
       onClick={onAsanaClick}>

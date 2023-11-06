@@ -14,7 +14,6 @@ export interface AsanaCardsListProps {
   size?: 'default' | 'small'
   className?: string
   withLinks?: boolean
-  isMobile: boolean
   isLoading?: boolean
   onAsanaClick?: (asana: Asana) => void
 }
@@ -23,16 +22,19 @@ export const AsanasList: React.FC<AsanaCardsListProps> = ({
   asanas = [],
   size,
   className,
-  isMobile,
-  onAsanaClick,
-  isLoading
+  isLoading,
+  onAsanaClick
 }) => {
   if (isLoading) {
     return <Spinner />
   }
 
   if (!asanas.length) {
-    return <Typography.Paragraph>Список пуст</Typography.Paragraph>
+    return (
+      <div className={clsx(styles.list, className)}>
+        <Typography.Paragraph>Список пуст</Typography.Paragraph>
+      </div>
+    )
   }
 
   return (
@@ -42,9 +44,8 @@ export const AsanasList: React.FC<AsanaCardsListProps> = ({
           data={asana}
           key={asana.id}
           size={size}
-          isMobile={isMobile}
           onAsanaClick={onAsanaClick}
-          className={isMobile ? styles.asana : undefined}
+          className={styles.asana}
         />
       ))}
     </ul>

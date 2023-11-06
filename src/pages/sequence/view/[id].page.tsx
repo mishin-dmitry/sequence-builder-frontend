@@ -7,16 +7,14 @@ import type {PageProps} from 'types/page-props'
 
 import {getSequence} from 'api'
 import {Meta} from 'components/meta'
-import {useSequence} from '../hooks'
 import {useRouter} from 'next/router'
 import {useUser} from 'context/user'
 import {Urls} from 'lib/urls'
 import {useAsanas} from 'context/asanas'
 import {SequenceViewer} from 'components/sequence-viewer'
-
-import clsx from 'clsx'
-import styles from './styles.module.css'
 import {Spinner} from 'components/spinner'
+
+import styles from './styles.module.css'
 
 const CreateSequencePage: React.FC<PageProps & {sequence: SequenceType}> = ({
   isMobile,
@@ -28,9 +26,10 @@ const CreateSequencePage: React.FC<PageProps & {sequence: SequenceType}> = ({
     () =>
       blocks.reduce((acc: Record<string, Asana[]>, curValue, index) => {
         acc[index] = curValue.asanas.map(
-          ({id, options: {inRepeatingBlock}}) => ({
+          ({id, options: {inRepeatingBlock, inDynamicBlock}}) => ({
             ...asanasMap[id],
-            isAsanaInRepeatingBlock: inRepeatingBlock
+            isAsanaInRepeatingBlock: inRepeatingBlock,
+            isAsanaInDynamicBlock: inDynamicBlock
           })
         )
 
@@ -62,7 +61,7 @@ const CreateSequencePage: React.FC<PageProps & {sequence: SequenceType}> = ({
         description="Создайте свой идеальный путь в йоге с нашим приложением для построения последовательностей. Планируйте, комбинируйте и улучшайте свою практику йоги с Sequoia – вашим верным спутником на пути к гармонии и благополучию."
         keywords="Йога, построение последовательностей, асаны"
       />
-      <div className={clsx(styles.root, isMobile && styles.mobile)}>
+      <div className={styles.root}>
         {isFetching || (!isFetching && !isAuthorized) || isAsanasFetching ? (
           <Spinner />
         ) : (

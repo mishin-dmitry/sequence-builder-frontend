@@ -1,3 +1,5 @@
+@import url('./variables.css');
+
 * {
   box-sizing: border-box;
 }
@@ -15,6 +17,7 @@ body {
   min-width: 320px;
   min-height: 100%;
   text-rendering: optimizeLegibility;
+  color: var(--text-color);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-moothing: grayscale;
   -webkit-tap-highlight-color: transparent;
@@ -41,12 +44,7 @@ iframe {
 }
 
 img {
-  user-select: none;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
+  pointer-events: none;
 }
 
 .ant-drawer-header-title {
@@ -60,4 +58,8 @@ img {
 
 input {
   font-size: 16px !important;
+}
+
+.ant-modal-content {
+  padding: 10px !important;
 }

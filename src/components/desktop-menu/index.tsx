@@ -1,7 +1,6 @@
 import React, {useMemo} from 'react'
 
-import {Menu, Row} from 'antd'
-import {Urls} from 'lib/urls'
+import {Menu} from 'antd'
 import {useRouter} from 'next/router'
 import {NAV_MENU_LINKS} from 'lib/nav-menu-links'
 
@@ -33,24 +32,13 @@ const DesktopMenu: React.FC<DesktopMenuProps> = ({isAuthorized}) => {
 
   return (
     <div className={styles.menuWrapper}>
-      <Row justify="space-between" className={styles.row}>
-        <Menu
-          theme="dark"
-          mode="horizontal"
-          items={links}
-          selectedKeys={[router.pathname]}
-          className={styles.menu}
-        />
-        {isAuthorized ? (
-          <Link href={Urls.LOGOUT} as={Urls.LOGOUT} className={styles.link}>
-            Выйти
-          </Link>
-        ) : (
-          <Link href={Urls.LOGIN} as={Urls.LOGIN} className={styles.link}>
-            Войти
-          </Link>
-        )}
-      </Row>
+      <Menu
+        theme="dark"
+        mode="horizontal"
+        items={links}
+        selectedKeys={[router.pathname]}
+        style={{flex: 'auto', minWidth: 0}}
+      />
     </div>
   )
 }

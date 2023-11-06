@@ -1,16 +1,39 @@
 .list {
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  margin: -10px 0 0 -10px;
+  padding: 0 10px 10px;
+  margin: -10px 0 0;
+  column-gap: 10px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  columns: 160px;
   overflow: hidden;
   overflow-y: scroll;
 
-  .mobile & {
-    margin: 0;
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 
 .asana {
-  width: calc((100% - 30px) / 3) !important;
+  &:not(:first-child) {
+    margin-top: 10px;
+  }
+}
+
+body[data-mobile='true'] {
+  & .list {
+    columns: 3;
+    margin: 0;
+    padding: 0;
+    column-gap: 5px;
+    overflow: auto;
+    overflow-y: auto;
+
+    & .asana {
+      width: 100%;
+
+      &:not(:first-child) {
+        margin-top: 5px;
+      }
+    }
+  }
 }

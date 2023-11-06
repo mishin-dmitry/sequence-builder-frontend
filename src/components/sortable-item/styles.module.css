@@ -31,7 +31,7 @@
   flex-grow: 1;
   align-items: center;
   padding: 10px;
-  background-color: #fff;
+  background-color: var(--card-bg);
   outline: none;
   box-sizing: border-box;
   list-style: none;
@@ -40,7 +40,7 @@
   width: 100px;
   height: 100px;
   border-radius: 8px;
-  border: 2px solid transparent;
+  transition: box-shadow 0.2s;
   -webkit-tap-highlight-color: transparent;
 
   &:hover {
@@ -50,8 +50,17 @@
   }
 
   &.repeating {
-    border-color: #7798fc;
-    transition: border-color 0.2s;
+    box-shadow: 0 0 0 2px var(--repeat-color);
+  }
+
+  &.dynamic {
+    box-shadow: 0 0 0 2px var(--dynamic-color);
+  }
+
+  &.bothBlocks {
+    box-shadow:
+      0 0 0 2px var(--repeat-color),
+      inset 0 0 0 2px var(--dynamic-color);
   }
 
   &.dragging {
@@ -62,43 +71,69 @@
 
 .index {
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   top: 5px;
   left: 5px;
   display: flex;
   justify-content: center;
   align-self: center;
-  border: 1px solid black;
-  background-color: #fff;
+  color: var(--text-color);
+  border: 1px solid var(--text-color);
+  background-color: var(--card-bg);
+  font-size: 11px;
 }
 
 .deleteButton {
   right: -5px !important;
 }
 
-.rowButton {
-  right: 20px !important;
+.repeatButton {
+  right: 15px !important;
 
   &.singleButton {
     right: -5px !important;
   }
 }
 
-.rowButton,
+.copyButton {
+  right: 55px !important;
+}
+
+.dynamicButton {
+  right: 35px !important;
+
+  &.singleButton {
+    right: -5px !important;
+  }
+
+  &.multipleButton {
+    right: 15px !important;
+  }
+}
+
+.repeatButton,
+.dynamicButton,
+.copyButton,
 .deleteButton {
-  min-width: 20px !important;
-  width: 20px !important;
-  height: 20px !important;
+  min-width: 17px !important;
+  width: 17px !important;
+  height: 17px !important;
   position: absolute !important;
-  top: -5px !important;
+  top: -7px !important;
   justify-content: center;
   align-items: center;
   display: flex !important;
 
   & svg {
-    width: 13px;
-    height: 13px;
+    width: 10px;
+    height: 10px;
+  }
+}
+
+body[data-mobile='true'] {
+  & .wrapper {
+    margin: 5px 0 0 5px;
   }
 }

@@ -1,12 +1,8 @@
 .main {
   flex: 1 1 auto;
   position: relative;
-  padding: 10px;
   display: flex;
-
-  &:not(.mobile) {
-    overflow: hidden;
-  }
+  overflow: hidden;
 }
 
 .footer {
@@ -20,4 +16,24 @@
 
 .header {
   padding: 0 15px !important;
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+}
+
+.leftRow {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  margin-left: 40px;
+}
+
+body[data-mobile='true'] {
+  & .layout {
+    max-height: auto;
+  }
+
+  & .main {
+    overflow: auto;
+  }
 }

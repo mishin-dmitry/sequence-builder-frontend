@@ -18,7 +18,7 @@ import clsx from 'clsx'
 
 const VARIATIONS_LENGTH = 4
 
-const QuizPage: React.FC<PageProps> = ({isMobile}) => {
+const QuizPage: React.FC<PageProps> = () => {
   const [rightAnswer, setRightAnswer] = useState<Asana | null>(null)
   const [selectedAnswer, setSelectedAnswer] = useState<Asana | null>(null)
   const [showedAnswer, setShowedAnswer] = useState<Asana | null>(null)
@@ -35,9 +35,11 @@ const QuizPage: React.FC<PageProps> = ({isMobile}) => {
   }, [asanas])
 
   useEffect(() => {
-    prepareVariations()
+    if (asanas.length) {
+      prepareVariations()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [asanas])
 
   const variations = useMemo(
     () =>
@@ -95,7 +97,6 @@ const QuizPage: React.FC<PageProps> = ({isMobile}) => {
       />
       <div className={styles.pageWrapper}>
         <AsanaCard
-          isMobile={isMobile}
           data={rightAnswer}
           hideText
           isButton={false}
@@ -133,7 +134,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     )
   )
 
-  return {props: {isMobile}}
+  const theme = context.req.cookies.seq_theme || 'light'
+
+  return {props: {isMobile, theme}}
 }
 
 export default QuizPage

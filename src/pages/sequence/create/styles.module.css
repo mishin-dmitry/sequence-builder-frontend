@@ -1,9 +1,24 @@
 .root {
   display: flex;
   width: 100%;
+}
 
-  &.mobile {
-    flex-direction: column;
+.sequenceBlocks {
+  flex: 1;
+  margin-top: 20px;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+
+  button + button {
+    margin: 0 0 0 10px;
   }
 }
 
@@ -11,13 +26,66 @@
   margin-top: 20px;
 }
 
+.scrollContainer {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 50px);
+  overflow: hidden;
+  overflow-y: scroll;
+  flex: 1;
+}
+
 .listWrapper {
-  height: calc(100vh - 90px);
+  height: 100%;
   display: flex;
   flex-direction: column;
   flex: 1;
+}
 
-  .mobile & {
+.timeWrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+
+  & .settingsButton {
+    margin-right: 10px;
+  }
+}
+
+.addBlockButton {
+  margin-top: 10px;
+}
+
+.blockWrapper {
+  cursor: pointer;
+
+  & + .blockWrapper {
+    margin-top: 10px;
+  }
+}
+
+.resizable {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--resizable-border-color);
+}
+
+body[data-mobile='true'] {
+  & .root {
+    flex-direction: column;
+  }
+
+  & .listWrapper,
+  & .scrollContainer {
     height: auto;
+  }
+
+  & .actionButtons {
+    flex-direction: column;
+
+    button + button {
+      margin: 10px 0 0;
+    }
   }
 }

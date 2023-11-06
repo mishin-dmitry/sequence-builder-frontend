@@ -1,9 +1,8 @@
 import React, {useCallback, useMemo, useState} from 'react'
 
-import {Drawer, Menu, Row} from 'antd'
-import {LoginOutlined, LogoutOutlined, MenuOutlined} from '@ant-design/icons'
+import {Drawer, Menu} from 'antd'
+import {MenuOutlined} from '@ant-design/icons'
 import {NAV_MENU_LINKS} from 'lib/nav-menu-links'
-import {Urls} from 'lib/urls'
 import {useRouter} from 'next/router'
 
 import styles from './styles.module.css'
@@ -39,22 +38,11 @@ const MobileMenu: React.FC<MobileMenuProps> = ({isAuthorized}) => {
 
   return (
     <div className={styles.menuWrapper}>
-      <Row justify="space-between" className={styles.row}>
-        <button
-          className={clsx(styles.burgerMenu, styles.link)}
-          onClick={openMenu}>
-          <MenuOutlined />
-        </button>
-        {isAuthorized ? (
-          <Link href={Urls.LOGOUT} className={styles.link}>
-            <LogoutOutlined />
-          </Link>
-        ) : (
-          <Link href={Urls.LOGIN} className={styles.link}>
-            <LoginOutlined />
-          </Link>
-        )}
-      </Row>
+      <button
+        className={clsx(styles.burgerMenu, styles.link)}
+        onClick={openMenu}>
+        <MenuOutlined />
+      </button>
       <Drawer
         open={isOpen}
         onClose={closeMenu}

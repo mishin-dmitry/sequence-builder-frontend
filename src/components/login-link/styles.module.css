@@ -1,0 +1,26 @@
+.link {
+  color: rgba(255 255 255/ 0.65);
+  margin-left: 20px;
+
+  & svg {
+    margin-left: 5px;
+  }
+
+  &:hover {
+    color: #fff;
+  }
+}
+
+body[data-mobile='true'] {
+  & .link {
+    margin-left: 0;
+
+    & > span:first-child {
+      display: none;
+    }
+
+    & svg {
+      margin-left: 20px;
+    }
+  }
+}

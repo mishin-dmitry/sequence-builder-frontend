@@ -14,6 +14,7 @@ import {saveAs} from 'file-saver'
 import {pdf} from '@react-pdf/renderer'
 import {SequenceTimeForm, TimeSettingsFormInputs} from './sequence-time-form'
 import {getItem, setItem} from 'lib/local-storage'
+import {ConfirmButton} from 'components/confirm-button'
 
 import {type CheckboxChangeEvent} from 'antd/es/checkbox'
 import type {DragStartEvent, DragEndEvent} from '@dnd-kit/core'
@@ -24,7 +25,6 @@ import {LOCAL_STORAGE_TIME_SETTINGS} from 'lib/constants'
 import dayjs from 'dayjs'
 import styles from './styles.module.css'
 import PdfViewer from 'components/pdf-viewer'
-import {ConfirmButton} from 'components/confirm-button'
 
 interface SequenceEditorProps {
   isMobile: boolean
@@ -69,6 +69,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   onDelete,
   isViewMode
 }) => {
+  const [isSaving, setIsSaving] = useState(false)
   const [isPdfModalVisible, setIsPdfModalVisible] = useState(false)
   const [isAsanasModalVisible, setIsAsanasModalVisible] = useState(false)
   const [isTimeSettingsVisible, setIsTimeSettingsVisible] = useState(false)
@@ -156,7 +157,13 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
       return
     }
 
-    await onSave()
+    try {
+      setIsSaving(true)
+      await onSave()
+    } catch {
+    } finally {
+      setIsSaving(false)
+    }
   }, [onSave, title])
 
   const onTitleChange = useCallback(
@@ -269,18 +276,41 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   // Показать превью pdf файла
   const showAsanasModal = useCallback(() => setIsAsanasModalVisible(true), [])
 
-  const addAsanaToRepeatingBlock = useCallback(
-    (asanaIndex: number, action: 'add' | 'delete', blockId: string) => {
+  const addAsanaToBlock = useCallback(
+    (
+      asanaIndex: number,
+      block: 'repeating' | 'dynamic',
+      action: 'add' | 'delete',
+      blockId: string
+    ) => {
       const newData = {
         ...data,
         [blockId]: data[blockId].map((asana, index) =>
           index === asanaIndex
             ? {
                 ...asana,
-                isAsanaInRepeatingBlock: action === 'add' ? true : false
+                ...(block === 'repeating'
+                  ? {isAsanaInRepeatingBlock: action === 'add'}
+                  : {isAsanaInDynamicBlock: action === 'add'})
               }
             : asana
         )
+      }
+
+      onChange(newData)
+    },
+    [data, onChange]
+  )
+
+  const copyAsana = useCallback(
+    (asana: Asana, index: number, blockId: string) => {
+      const newSequence = [...data[blockId]]
+
+      newSequence.splice(index, 0, asana)
+
+      const newData = {
+        ...data,
+        [blockId]: newSequence
       }
 
       onChange(newData)
@@ -303,8 +333,9 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
           onDragEnd={onDragEnd}
           onDragStart={onDragStart}
           onAddAsanaButtonClick={showAsanasModal}
-          addAsanaToRepeatingBlock={addAsanaToRepeatingBlock}
+          addAsanaToBlock={addAsanaToBlock}
           isEditing={editingBlock === key}
+          copyAsana={copyAsana}
         />
       </div>
     ))
@@ -316,8 +347,9 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     onDragEnd,
     onDragStart,
     showAsanasModal,
-    addAsanaToRepeatingBlock,
+    addAsanaToBlock,
     editingBlock,
+    copyAsana,
     onChangeEditingBlock
   ])
 
@@ -435,6 +467,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
           {!isViewMode && (
             <Button
               block
+              size={isMobile ? 'small' : 'large'}
               className={styles.withTopMargin}
               onClick={addAsanasBlock}>
               Добавить блок асан
@@ -469,7 +502,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
               title="Удалить последовательность"
               description="Вы действительно хотите удалить последовательность?"
               onClick={onDelete}
-              size="large"
+              size={isMobile ? 'small' : 'large'}
               okText="Удалить">
               Удалить
             </ConfirmButton>
@@ -477,22 +510,23 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
             <ConfirmButton
               title="Очистить последовательность"
               description="Вы действительно хотите очистить последовательность?"
-              size="large"
+              size={isMobile ? 'small' : 'large'}
               okText="Очистить"
               onClick={clearSequence}>
               Очистить
             </ConfirmButton>
           ))}
-        <Button size="large" block={isMobile} onClick={showPreview}>
+        <Button size={isMobile ? 'small' : 'large'} onClick={showPreview}>
           Посмотреть результат
         </Button>
-        <Button size="large" block={isMobile} onClick={generatePdf}>
+        <Button size={isMobile ? 'small' : 'large'} onClick={generatePdf}>
           Скачать в PDF
         </Button>
         {isAuthorized && !isViewMode && (
           <Button
             type="primary"
-            size="large"
+            size={isMobile ? 'small' : 'large'}
+            loading={isSaving}
             disabled={!builderLength || isInputEmpty}
             block={isMobile}
             onClick={onSaveButtonClick}>
@@ -533,7 +567,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
         destroyOnClose
         width={1000}
         {...(isMobile ? {footer: null} : {})}>
-        <PdfViewer sequence={pdfAsanaData} isMobile={isMobile} />
+        <PdfViewer sequence={pdfAsanaData} />
       </Modal>
       <Modal
         title="Выберите асану"

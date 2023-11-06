@@ -3,6 +3,8 @@
 }
 
 .buttons {
+  white-space: nowrap;
+
   button + button {
     margin-left: 5px;
   }

@@ -7,6 +7,9 @@ export interface Asana {
   // Признак того, что асана находится в блоке,
   // который надо сделать на обратную сторону
   isAsanaInRepeatingBlock?: boolean
+  // Признак того, что асана находится в блоке,
+  // который надо сделать в динамике
+  isAsanaInDynamicBlock?: boolean
   groups: AsanaGroup[]
 }
 
@@ -35,6 +38,7 @@ export interface Sequence extends BaseSequence {
       alias: string
       options: {
         inRepeatingBlock: boolean
+        inDynamicBlock: boolean
       }
     }[]
   }[]

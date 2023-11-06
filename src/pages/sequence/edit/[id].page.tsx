@@ -21,11 +21,10 @@ import {useUser} from 'context/user'
 import {Urls} from 'lib/urls'
 import {useAsanas} from 'context/asanas'
 import {SequenceEditor} from 'components/sequence-editor'
+import {Spinner} from 'components/spinner'
 
-import clsx from 'clsx'
 import styles from './styles.module.css'
 import debounce from 'lodash.debounce'
-import {Spinner} from 'components/spinner'
 
 const CreateSequencePage: React.FC<
   PageProps & {editingSequence: SequenceType}
@@ -55,10 +54,13 @@ const CreateSequencePage: React.FC<
 
   const [builderData, setBuilderData] = useState<Record<string, Asana[]>>(
     blocks.reduce((acc: Record<string, Asana[]>, curValue, index) => {
-      acc[index] = curValue.asanas.map(({id, options: {inRepeatingBlock}}) => ({
-        ...asanasMap[id],
-        isAsanaInRepeatingBlock: inRepeatingBlock
-      }))
+      acc[index] = curValue.asanas.map(
+        ({id, options: {inRepeatingBlock, inDynamicBlock}}) => ({
+          ...asanasMap[id],
+          isAsanaInRepeatingBlock: inRepeatingBlock,
+          isAsanaInDynamicBlock: inDynamicBlock
+        })
+      )
 
       return acc
     }, {})
@@ -68,9 +70,10 @@ const CreateSequencePage: React.FC<
     setBuilderData(
       blocks.reduce((acc: Record<string, Asana[]>, curValue, index) => {
         acc[index] = curValue.asanas.map(
-          ({id, options: {inRepeatingBlock}}) => ({
+          ({id, options: {inRepeatingBlock, inDynamicBlock}}) => ({
             ...asanasMap[id],
-            isAsanaInRepeatingBlock: inRepeatingBlock
+            isAsanaInRepeatingBlock: inRepeatingBlock,
+            isAsanaInDynamicBlock: inDynamicBlock
           })
         )
 
@@ -91,10 +94,17 @@ const CreateSequencePage: React.FC<
       description,
       isPublic,
       blocks: Object.values(builderData).map((block) =>
-        block.map(({id, isAsanaInRepeatingBlock = false}) => ({
-          asanaId: id,
-          inRepeatingBlock: isAsanaInRepeatingBlock
-        }))
+        block.map(
+          ({
+            id,
+            isAsanaInRepeatingBlock = false,
+            isAsanaInDynamicBlock = false
+          }) => ({
+            asanaId: id,
+            inRepeatingBlock: isAsanaInRepeatingBlock,
+            inDynamicBlock: isAsanaInDynamicBlock
+          })
+        )
       )
     }
 
@@ -228,15 +238,10 @@ const CreateSequencePage: React.FC<
       {shouldShowSpinner ? (
         <Spinner />
       ) : (
-        <div className={clsx(styles.root, isMobile && styles.mobile)}>
+        <div className={styles.root}>
           {!isMobile && (
             <Resizable
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRight: '1px solid #ddd'
-              }}
+              className={styles.resizable}
               defaultSize={{
                 width: '352px',
                 height: '100%'
@@ -251,7 +256,6 @@ const CreateSequencePage: React.FC<
                   searchItems={asanas}
                 />
                 <AsanasList
-                  isMobile={isMobile}
                   asanas={asanas}
                   onAsanaClick={onAsanaClick}
                   size="small"
@@ -282,7 +286,6 @@ const CreateSequencePage: React.FC<
                   searchItems={asanas}
                 />
                 <AsanasList
-                  isMobile={isMobile}
                   asanas={asanas}
                   onAsanaClick={onAsanaClick}
                   size="small"

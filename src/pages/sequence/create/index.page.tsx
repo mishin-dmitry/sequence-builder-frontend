@@ -28,7 +28,6 @@ import {useRouter} from 'next/router'
 
 import styles from './styles.module.css'
 import debounce from 'lodash.debounce'
-import clsx from 'clsx'
 
 const CreateSequencePage: React.FC<PageProps> = ({isMobile}) => {
   const {
@@ -41,9 +40,10 @@ const CreateSequencePage: React.FC<PageProps> = ({isMobile}) => {
   const [asanas, setAsanas] = useState(allAsanas)
   const [editingBlock, setEditingBlock] = useState('0')
   const [builderData, setBuilderData] = useState<Record<string, Asana[]>>({})
+
   const [title, setTitle] = useState<string>('')
   const [description, setDescription] = useState<string>('')
-  const [isPublic, setIsPublic] = useState(false)
+  const [isPublic, setIsPublic] = useState(true)
 
   const {createSequence} = useSequence()
   const {isAuthorized, isFetching: isUserFetching} = useUser()
@@ -65,10 +65,17 @@ const CreateSequencePage: React.FC<PageProps> = ({isMobile}) => {
       description,
       isPublic,
       blocks: Object.values(builderData).map((block) =>
-        block.map(({id, isAsanaInRepeatingBlock = false}) => ({
-          asanaId: id,
-          inRepeatingBlock: isAsanaInRepeatingBlock
-        }))
+        block.map(
+          ({
+            id,
+            isAsanaInRepeatingBlock = false,
+            isAsanaInDynamicBlock = false
+          }) => ({
+            asanaId: id,
+            inRepeatingBlock: isAsanaInRepeatingBlock,
+            inDynamicBlock: isAsanaInDynamicBlock
+          })
+        )
       )
     }
 
@@ -265,19 +272,14 @@ const CreateSequencePage: React.FC<PageProps> = ({isMobile}) => {
         description="Создайте свой идеальный путь в йоге с нашим приложением для построения последовательностей. Планируйте, комбинируйте и улучшайте свою практику йоги с Sequoia – вашим верным спутником на пути к гармонии и благополучию."
         keywords="Йога, построение последовательностей, асаны"
       />
-      <div className={clsx(styles.root, isMobile && styles.mobile)}>
+      <div className={styles.root}>
         {shouldShowSpinner ? (
           <Spinner />
         ) : (
           <>
             {!isMobile && (
               <Resizable
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRight: '1px solid #ddd'
-                }}
+                className={styles.resizable}
                 defaultSize={{
                   width: '352px',
                   height: '100%'
@@ -292,7 +294,6 @@ const CreateSequencePage: React.FC<PageProps> = ({isMobile}) => {
                     searchItems={asanas}
                   />
                   <AsanasList
-                    isMobile={isMobile}
                     asanas={asanas}
                     onAsanaClick={onAsanaClick}
                     size="small"
@@ -322,7 +323,6 @@ const CreateSequencePage: React.FC<PageProps> = ({isMobile}) => {
                     searchItems={asanas}
                   />
                   <AsanasList
-                    isMobile={isMobile}
                     asanas={asanas}
                     onAsanaClick={onAsanaClick}
                     size="small"
@@ -346,7 +346,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     )
   )
 
-  return {props: {isMobile}}
+  const theme = context.req.cookies.seq_theme || 'light'
+
+  return {props: {isMobile, theme}}
 }
 
 export default CreateSequencePage
