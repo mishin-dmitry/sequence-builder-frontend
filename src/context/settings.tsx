@@ -4,13 +4,10 @@ import React, {
   useState,
   type PropsWithChildren,
   useMemo,
-  useCallback,
-  useEffect
+  useCallback
 } from 'react'
 
 import {ConfigProvider, theme as antdTheme} from 'antd'
-import {getItem, setItem} from 'lib/local-storage'
-import {LOCAL_STORAGE_THEME_PREFERENCE} from 'lib/constants'
 
 interface UseSettings {
   toggleTheme: () => void
@@ -40,31 +37,17 @@ export const ProvideSettings: React.FC<ProvideSettingsProps> = ({
 
   const {defaultAlgorithm, darkAlgorithm} = antdTheme
 
-  useEffect(() => {
-    const themeFromLS = getItem<'dark' | 'light'>(
-      LOCAL_STORAGE_THEME_PREFERENCE
-    )
-
-    if (themeFromLS) {
-      setTheme(themeFromLS)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   const toggleTheme = useCallback(() => {
     setTheme((prevState) => {
       const isDark = prevState === 'light'
 
       if (isDark) {
         document.documentElement.setAttribute('data-theme', 'dark')
-
         document.cookie = 'seq_theme=dark'
       } else {
         document.documentElement.removeAttribute('data-theme')
         document.cookie = 'seq_theme=light'
       }
-
-      setItem(LOCAL_STORAGE_THEME_PREFERENCE, isDark ? 'dark' : 'light')
 
       return isDark ? 'dark' : 'light'
     })
