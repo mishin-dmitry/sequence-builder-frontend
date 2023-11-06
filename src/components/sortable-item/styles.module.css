@@ -133,7 +133,7 @@
 }
 
 body[data-mobile='true'] {
-  & .wrappe {
+  & .wrapper {
     margin: 5px 0 0 5px;
   }
 }
