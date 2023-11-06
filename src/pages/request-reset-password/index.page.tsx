@@ -29,7 +29,7 @@ const RequestResetPasswordPage: React.FC = () => {
 
   useEffect(() => {
     if (!isFetching && isAuthorized) {
-      router.push(Urls.CREATE_SEQUENCE)
+      router.push(Urls.CREATE_SEQUENCE, undefined, {shallow: true})
     }
   }, [isAuthorized, isFetching, router])
 

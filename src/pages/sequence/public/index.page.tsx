@@ -27,14 +27,14 @@ const PublicSequencesPage: React.FC<PageProps> = ({
 
   useEffect(() => {
     if (!isFetching && !isAuthorized) {
-      router.push(Urls.LOGIN)
+      router.push(Urls.LOGIN, undefined, {shallow: true})
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthorized, isFetching])
 
   const onShow = useCallback(
     (id: number) => {
-      router.push(`${Urls.VIEW_SEQUENCE}/${id}`)
+      router.push(`${Urls.VIEW_SEQUENCE}/${id}`, undefined, {shallow: true})
     },
     [router]
   )

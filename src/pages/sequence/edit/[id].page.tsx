@@ -127,13 +127,13 @@ const CreateSequencePage: React.FC<
 
   useEffect(() => {
     if (!!user && user.id !== userId) {
-      router.replace(Urls.CREATE_SEQUENCE)
+      router.replace(Urls.CREATE_SEQUENCE, undefined, {shallow: true})
     }
   }, [router, user, userId])
 
   useEffect(() => {
     if (!isUserFetching && !isAuthorized) {
-      router.push(Urls.LOGIN)
+      router.push(Urls.LOGIN, undefined, {shallow: true})
     }
   }, [isAuthorized, isFetching, isUserFetching, router])
 
@@ -222,7 +222,7 @@ const CreateSequencePage: React.FC<
   const onDelete = useCallback(async () => {
     await deleteSequence(id as number)
 
-    router.push(Urls.MY_SEQUENCES)
+    router.push(Urls.MY_SEQUENCES, undefined, {shallow: true})
   }, [deleteSequence, id, router])
 
   const shouldShowSpinner =

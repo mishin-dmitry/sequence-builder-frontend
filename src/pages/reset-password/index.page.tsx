@@ -32,13 +32,13 @@ const ResetPasswordPage: React.FC = () => {
 
   useEffect(() => {
     if (router.isReady && (!router.query.token || !router.query.id)) {
-      router.push(Urls.LOGIN)
+      router.push(Urls.LOGIN, undefined, {shallow: true})
     }
   }, [router])
 
   useEffect(() => {
     if (!isFetching && isAuthorized) {
-      router.push(Urls.CREATE_SEQUENCE)
+      router.push(Urls.CREATE_SEQUENCE, undefined, {shallow: true})
     }
   }, [isAuthorized, isFetching, router])
 

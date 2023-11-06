@@ -84,7 +84,7 @@ const CreateSequencePage: React.FC<PageProps> = ({isMobile}) => {
     clearLocalStorage()
 
     if (id) {
-      router.push(`${Urls.EDIT_SEQUENCE}/${id}`)
+      router.push(`${Urls.EDIT_SEQUENCE}/${id}`, undefined, {shallow: true})
     }
   }, [
     builderData,

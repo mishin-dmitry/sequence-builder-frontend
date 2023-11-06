@@ -18,13 +18,13 @@ const LogoutPage: React.FC = () => {
     const logoutUser = async (): Promise<void> => {
       await logout()
 
-      router.push(Urls.LOGIN)
+      router.push(Urls.LOGIN, undefined, {shallow: true})
     }
 
     if (!isFetching && isAuthorized) {
       logoutUser()
     } else {
-      router.replace(Urls.CREATE_SEQUENCE)
+      router.replace(Urls.CREATE_SEQUENCE, undefined, {shallow: true})
     }
   }, [isAuthorized, isFetching, logout, router])
 

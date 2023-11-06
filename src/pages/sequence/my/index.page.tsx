@@ -31,7 +31,7 @@ const MySequencesPage: React.FC<PageProps> = ({
 
   useEffect(() => {
     if (!isFetching && !isAuthorized) {
-      router.push(Urls.LOGIN)
+      router.push(Urls.LOGIN, undefined, {shallow: true})
     }
   }, [isAuthorized, isFetching, router])
 
@@ -48,7 +48,7 @@ const MySequencesPage: React.FC<PageProps> = ({
 
   const onEdit = useCallback(
     (id: number) => {
-      router.push(`${Urls.EDIT_SEQUENCE}/${id}`)
+      router.push(`${Urls.EDIT_SEQUENCE}/${id}`, undefined, {shallow: true})
     },
     [router]
   )

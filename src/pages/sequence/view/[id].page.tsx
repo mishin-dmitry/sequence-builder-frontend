@@ -44,13 +44,13 @@ const CreateSequencePage: React.FC<PageProps & {sequence: SequenceType}> = ({
 
   useEffect(() => {
     if (!isPublic) {
-      router.replace(Urls.PUBLIC_SEQUENCES)
+      router.replace(Urls.PUBLIC_SEQUENCES, undefined, {shallow: true})
     }
   }, [isPublic, router])
 
   useEffect(() => {
     if (!isFetching && !isAuthorized) {
-      router.push(Urls.LOGIN)
+      router.push(Urls.LOGIN, undefined, {shallow: true})
     }
   }, [isAuthorized, isFetching, router])
 

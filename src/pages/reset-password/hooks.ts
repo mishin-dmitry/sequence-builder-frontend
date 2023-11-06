@@ -27,7 +27,7 @@ export const useUpdatePassword = (): UseUpdatePassword => {
 
         await new Promise((resolve) => window.setTimeout(resolve, 2000))
 
-        router.push(Urls.LOGIN)
+        router.push(Urls.LOGIN, undefined, {shallow: true})
       } catch (error) {
         if (error instanceof Error) {
           notification['error']({
