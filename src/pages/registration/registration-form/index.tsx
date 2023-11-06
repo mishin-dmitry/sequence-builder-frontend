@@ -50,7 +50,11 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
   }
 
   const footer = useMemo(
-    () => <Link href={Urls.LOGIN}>Уже зарегистрирован</Link>,
+    () => (
+      <Link href={Urls.LOGIN} as={Urls.LOGIN} shallow>
+        Уже зарегистрирован
+      </Link>
+    ),
     []
   )
 

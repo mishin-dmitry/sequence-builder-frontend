@@ -47,7 +47,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   }
 
   const footer = useMemo(
-    () => <Link href={Urls.REGISTRATION}>Зарегистрироваться</Link>,
+    () => (
+      <Link href={Urls.REGISTRATION} as={Urls.REGISTRATION} shallow>
+        Зарегистрироваться
+      </Link>
+    ),
     []
   )
 
@@ -100,7 +104,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             />
           )}
         />
-        <Link href={Urls.REQUEST_RESET_PASSWORD} className={styles.link}>
+        <Link
+          href={Urls.REQUEST_RESET_PASSWORD}
+          as={Urls.REQUEST_RESET_PASSWORD}
+          shallow
+          className={styles.link}>
           Забыли пароль?
         </Link>
         <div className={styles.buttonWrapper}>

@@ -22,7 +22,7 @@ const DesktopMenu: React.FC<DesktopMenuProps> = ({isAuthorized}) => {
       ).map(({title, href}) => ({
         key: href,
         label: (
-          <Link href={href} as={href}>
+          <Link href={href} as={href} shallow>
             {title}
           </Link>
         )

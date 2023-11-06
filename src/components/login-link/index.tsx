@@ -9,12 +9,12 @@ import styles from './styles.module.css'
 
 export const LoginLink: React.FC<{isAuthorized: boolean}> = ({isAuthorized}) =>
   isAuthorized ? (
-    <Link href={Urls.LOGOUT} as={Urls.LOGOUT} className={styles.link}>
+    <Link href={Urls.LOGOUT} as={Urls.LOGOUT} className={styles.link} shallow>
       <span>Выйти</span>
       <LogoutOutlined />
     </Link>
   ) : (
-    <Link href={Urls.LOGIN} as={Urls.LOGIN} className={styles.link}>
+    <Link href={Urls.LOGIN} as={Urls.LOGIN} className={styles.link} shallow>
       <span>Войти</span>
       <LoginOutlined />
     </Link>

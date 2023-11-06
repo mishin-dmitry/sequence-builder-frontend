@@ -38,7 +38,11 @@ export const RequestResetPasswordForm: React.FC<
   }
 
   const footer = useMemo(
-    () => <Link href={Urls.REGISTRATION}>Зарегистрироваться</Link>,
+    () => (
+      <Link href={Urls.REGISTRATION} as={Urls.REGISTRATION} shallow>
+        Зарегистрироваться
+      </Link>
+    ),
     []
   )
 

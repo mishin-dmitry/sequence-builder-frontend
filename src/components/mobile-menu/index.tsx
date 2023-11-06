@@ -28,7 +28,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({isAuthorized}) => {
         forAuthorized ? isAuthorized : true
       ).map(({title, href}) => (
         <Menu.Item onClick={closeMenu} key={href}>
-          <Link href={href} as={href}>
+          <Link href={href} as={href} shallow>
             {title}
           </Link>
         </Menu.Item>
