@@ -47,12 +47,6 @@ export const ProvideSettings: React.FC<ProvideSettingsProps> = ({
 
     if (themeFromLS) {
       setTheme(themeFromLS)
-    } else {
-      const isDarkTheme = window.matchMedia(
-        '(prefers-color-scheme: dark)'
-      ).matches
-
-      setTheme(isDarkTheme ? 'dark' : 'light')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
