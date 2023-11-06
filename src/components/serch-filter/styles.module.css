@@ -2,11 +2,6 @@
   padding: 10px 10px 0;
   margin-bottom: 30px;
   display: flex;
-
-  &.mobile {
-    padding: 0;
-    margin-bottom: 10px;
-  }
 }
 
 .filterIcon {
@@ -30,4 +25,11 @@
 
 .input {
   flex: 1;
+}
+
+body[data-mobile='true'] {
+  & .searchWrapper {
+    padding: 0;
+    margin-bottom: 10px;
+  }
 }

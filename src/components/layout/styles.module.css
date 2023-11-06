@@ -2,6 +2,7 @@
   flex: 1 1 auto;
   position: relative;
   display: flex;
+  overflow: hidden;
 }
 
 .footer {
@@ -10,22 +11,26 @@
 }
 
 .layout {
-  &:not(.mobile) {
-    max-height: 100vh;
-
-    & .main {
-      overflow: hidden;
-    }
-
-    & .header {
-      justify-content: flex-end;
-    }
-  }
+  max-height: 100vh;
 }
 
 .header {
   padding: 0 15px !important;
-  justify-content: space-between;
+  justify-content: flex-end;
   display: flex;
   align-items: center;
+}
+
+body[data-mobile='true'] {
+  & .layout {
+    max-height: auto;
+  }
+
+  & .main {
+    overflow: auto;
+  }
+
+  & .header {
+    justify-content: space-between;
+  }
 }

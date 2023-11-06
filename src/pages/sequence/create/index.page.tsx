@@ -29,7 +29,6 @@ import {
 } from 'lib/constants'
 
 import debounce from 'lodash.debounce'
-import clsx from 'clsx'
 import {SettingOutlined} from '@ant-design/icons'
 import {TimeSettingsFormInputs, SequenceTimeForm} from './sequence-time-form'
 import dayjs from 'dayjs'
@@ -526,7 +525,7 @@ const CreateSequencePage: React.FC<PageProps> = ({
         description="Создайте свой идеальный путь в йоге с нашим приложением для построения последовательностей. Планируйте, комбинируйте и улучшайте свою практику йоги с Sequoia – вашим верным спутником на пути к гармонии и благополучию."
         keywords="Йога, построение последовательностей, асаны"
       />
-      <div className={clsx(styles.root, isMobile && styles.mobile)}>
+      <div className={styles.root}>
         {!isMobile && (
           <Resizable
             style={{
@@ -547,10 +546,8 @@ const CreateSequencePage: React.FC<PageProps> = ({
                 filterItems={asanaGroups}
                 onFilterAsanas={onFilterAsana}
                 searchItems={asanas}
-                isMobile={isMobile}
               />
               <AsanasList
-                isMobile={isMobile}
                 asanas={asanas}
                 onAsanaClick={onAsanaClick}
                 size="small"
@@ -652,7 +649,7 @@ const CreateSequencePage: React.FC<PageProps> = ({
             destroyOnClose
             width={1000}
             {...(isMobile ? {footer: null} : {})}>
-            <PdfViewer sequence={pdfAsanaData} isMobile={isMobile} />
+            <PdfViewer sequence={pdfAsanaData} />
           </Modal>
           <Modal
             title="Выберите асану"
@@ -667,10 +664,8 @@ const CreateSequencePage: React.FC<PageProps> = ({
                 filterItems={asanaGroups}
                 onFilterAsanas={onFilterAsana}
                 searchItems={asanas}
-                isMobile={isMobile}
               />
               <AsanasList
-                isMobile={isMobile}
                 asanas={asanas}
                 onAsanaClick={onAsanaClick}
                 size="small"

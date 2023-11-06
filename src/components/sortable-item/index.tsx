@@ -155,7 +155,6 @@ export const SortableItem: React.FC<SortableItemProps> = ({
         styles.wrapper,
         isSorting && styles.sorting,
         isDragging && styles.dragOverlay,
-        isMobile && styles.mobile,
         className
       )}
       style={style}

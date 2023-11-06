@@ -116,12 +116,7 @@ export const Sequence: React.FC<SequenceProps> = ({
 
   const sequence = useMemo(() => {
     return (
-      <div
-        className={clsx(
-          styles.sequenceRow,
-          isMobile && styles.mobile,
-          isEditing && styles.editing
-        )}>
+      <div className={clsx(styles.sequenceRow, isEditing && styles.editing)}>
         <div className={styles.sequence}>
           {data.map((asana, index) => {
             const {

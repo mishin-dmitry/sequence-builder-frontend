@@ -4,16 +4,29 @@
   column-gap: 10px;
   -ms-overflow-style: none;
   scrollbar-width: none;
+  columns: 160px;
+  overflow: hidden;
+  overflow-y: scroll;
 
   &::-webkit-scrollbar {
     display: none;
   }
+}
 
-  &.mobile {
-    column-count: 3;
+.asana {
+  &:not(:first-child) {
+    margin-top: 10px;
+  }
+}
+
+body[data-mobile='true'] {
+  & .list {
+    columns: 3;
     margin: 0;
     padding: 0;
     column-gap: 5px;
+    overflow: auto;
+    overflow-y: auto;
 
     & .asana {
       width: 100%;
@@ -22,17 +35,5 @@
         margin-top: 5px;
       }
     }
-  }
-
-  &:not(.mobile) {
-    columns: 160px;
-    overflow: hidden;
-    overflow-y: scroll;
-  }
-}
-
-.asana {
-  &:not(:first-child) {
-    margin-top: 10px;
   }
 }

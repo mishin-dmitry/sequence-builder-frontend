@@ -16,10 +16,6 @@
   margin: 10px 0 0 10px;
   border-radius: 8px;
 
-  &.mobile {
-    margin: 5px 0 0 5px;
-  }
-
   &.dragOverlay {
     transition: box-shadow 200ms cubic-bezier(0.18, 0.67, 0.6, 1.22);
     transform: scale(1.05);
@@ -133,5 +129,11 @@
   & svg {
     width: 10px;
     height: 10px;
+  }
+}
+
+body[data-mobile='true'] {
+  & .wrappe {
+    margin: 5px 0 0 5px;
   }
 }

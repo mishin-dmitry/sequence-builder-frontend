@@ -5,17 +5,16 @@ import type {Asana} from 'types'
 import {Typography} from 'antd'
 import {isMobile as _isMobile} from 'lib/is-mobile'
 import {iconsMap} from 'icons'
+import {useTheme} from 'context/theme'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
-import {useTheme} from 'context/theme'
 
 interface AsanaCardProps {
   data: Asana
   size?: 'default' | 'small'
   isButton?: boolean
   hideText?: boolean
-  isMobile: boolean
   className?: string
   onAsanaClick?: (asana: Asana) => void
 }
@@ -24,7 +23,6 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
   data,
   onAsanaClick: onAsanaClickProp,
   size = 'default',
-  isMobile,
   hideText,
   isButton = true,
   className
@@ -64,7 +62,6 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
       className={clsx(
         styles.card,
         styles[size],
-        isMobile && styles.mobile,
         (alias === 'empty' || alias === 'separator') && styles.empty,
         className
       )}

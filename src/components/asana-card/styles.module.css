@@ -31,14 +31,6 @@
     & .title {
       font-size: 14px;
     }
-
-    &.mobile {
-      width: 100px;
-
-      .title {
-        font-size: 11px;
-      }
-    }
   }
 
   & .title {
@@ -47,13 +39,15 @@
 }
 
 button.card {
-  cursor: pointer;
+  @media (hover: hover) {
+    cursor: pointer;
 
-  &:hover {
-    transform: scale(1.05);
-    box-shadow:
-      0 10px 20px rgba(0 0 0 / 0.12),
-      0 4px 8px rgba(0 0 0/ 0.06);
+    &:hover {
+      transform: scale(1.05);
+      box-shadow:
+        0 10px 20px rgba(0 0 0 / 0.12),
+        0 4px 8px rgba(0 0 0/ 0.06);
+    }
   }
 }
 
@@ -70,4 +64,12 @@ button.card {
 .textContainer {
   display: flex;
   width: 100%;
+}
+
+body[data-mobile='true'] {
+  & .card.small {
+    & .title {
+      font-size: 11px;
+    }
+  }
 }
