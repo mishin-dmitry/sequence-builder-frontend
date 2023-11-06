@@ -10,7 +10,6 @@ import {Urls} from 'lib/urls'
 import {useAsanas} from 'context/asanas'
 import {SequenceViewer} from 'components/sequence-viewer'
 import {Spinner} from 'components/spinner'
-import {useSettings} from 'context/settings'
 
 import styles from './styles.module.css'
 
@@ -18,7 +17,6 @@ export const ViewSequence: React.FC<{sequence: SequenceType}> = ({
   sequence: {isPublic, blocks, title = ''}
 }) => {
   const {asanasMap} = useAsanas()
-  const {isMobile} = useSettings()
 
   const data = useMemo(
     () =>
@@ -58,7 +56,7 @@ export const ViewSequence: React.FC<{sequence: SequenceType}> = ({
         {!isAuthorized ? (
           <Spinner />
         ) : (
-          <SequenceViewer isMobile={isMobile} data={data} title={title} />
+          <SequenceViewer data={data} title={title} />
         )}
       </div>
     </>
