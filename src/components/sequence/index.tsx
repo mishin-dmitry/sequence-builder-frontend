@@ -20,7 +20,7 @@ import {
 import {SortableItem} from 'components/sortable-item'
 import {PlusCircleOutlined} from '@ant-design/icons'
 import {KeyboardSensor, MouseSensor, PointerSensor} from 'lib/sensors'
-import {Button} from 'antd'
+import {ConfirmButton} from 'components/confirm-button'
 import {useTheme} from 'context/theme'
 
 import clsx from 'clsx'
@@ -61,11 +61,7 @@ export const Sequence: React.FC<SequenceProps> = ({
   const {isDarkTheme} = useTheme()
 
   const onDeleteBlock = useCallback(
-    (event: React.SyntheticEvent) => {
-      event.stopPropagation()
-
-      onDeleteBlockProp(id)
-    },
+    () => onDeleteBlockProp(id),
     [onDeleteBlockProp, id]
   )
 
@@ -178,9 +174,13 @@ export const Sequence: React.FC<SequenceProps> = ({
           )}
         </div>
         <div className={styles.buttonWrapper}>
-          <Button danger onClick={onDeleteBlock}>
+          <ConfirmButton
+            okText="Удалить"
+            title="Удалить блок асан"
+            description="Вы действительно хотите удалить блок асан?"
+            onClick={onDeleteBlock}>
             Удалить блок асан
-          </Button>
+          </ConfirmButton>
         </div>
       </div>
     )

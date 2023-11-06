@@ -1,0 +1,115 @@
+.previewWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 10px 0;
+  min-width: 0;
+  justify-content: space-between;
+  height: calc(100vh - 85px);
+  overflow: hidden;
+}
+
+.root {
+  display: flex;
+  width: 100%;
+}
+
+.sequenceBlocks {
+  flex: 1;
+  margin-top: 20px;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+
+  button + button {
+    margin: 0 0 0 10px;
+  }
+}
+
+.button {
+  margin-top: 20px;
+}
+
+.scrollContainer {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 50px);
+  overflow: hidden;
+  overflow-y: scroll;
+  flex: 1;
+}
+
+.listWrapper {
+  height: calc(100vh - 90px);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.timeWrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+
+  & .settingsButton {
+    margin-right: 10px;
+  }
+}
+
+.checkbox {
+  margin-top: 10px;
+}
+
+.addBlockButton {
+  margin-top: 10px;
+}
+
+.blockWrapper {
+  cursor: pointer;
+
+  & + .blockWrapper {
+    margin-top: 10px;
+  }
+}
+
+.textarea {
+  margin-top: 10px;
+}
+
+.resizable {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--resizable-border-color);
+}
+
+body[data-mobile='true'] {
+  & .previewWrapper {
+    height: auto;
+    flex: 1 1 auto;
+  }
+
+  & .root {
+    flex-direction: column;
+  }
+
+  & .actionButtons {
+    flex-direction: column;
+
+    button + button {
+      margin: 10px 0 0;
+    }
+  }
+
+  & .scrollContainer,
+  & .listWrapper {
+    height: auto;
+  }
+}

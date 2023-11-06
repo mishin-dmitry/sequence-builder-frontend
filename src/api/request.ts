@@ -12,25 +12,24 @@ export enum HttpMethod {
 export const request = async <T = void>(
   httpMethod: HttpMethod,
   endpoint: string,
-  params: Record<string, any>
+  params: Record<string, any>,
+  headers = {}
 ): Promise<T> => {
-  try {
-    const response = await fetch(`${process.env.API_ORIGIN}${endpoint}/`, {
-      method: httpMethod,
-      body: params,
-      // body: JSON.stringify(params),
-      headers: {
-        // 'Content-Type': 'multipart/form-data'gd
-        // 'Content-Length': '473',
-        // 'Access-Control-Allow-Origin': '*'
-        // 'Content-Type': 'application/json'
-      }
-    })
+  const response = await fetch(`${process.env.API_ORIGIN}${endpoint}/`, {
+    method: httpMethod,
+    body: JSON.stringify(params),
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      ...headers
+    }
+  })
 
-    return response.json()
-  } catch (error) {
-    console.error(error)
+  const parsedResponse = await response.json()
 
-    throw error
+  if (parsedResponse.error) {
+    throw new Error(parsedResponse.error)
   }
+
+  return parsedResponse
 }

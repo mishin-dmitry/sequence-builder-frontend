@@ -16,9 +16,16 @@
 
 .header {
   padding: 0 15px !important;
-  justify-content: flex-end;
+  justify-content: space-between;
   display: flex;
   align-items: center;
+}
+
+.leftRow {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  margin-left: 40px;
 }
 
 body[data-mobile='true'] {
@@ -28,9 +35,5 @@ body[data-mobile='true'] {
 
   & .main {
     overflow: auto;
-  }
-
-  & .header {
-    justify-content: space-between;
   }
 }

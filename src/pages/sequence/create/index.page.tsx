@@ -1,63 +1,100 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import styles from './styles.module.css'
-import {AsanasList} from 'components/asanas-list'
-import PdfViewer from 'components/pdf-viewer'
-import {Asana, AsanaGroup} from 'types'
-import {Button, Modal} from 'antd'
-import {PDFDocument} from 'components/pdf-viewer/document'
-
-import {saveAs} from 'file-saver'
-import {pdf} from '@react-pdf/renderer'
-import {Sequence} from 'components/sequence'
-import {arrayMove} from 'lib/array-move'
-
-import type {GetServerSideProps} from 'next/types'
-import {Resizable} from 're-resizable'
-import {Input} from 'components/input'
-import {getAsanaGroupsList, getAsanasList} from 'api/actions'
-import {Meta} from 'components/meta'
+import type {Asana, AsanaGroup, SequenceRequest} from 'types'
 import type {PageProps} from 'types/page-props'
-import {reachGoal} from 'lib/metrics'
+import type {GetServerSideProps} from 'next/types'
+
+import {Resizable} from 're-resizable'
+import {Meta} from 'components/meta'
 import {SearchFilter} from 'components/serch-filter'
 import {getItem, removeItem, setItem} from 'lib/local-storage'
+
 import {
+  LOCAL_STORAGE_DESCRIPTION_KEY,
   LOCAL_STORAGE_EDITING_BLOCK,
+  LOCAL_STORAGE_IS_PUBLIC_KEY,
   LOCAL_STORAGE_SEQUENCE_KEY,
-  LOCAL_STORAGE_TIME_SETTINGS,
   LOCAL_STORAGE_TITLE_KEY
 } from 'lib/constants'
 
+import {AsanasList} from 'components/asanas-list'
+import {useSequence} from '../hooks'
+import {useAsanas} from 'context/asanas'
+import {SequenceEditor} from 'components/sequence-editor'
+import {useUser} from 'context/user'
+import {Urls} from 'lib/urls'
+import {Spinner} from 'components/spinner'
+import {useRouter} from 'next/router'
+
+import styles from './styles.module.css'
 import debounce from 'lodash.debounce'
-import {SettingOutlined} from '@ant-design/icons'
-import {TimeSettingsFormInputs, SequenceTimeForm} from './sequence-time-form'
-import dayjs from 'dayjs'
-import type {DragStartEvent, DragEndEvent} from '@dnd-kit/core'
-import {useTheme} from 'context/theme'
 
-const DEFAULT_TIME_SETTINGS = {
-  pranayamaTime: dayjs().minute(10).second(0),
-  warmUpTime: dayjs().minute(5).second(0),
-  namaskarTime: dayjs().minute(10).second(0),
-  asanaTime: dayjs().minute(0).second(30),
-  shavasanaTime: dayjs().minute(15).second(0)
-}
+const CreateSequencePage: React.FC<PageProps> = ({isMobile}) => {
+  const {
+    asanas: allAsanas,
+    asanaGroups,
+    asanasMap,
+    isFetching: isAsanasFetching
+  } = useAsanas()
 
-const CreateSequencePage: React.FC<PageProps> = ({
-  isMobile,
-  asanas: allAsanas = [],
-  asanaGroups = [],
-  asanaMap = {}
-}) => {
-  const [documentTitle, setDocumentTitle] = useState<string>('')
-  const [isPdfModalVisible, setIsPdfModalVisible] = useState(false)
-  const [isAsanasModalVisible, setIsAsanasModalVisible] = useState(false)
   const [asanas, setAsanas] = useState(allAsanas)
-  const [isTimeSettingsVisible, setIsTimeSettingsVisible] = useState(false)
   const [editingBlock, setEditingBlock] = useState('0')
   const [builderData, setBuilderData] = useState<Record<string, Asana[]>>({})
 
-  const {isDarkTheme} = useTheme()
+  const [title, setTitle] = useState<string>('')
+  const [description, setDescription] = useState<string>('')
+  const [isPublic, setIsPublic] = useState(true)
+
+  const {createSequence} = useSequence()
+  const {isAuthorized, isFetching: isUserFetching} = useUser()
+
+  const router = useRouter()
+
+  const clearLocalStorage = useCallback(() => {
+    removeItem(LOCAL_STORAGE_SEQUENCE_KEY)
+    removeItem(LOCAL_STORAGE_EDITING_BLOCK)
+    removeItem(LOCAL_STORAGE_TITLE_KEY)
+    removeItem(LOCAL_STORAGE_DESCRIPTION_KEY)
+    removeItem(LOCAL_STORAGE_IS_PUBLIC_KEY)
+  }, [])
+
+  // Сохранить последовательность
+  const onSave = useCallback(async () => {
+    const data: SequenceRequest = {
+      title,
+      description,
+      isPublic,
+      blocks: Object.values(builderData).map((block) =>
+        block.map(
+          ({
+            id,
+            isAsanaInRepeatingBlock = false,
+            isAsanaInDynamicBlock = false
+          }) => ({
+            asanaId: id,
+            inRepeatingBlock: isAsanaInRepeatingBlock,
+            inDynamicBlock: isAsanaInDynamicBlock
+          })
+        )
+      )
+    }
+
+    const {id} = (await createSequence(data)) || {}
+
+    clearLocalStorage()
+
+    if (id) {
+      router.push(`${Urls.EDIT_SEQUENCE}/${id}`)
+    }
+  }, [
+    builderData,
+    clearLocalStorage,
+    createSequence,
+    description,
+    isPublic,
+    router,
+    title
+  ])
 
   const builderLength = useMemo(() => {
     return Object.values(builderData).reduce(
@@ -65,15 +102,6 @@ const CreateSequencePage: React.FC<PageProps> = ({
       0
     )
   }, [builderData])
-
-  const [timeSettings, setTimeSettings] = useState<TimeSettingsFormInputs>(
-    DEFAULT_TIME_SETTINGS
-  )
-
-  const [sequenceDuration, setSequenceDuration] = useState<{
-    hours?: number
-    minutes?: number
-  }>({})
 
   const searchAsanaString = useRef<string>('')
   const filterAsanaGroups = useRef<AsanaGroup[]>([])
@@ -87,91 +115,55 @@ const CreateSequencePage: React.FC<PageProps> = ({
       LOCAL_STORAGE_SEQUENCE_KEY
     )
 
-    const documentTitleFromLS = getItem<string>(LOCAL_STORAGE_TITLE_KEY)
     const editingBlockFromLS = getItem<string>(LOCAL_STORAGE_EDITING_BLOCK)
-
-    const timeSettingsFromLS = getItem<
-      Record<keyof TimeSettingsFormInputs, string>
-    >(LOCAL_STORAGE_TIME_SETTINGS)
-
-    if (editingBlockFromLS) {
-      setEditingBlock(editingBlockFromLS)
-    }
-
-    if (documentTitleFromLS) {
-      setDocumentTitle(documentTitleFromLS)
-    }
+    const titleFromLS = getItem<string>(LOCAL_STORAGE_TITLE_KEY)
 
     if (sequenceFromLS) {
       setBuilderData(sequenceFromLS)
     }
 
-    setTimeSettings(
-      timeSettingsFromLS
-        ? {
-            asanaTime: dayjs(timeSettingsFromLS.asanaTime),
-            namaskarTime: dayjs(timeSettingsFromLS.namaskarTime),
-            pranayamaTime: dayjs(timeSettingsFromLS.pranayamaTime),
-            shavasanaTime: dayjs(timeSettingsFromLS.shavasanaTime),
-            warmUpTime: dayjs(timeSettingsFromLS.warmUpTime)
-          }
-        : DEFAULT_TIME_SETTINGS
-    )
-  }, [])
-
-  useEffect(() => {
-    const time = Object.entries(timeSettings).reduce(
-      (acc, curValue) => {
-        const [key, time] = curValue
-
-        if (!time) return acc
-
-        const seconds = time.second()
-        const minutes = time.minute()
-
-        if (key === 'asanaTime') {
-          Object.values(builderData).forEach((asanasBlock) => {
-            asanasBlock.forEach(({isAsanaInRepeatingBlock}) => {
-              acc.seconds += isAsanaInRepeatingBlock ? seconds * 2 : seconds
-              acc.minutes += isAsanaInRepeatingBlock ? minutes * 2 : minutes
-            })
-          })
-        } else {
-          acc.seconds += seconds
-          acc.minutes += minutes
-        }
-
-        return acc
-      },
-      {minutes: 0, seconds: 0}
-    )
-
-    const hours = Math.floor(time.minutes / 60)
-    let minutes = time.minutes % 60
-
-    if (time.seconds > 60) {
-      minutes += Math.floor(time.seconds / 60)
+    if (editingBlockFromLS) {
+      setEditingBlock(editingBlockFromLS)
     }
 
-    setSequenceDuration({hours, minutes})
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timeSettings, builderData])
+    if (titleFromLS) {
+      setTitle(titleFromLS)
+    }
+
+    if (isAuthorized) {
+      const isPublicFromLS = getItem<boolean>(LOCAL_STORAGE_IS_PUBLIC_KEY)
+
+      const descriptionFromLS = getItem<string>(LOCAL_STORAGE_DESCRIPTION_KEY)
+
+      if (descriptionFromLS) {
+        setDescription(descriptionFromLS)
+      }
+
+      if (isPublicFromLS) {
+        setIsPublic(isPublicFromLS)
+      }
+    }
+  }, [isAuthorized])
 
   useEffect(() => {
-    if (!documentTitle) {
+    if (!title) {
       removeItem(LOCAL_STORAGE_TITLE_KEY)
     } else {
-      setItem(LOCAL_STORAGE_TITLE_KEY, documentTitle)
+      setItem(LOCAL_STORAGE_TITLE_KEY, title)
     }
-  }, [documentTitle])
+  }, [title])
 
   useEffect(() => {
-    if (!editingBlock) {
-      removeItem(LOCAL_STORAGE_EDITING_BLOCK)
+    if (!description) {
+      removeItem(LOCAL_STORAGE_DESCRIPTION_KEY)
     } else {
-      setItem(LOCAL_STORAGE_EDITING_BLOCK, editingBlock)
+      setItem(LOCAL_STORAGE_DESCRIPTION_KEY, description)
     }
-  }, [editingBlock])
+  }, [description])
+
+  useEffect(() => {
+    setItem(LOCAL_STORAGE_IS_PUBLIC_KEY, isPublic)
+  }, [isPublic])
 
   useEffect(() => {
     if (!builderLength) {
@@ -181,45 +173,13 @@ const CreateSequencePage: React.FC<PageProps> = ({
     }
   }, [builderData, builderLength])
 
-  // Удалить асану в редактируемой последовательности
-  const deleteAsanaById = useCallback(
-    (asanaIndex: number, blockId: string): void => {
-      setBuilderData((prevData) => {
-        return {
-          ...prevData,
-          [blockId]: (prevData[blockId] ?? []).filter(
-            (_, index) => index !== asanaIndex
-          )
-        }
-      })
-    },
-    []
-  )
-
-  // Очистить последовательность
-  const clearSequence = useCallback(() => {
-    setBuilderData({})
-    setDocumentTitle('')
-    setEditingBlock('0')
-
-    reachGoal('clear_sequence')
-  }, [])
-
-  // Скрыть превью pdf файла
-  const hidePreview = useCallback(() => setIsPdfModalVisible(false), [])
-
-  // Показать превью pdf файла
-  const showPreview = useCallback(() => {
-    setIsPdfModalVisible(true)
-
-    reachGoal('show_preview')
-  }, [])
-
-  // Скрыть превью pdf файла
-  const hideAsanasModal = useCallback(() => setIsAsanasModalVisible(false), [])
-
-  // Показать превью pdf файла
-  const showAsanasModal = useCallback(() => setIsAsanasModalVisible(true), [])
+  useEffect(() => {
+    if (!editingBlock) {
+      removeItem(LOCAL_STORAGE_EDITING_BLOCK)
+    } else {
+      setItem(LOCAL_STORAGE_EDITING_BLOCK, editingBlock)
+    }
+  }, [editingBlock])
 
   // Добавить асану в ряд последовательности
   const onAsanaClick = useCallback(
@@ -236,71 +196,11 @@ const CreateSequencePage: React.FC<PageProps> = ({
       setBuilderData((prevData) => {
         return {
           ...prevData,
-          [editingBlock]: [...(prevData[editingBlock] ?? []), asanaMap[id]]
+          [editingBlock]: [...(prevData[editingBlock] ?? []), asanasMap[id]]
         }
       })
-
-      if (isMobile) {
-        hideAsanasModal()
-      }
     },
-    [asanaMap, builderData, editingBlock, hideAsanasModal, isMobile]
-  )
-
-  const pdfAsanaData = useMemo(() => {
-    return {
-      documentTitle,
-      asanas: builderData
-    }
-  }, [builderData, documentTitle])
-
-  // Сгенерировать pdf файл
-  const generatePdf = useCallback(async () => {
-    const pdfDoc = pdf(PDFDocument(pdfAsanaData))
-
-    pdfDoc.updateContainer(PDFDocument(pdfAsanaData))
-
-    const blob = await pdfDoc.toBlob()
-
-    saveAs(blob, documentTitle)
-
-    reachGoal('save_pdf')
-  }, [pdfAsanaData, documentTitle])
-
-  const onDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      const {active, over} = event
-
-      if (!!over?.id && active.id !== over.id) {
-        setBuilderData((prevData) => {
-          const [, oldIndex] = (active.id as string).split('-')
-          const [, newIndex] = (over.id as string).split('-')
-
-          const sortedItems = arrayMove(
-            prevData[editingBlock],
-            +oldIndex,
-            +newIndex
-          )
-
-          return {
-            ...prevData,
-            [editingBlock]: sortedItems
-          }
-        })
-      }
-    },
-    [editingBlock]
-  )
-
-  const onDragStart = useCallback(
-    ({active}: DragStartEvent) => {
-      const {containerId} = active.data.current?.sortable ?? {}
-
-      if (containerId && containerId !== editingBlock) {
-        setEditingBlock(containerId)
-      }
-    },
-    [editingBlock]
+    [asanasMap, builderData, editingBlock]
   )
 
   const onSearchAsana = useCallback(
@@ -333,13 +233,6 @@ const CreateSequencePage: React.FC<PageProps> = ({
     [allAsanas, asanas]
   )
 
-  const onDocumentTitleChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setDocumentTitle(event.target.value)
-    },
-    []
-  )
-
   const onFilterAsana = useCallback(
     (groups: AsanaGroup[] = []) => {
       let filteredAsanas
@@ -370,153 +263,7 @@ const CreateSequencePage: React.FC<PageProps> = ({
     [allAsanas, asanas, onSearchAsana]
   )
 
-  const addAsanaToBlock = useCallback(
-    (
-      asanaIndex: number,
-      block: 'repeating' | 'dynamic',
-      action: 'add' | 'delete',
-      blockId: string
-    ) => {
-      setBuilderData((prevData) => {
-        return {
-          ...prevData,
-          [blockId]: prevData[blockId].map((asana, index) =>
-            index === asanaIndex
-              ? {
-                  ...asana,
-                  ...(block === 'repeating'
-                    ? {isAsanaInRepeatingBlock: action === 'add' ? true : false}
-                    : {isAsanaInDynamicBlock: action === 'add' ? true : false})
-                }
-              : asana
-          )
-        }
-      })
-    },
-    []
-  )
-
-  const copyAsana = useCallback(
-    (asana: Asana, index: number, blockId: string) => {
-      setBuilderData((prevData) => {
-        const newSequence = [...prevData[blockId]]
-
-        newSequence.splice(index, 0, asana)
-
-        return {
-          ...prevData,
-          [blockId]: newSequence
-        }
-      })
-    },
-    []
-  )
-
-  const toggleTimeSettingsVisible = useCallback(
-    () => setIsTimeSettingsVisible((prevData) => !prevData),
-    []
-  )
-
-  const hideTimeSettingsModel = useCallback(
-    () => setIsTimeSettingsVisible(false),
-    []
-  )
-
-  const saveTimeSettings = useCallback(
-    (data: TimeSettingsFormInputs) => {
-      setTimeSettings(data)
-      hideTimeSettingsModel()
-
-      setItem(LOCAL_STORAGE_TIME_SETTINGS, data)
-    },
-    [hideTimeSettingsModel]
-  )
-
-  const deleteAsanasBlock = useCallback(
-    (id: string) => {
-      setBuilderData((prevData) => {
-        delete prevData[id]
-
-        return {...prevData}
-      })
-
-      if (editingBlock === id) {
-        const blockIds = Object.keys(builderData)
-
-        // Если вообще нет блоков асан, то добавим редактируемый блок - 0
-        // Иначе найдем последний
-        setEditingBlock(!blockIds.length ? '0' : blockIds[blockIds.length - 1])
-      }
-    },
-    [builderData, editingBlock]
-  )
-
-  const addAsanasBlock = useCallback(() => {
-    let nextEditingBlockId = '0'
-
-    Object.keys(builderData).forEach((key) => {
-      if (+key >= +nextEditingBlockId) {
-        nextEditingBlockId = `${+key + 1}`
-      }
-    })
-
-    setEditingBlock(nextEditingBlockId)
-
-    setBuilderData((prevData) => {
-      return {
-        ...prevData,
-        [nextEditingBlockId]: []
-      }
-    })
-  }, [builderData])
-
-  const sequenceBlocks = useMemo(() => {
-    let lastIndex = 0
-
-    return Object.keys(builderData).map((key, index) => {
-      const dataWithIndexes = builderData[key].map((data) => {
-        if (data.alias === 'separator') {
-          return data
-        }
-
-        lastIndex += 1
-
-        return {...data, count: lastIndex}
-      })
-
-      return (
-        <div
-          key={index}
-          className={styles.blockWrapper}
-          onClick={() => setEditingBlock(key)}>
-          <Sequence
-            id={key}
-            data={dataWithIndexes}
-            isMobile={isMobile}
-            onDeleteAsana={deleteAsanaById}
-            onDeleteBlock={deleteAsanasBlock}
-            onDragEnd={onDragEnd}
-            onDragStart={onDragStart}
-            onAddAsanaButtonClick={showAsanasModal}
-            addAsanaToBlock={addAsanaToBlock}
-            isEditing={editingBlock === key}
-            copyAsana={copyAsana}
-          />
-        </div>
-      )
-    })
-  }, [
-    builderData,
-    isMobile,
-    deleteAsanaById,
-    deleteAsanasBlock,
-    onDragEnd,
-    onDragStart,
-    showAsanasModal,
-    addAsanaToBlock,
-    editingBlock,
-    copyAsana
-  ])
+  const shouldShowSpinner = isUserFetching || isAsanasFetching
 
   return (
     <>
@@ -526,153 +273,65 @@ const CreateSequencePage: React.FC<PageProps> = ({
         keywords="Йога, построение последовательностей, асаны"
       />
       <div className={styles.root}>
-        {!isMobile && (
-          <Resizable
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRight: `1px solid ${isDarkTheme ? '#424242' : '#ddd'}`
-            }}
-            defaultSize={{
-              width: '352px',
-              height: '100%'
-            }}
-            maxWidth="535px"
-            minWidth="170px">
-            <div className={styles.listWrapper}>
-              <SearchFilter
-                onSearchAsana={onSearchAsana}
-                filterItems={asanaGroups}
-                onFilterAsanas={onFilterAsana}
-                searchItems={asanas}
-              />
-              <AsanasList
-                asanas={asanas}
-                onAsanaClick={onAsanaClick}
-                size="small"
-              />
-            </div>
-          </Resizable>
-        )}
-        <div className={styles.previewWrapper}>
-          <div className={styles.scrollContainer}>
-            <div className={styles.scrollContainerInner}>
-              <Input
-                placeholder="Введите название вашей последовательности..."
-                label="Название последовательности"
-                value={documentTitle}
-                onChange={onDocumentTitleChange}
-                name="documentTitle"
-              />
-              <div className={styles.sequenceBlocks}>{sequenceBlocks}</div>
-              <Button
-                block
-                className={styles.addBlockButton}
-                onClick={addAsanasBlock}>
-                Добавить блок асан
-              </Button>
-            </div>
-          </div>
-
-          {!!builderLength &&
-            (!!sequenceDuration.hours || !!sequenceDuration.minutes) && (
-              <div className={styles.timeWrapper}>
-                <Button
-                  icon={<SettingOutlined />}
-                  size="small"
-                  className={styles.settingsButton}
-                  onClick={toggleTimeSettingsVisible}
-                />
-                <div>{`Время последовательности: ${
-                  sequenceDuration.hours ? `${sequenceDuration.hours}ч` : ''
-                } ${
-                  sequenceDuration.minutes ? `${sequenceDuration.minutes}м` : ''
-                }`}</div>
-              </div>
+        {shouldShowSpinner ? (
+          <Spinner />
+        ) : (
+          <>
+            {!isMobile && (
+              <Resizable
+                className={styles.resizable}
+                defaultSize={{
+                  width: '352px',
+                  height: '100%'
+                }}
+                maxWidth="535px"
+                minWidth="170px">
+                <div className={styles.listWrapper}>
+                  <SearchFilter
+                    onSearchAsana={onSearchAsana}
+                    filterItems={asanaGroups}
+                    onFilterAsanas={onFilterAsana}
+                    searchItems={asanas}
+                  />
+                  <AsanasList
+                    asanas={asanas}
+                    onAsanaClick={onAsanaClick}
+                    size="small"
+                  />
+                </div>
+              </Resizable>
             )}
-
-          <div className={styles.actionButtons}>
-            <Button
-              type="primary"
-              size="large"
-              block={isMobile}
-              danger
-              onClick={clearSequence}>
-              Очистить
-            </Button>
-            <Button
-              type="primary"
-              size="large"
-              block={isMobile}
-              onClick={showPreview}>
-              Посмотреть результат
-            </Button>
-            <Button
-              type="primary"
-              size="large"
-              block={isMobile}
-              onClick={generatePdf}>
-              Сохранить в PDF
-            </Button>
-          </div>
-          <Modal
-            centered
-            okText="Сохранить"
-            cancelText="Отмена"
-            width={310}
-            closeIcon={null}
-            footer={null}
-            open={isTimeSettingsVisible}
-            onCancel={hideTimeSettingsModel}>
-            <SequenceTimeForm
-              onSubmit={saveTimeSettings}
-              defaultValues={timeSettings}
-              footerButtons={[
-                <Button key="reset" onClick={hideTimeSettingsModel}>
-                  Отмена
-                </Button>,
-                <Button type="primary" htmlType="submit" key="submit">
-                  Сохранить
-                </Button>
-              ]}
+            <SequenceEditor
+              isMobile={isMobile}
+              onSave={onSave}
+              data={builderData}
+              onChange={setBuilderData}
+              editingBlock={editingBlock}
+              onChangeEditingBlock={setEditingBlock}
+              title={title}
+              onChangeTitle={setTitle}
+              description={description}
+              onChangeDescription={setDescription}
+              isPublic={isPublic}
+              onChangePublic={setIsPublic}
+              asanasListNode={
+                <div className={styles.listWrapper}>
+                  <SearchFilter
+                    onSearchAsana={onSearchAsana}
+                    filterItems={asanaGroups}
+                    onFilterAsanas={onFilterAsana}
+                    searchItems={asanas}
+                  />
+                  <AsanasList
+                    asanas={asanas}
+                    onAsanaClick={onAsanaClick}
+                    size="small"
+                  />
+                </div>
+              }
             />
-          </Modal>
-          <Modal
-            title="Ваша последовательность"
-            centered
-            okText="Скачать"
-            cancelText="Отмена"
-            open={isPdfModalVisible}
-            onOk={generatePdf}
-            onCancel={hidePreview}
-            destroyOnClose
-            width={1000}
-            {...(isMobile ? {footer: null} : {})}>
-            <PdfViewer sequence={pdfAsanaData} />
-          </Modal>
-          <Modal
-            title="Выберите асану"
-            centered
-            open={isAsanasModalVisible}
-            onCancel={hideAsanasModal}
-            className={isMobile ? styles.modal : undefined}
-            footer={null}>
-            <div className={styles.listWrapper}>
-              <SearchFilter
-                onSearchAsana={onSearchAsana}
-                filterItems={asanaGroups}
-                onFilterAsanas={onFilterAsana}
-                searchItems={asanas}
-              />
-              <AsanasList
-                asanas={asanas}
-                onAsanaClick={onAsanaClick}
-                size="small"
-              />
-            </div>
-          </Modal>
-        </div>
+          </>
+        )}
       </div>
     </>
   )
@@ -689,19 +348,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const theme = context.req.cookies.seq_theme || 'light'
 
-  const asanas = await getAsanasList()
-  const asanaGroups = await getAsanaGroupsList()
-
-  asanas.sort((a, b) => (a.name > b.name ? 1 : -1))
-  asanaGroups.sort((a, b) => (a.name > b.name ? 1 : -1))
-
-  const asanaMap = asanas.reduce((acc: Record<string, Asana>, curValue) => {
-    acc[curValue.id] = curValue
-
-    return acc
-  }, {})
-
-  return {props: {isMobile, theme, asanas, asanaGroups, asanaMap}}
+  return {props: {isMobile, theme}}
 }
 
 export default CreateSequencePage

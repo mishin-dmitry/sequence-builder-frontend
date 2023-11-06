@@ -4,6 +4,7 @@ import type {Asana} from 'types'
 
 import {AsanaCard} from 'components/asana-card'
 import {Typography} from 'antd'
+import {Spinner} from 'components/spinner'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
@@ -13,6 +14,7 @@ export interface AsanaCardsListProps {
   size?: 'default' | 'small'
   className?: string
   withLinks?: boolean
+  isLoading?: boolean
   onAsanaClick?: (asana: Asana) => void
 }
 
@@ -20,8 +22,13 @@ export const AsanasList: React.FC<AsanaCardsListProps> = ({
   asanas = [],
   size,
   className,
+  isLoading,
   onAsanaClick
 }) => {
+  if (isLoading) {
+    return <Spinner />
+  }
+
   if (!asanas.length) {
     return (
       <div className={clsx(styles.list, className)}>

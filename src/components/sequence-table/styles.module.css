@@ -1,0 +1,15 @@
+.table {
+  width: 100%;
+}
+
+.buttons {
+  white-space: nowrap;
+
+  button + button {
+    margin-left: 5px;
+  }
+}
+
+.tooltip {
+  margin-left: 10px;
+}

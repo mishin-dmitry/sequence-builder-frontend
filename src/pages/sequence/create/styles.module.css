@@ -1,14 +1,3 @@
-.previewWrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  min-width: 0;
-  justify-content: space-between;
-  height: 100%;
-  overflow: hidden;
-}
-
 .root {
   display: flex;
   width: 100%;
@@ -75,12 +64,14 @@
   }
 }
 
-body[data-mobile='true'] {
-  & .previewWrapper {
-    height: auto;
-    flex: 1 1 auto;
-  }
+.resizable {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--resizable-border-color);
+}
 
+body[data-mobile='true'] {
   & .root {
     flex-direction: column;
   }

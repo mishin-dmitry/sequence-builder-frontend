@@ -42,26 +42,21 @@ Font.register({
 })
 
 export interface Sequence {
-  documentTitle?: string
   asanas: Record<string, Asana[]>
 }
-
 interface Accumulator {
   asanas: (Asana | Asana[])[]
   block?: 'repeat' | 'dynamic'
 }
 
-export const PDFDocument = ({
-  documentTitle,
-  asanas: asanasProp
-}: Sequence): any => {
+export const PDFDocument = ({asanas: asanasProp}: Sequence): any => {
   const prepareAsanasBlock = (asanas: Asana[]): (Asana | Asana[])[] => {
     return asanas.reduce(
       (acc: Accumulator, curValue) => {
         // Если последний элемент в аккумуляторе массив, то будем пушить в него
-        const lastElement: any =
-          // const lastElement: Asana[] | Asana | null = acc.asanas
-          acc.asanas.length ? acc.asanas[acc.asanas.length - 1] : null
+        const lastElement: any = acc.asanas.length
+          ? acc.asanas[acc.asanas.length - 1]
+          : null
 
         const hasOnlyRepeatingBlock =
           curValue.isAsanaInRepeatingBlock && !curValue.isAsanaInDynamicBlock
@@ -74,7 +69,6 @@ export const PDFDocument = ({
           (hasOnlyRepeatingBlock || hasOnlyDynamicBlock)
         ) {
           // Если массив совпадает с текущим блоком, то просто пушнем в него
-          // if (curValue.isAsanaInRepeatingBlock || )
           if (
             (curValue.isAsanaInRepeatingBlock && acc.block === 'repeat') ||
             (curValue.isAsanaInDynamicBlock && acc.block === 'dynamic')
@@ -147,9 +141,6 @@ export const PDFDocument = ({
     <Document>
       <Page orientation="landscape" style={styles.page}>
         <View style={styles.columnView}>
-          {!!documentTitle && (
-            <Text style={styles.documentTitle}>{documentTitle}</Text>
-          )}
           {Object.values(asanasProp).map((asanasBlock, index) => {
             const asanas = prepareAsanasBlock(asanasBlock)
 

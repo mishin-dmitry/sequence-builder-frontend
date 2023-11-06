@@ -3,7 +3,6 @@
   flex: 1;
   justify-content: center;
   position: relative;
-  user-select: none;
 
   &.empty {
     align-self: flex-end;

@@ -1,11 +1,12 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 
-import {getAsanasList} from 'api/actions'
 import {getRandomItem} from 'lib/get-random-item'
 import {PageProps} from 'types/page-props'
 import {Spinner} from 'components/spinner'
 import {AsanaCard} from 'components/asana-card'
 import {Button} from 'antd'
+import {Meta} from 'components/meta'
+import {useAsanas} from 'context/asanas'
 
 import type {Asana} from 'types'
 import type {GetServerSideProps} from 'next'
@@ -14,15 +15,16 @@ import styles from './styles.module.css'
 import sampleSize from 'lodash.samplesize'
 import shuffle from 'lodash.shuffle'
 import clsx from 'clsx'
-import {Meta} from 'components/meta'
 
 const VARIATIONS_LENGTH = 4
 
-const QuizPage: React.FC<PageProps> = ({asanas}) => {
+const QuizPage: React.FC<PageProps> = () => {
   const [rightAnswer, setRightAnswer] = useState<Asana | null>(null)
   const [selectedAnswer, setSelectedAnswer] = useState<Asana | null>(null)
   const [showedAnswer, setShowedAnswer] = useState<Asana | null>(null)
   const [quizVariations, setQuizVariations] = useState<Asana[]>([])
+
+  const {asanas} = useAsanas()
 
   const prepareVariations = useCallback(() => {
     const variations = sampleSize(asanas, VARIATIONS_LENGTH)
@@ -33,9 +35,11 @@ const QuizPage: React.FC<PageProps> = ({asanas}) => {
   }, [asanas])
 
   useEffect(() => {
-    prepareVariations()
+    if (asanas.length) {
+      prepareVariations()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [asanas])
 
   const variations = useMemo(
     () =>
@@ -132,19 +136,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const theme = context.req.cookies.seq_theme || 'light'
 
-  const asanas = await getAsanasList()
-
-  asanas.sort((a, b) => (a.name > b.name ? 1 : -1))
-
-  return {
-    props: {
-      isMobile,
-      theme,
-      asanas: asanas.filter(
-        ({alias}) => alias !== 'empty' && alias !== 'separator'
-      )
-    }
-  }
+  return {props: {isMobile, theme}}
 }
 
 export default QuizPage

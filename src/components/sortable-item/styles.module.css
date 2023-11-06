@@ -50,17 +50,17 @@
   }
 
   &.repeating {
-    box-shadow: 0 0 0 2px #7798fc;
+    box-shadow: 0 0 0 2px var(--repeat-color);
   }
 
   &.dynamic {
-    box-shadow: 0 0 0 2px #e8ab7c;
+    box-shadow: 0 0 0 2px var(--dynamic-color);
   }
 
   &.bothBlocks {
     box-shadow:
-      0 0 0 2px #7798fc,
-      inset 0 0 0 2px #e8ab7c;
+      0 0 0 2px var(--repeat-color),
+      inset 0 0 0 2px var(--dynamic-color);
   }
 
   &.dragging {

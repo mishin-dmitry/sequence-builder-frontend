@@ -1,0 +1,11 @@
+.errorMessage {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.selectWrapper {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+}

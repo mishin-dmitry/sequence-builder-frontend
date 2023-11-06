@@ -1,0 +1,85 @@
+.previewWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  min-width: 0;
+  justify-content: space-between;
+  height: 100%;
+  overflow: hidden;
+
+  .mobile & {
+    padding-left: 0;
+    height: auto;
+    flex: 1 1 auto;
+  }
+}
+
+.blockWrapper + .blockWrapper {
+  margin-top: 10px;
+}
+
+.scrollContainer {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 50px);
+  overflow: hidden;
+  overflow-y: scroll;
+  flex: 1;
+
+  .mobile & {
+    height: auto;
+  }
+}
+
+.withTopMargin {
+  margin-top: 10px;
+}
+
+.timeWrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+
+  & .settingsButton {
+    margin-right: 10px;
+  }
+}
+
+.sequenceBlocks {
+  flex: 1;
+
+  &:empty {
+    display: none;
+
+    & + button {
+      margin: 0;
+    }
+  }
+}
+
+.controls {
+  margin-bottom: 20px;
+}
+
+.actionButtons {
+  margin-top: 10px;
+  overflow: auto;
+  white-space: nowrap;
+  text-align: right;
+
+  button + button {
+    margin: 0 0 0 10px;
+  }
+}
+
+body[data-mobile='true'] {
+  & .actionButtons {
+    display: flex;
+    flex-direction: column;
+
+    & button + button {
+      margin: 10px 0 0;
+    }
+  }
+}

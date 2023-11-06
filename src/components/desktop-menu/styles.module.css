@@ -1,0 +1,8 @@
+.row {
+  flex: 1;
+  flex-wrap: nowrap;
+}
+
+.menuWrapper {
+  flex: 1;
+}

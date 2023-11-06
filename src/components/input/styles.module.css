@@ -1,0 +1,9 @@
+.errorMessage {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.inputWrapper + .inputWrapper {
+  margin-top: 20px;
+}

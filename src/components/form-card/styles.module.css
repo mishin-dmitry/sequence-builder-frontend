@@ -1,0 +1,39 @@
+.pageWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(149 157 165/ 0.2);
+  max-width: 400px;
+}
+
+.main {
+  padding: 15px;
+}
+
+.title {
+  margin: 0 0 30px !important;
+  font-size: 24px !important;
+}
+
+.footer {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid var(--card-border-color);
+  padding: 15px;
+}
+
+body[data-mobile='true'] {
+  & .pageWrapper {
+    height: 100%;
+  }
+}

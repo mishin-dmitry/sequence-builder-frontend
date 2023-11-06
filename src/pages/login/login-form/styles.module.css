@@ -1,0 +1,13 @@
+.button {
+  margin-top: 20px;
+}
+
+.buttonWrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.link {
+  margin-top: 10px;
+  display: inline-flex;
+}
