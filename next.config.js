@@ -13,6 +13,10 @@ module.exports = withBundleAnalyzer({
     CDN_ORIGIN: process.env.CDN_ORIGIN
   },
 
+  experimental: {
+    optimizePackageImports: ['antd', '@ant-design/icons']
+  },
+
   async redirects() {
     return [
       {

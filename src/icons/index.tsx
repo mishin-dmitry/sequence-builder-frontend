@@ -135,6 +135,33 @@ import {radjaBhudjangasana} from './radja-bhudjangasana'
 import {chaturanga} from './chaturanga'
 import {bhaktiVirabhadrasana} from './bhakti-virabhadrasana'
 import {parshvaBakasana} from './parshva-bakasana'
+import {ardhaPrasaritaPadottanasana} from './ardha-prasarita-padottanasana'
+import {virasanaRuk} from './virasana-ruk'
+import {ardhaviraVrikshasana} from './ardhavira-vrikshasana'
+import {viparitaKarani} from './viparita-karani'
+import {djatharaParivartanasana} from './djathara-parivartanasana'
+import {brahmachariasana} from './brahmachariasana'
+import {ardhaUtthitahastaPadangushthasana1} from './ardha-utthitahasta-padangushthasana1'
+import {bhudjaSvastikasana} from './bhudja-svastikasana'
+import {gandaBherudasana} from './ganda-bherudasana'
+import {diba} from './diba'
+import {yogaDandasana} from './yoga-dandasana'
+import {prapadasana} from './prapadasana'
+import {suptaPadangushthasana2} from './supta-padangushthasana2'
+import {tiriakaTadasana} from './tiriaka-tadasana'
+import {trikonasana2} from './trikonasana2'
+import {parivrittaStupasana} from './parivritta-stupasana'
+import {samakonasana} from './samakonasana'
+import {suptaPadangushthasana3} from './supta-padangushthasana3'
+import {trikonasana1} from './trikonasana1'
+import {urdhvaPrasaritaPadasana} from './urdhva-prasarita-padasana'
+import {hastaPadangushthasana4} from './utthita-hasta-padangushthasana-4'
+import {ekapadaBidalasana} from './ekapada-bidalasana'
+import {ekapadaShirshasana} from './ekapada-shirshasana'
+import {ekaBhudjaSvastikasana} from './eka-bhudja-svastikasana'
+import {ekapadaMardjariasana} from './ekapada-mardjariasana'
+import {vadjrasana} from './vadjrasana'
+import {virasana} from './virasana'
 
 export const iconsMap: Record<string, string> = {
   adhomukhaShvanasana,
@@ -273,5 +300,32 @@ export const iconsMap: Record<string, string> = {
   radjaBhudjangasana,
   chaturanga,
   bhaktiVirabhadrasana,
-  parshvaBakasana
+  parshvaBakasana,
+  ardhaPrasaritaPadottanasana,
+  virasanaRuk,
+  ardhaviraVrikshasana,
+  viparitaKarani,
+  djatharaParivartanasana,
+  brahmachariasana,
+  ardhaUtthitahastaPadangushthasana1,
+  bhudjaSvastikasana,
+  gandaBherudasana,
+  diba,
+  yogaDandasana,
+  prapadasana,
+  suptaPadangushthasana2,
+  tiriakaTadasana,
+  trikonasana2,
+  parivrittaStupasana,
+  samakonasana,
+  suptaPadangushthasana3,
+  trikonasana1,
+  urdhvaPrasaritaPadasana,
+  hastaPadangushthasana4,
+  ekapadaBidalasana,
+  ekapadaShirshasana,
+  ekaBhudjaSvastikasana,
+  ekapadaMardjariasana,
+  vadjrasana,
+  virasana
 }

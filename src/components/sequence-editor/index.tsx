@@ -467,7 +467,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
           {!isViewMode && (
             <Button
               block
-              size={isMobile ? 'small' : 'large'}
+              size="large"
               className={styles.withTopMargin}
               onClick={addAsanasBlock}>
               Добавить блок асан
@@ -502,7 +502,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
               title="Удалить последовательность"
               description="Вы действительно хотите удалить последовательность?"
               onClick={onDelete}
-              size={isMobile ? 'small' : 'large'}
+              size="large"
               okText="Удалить">
               Удалить
             </ConfirmButton>
@@ -510,22 +510,22 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
             <ConfirmButton
               title="Очистить последовательность"
               description="Вы действительно хотите очистить последовательность?"
-              size={isMobile ? 'small' : 'large'}
+              size="large"
               okText="Очистить"
               onClick={clearSequence}>
               Очистить
             </ConfirmButton>
           ))}
-        <Button size={isMobile ? 'small' : 'large'} onClick={showPreview}>
+        <Button size="large" onClick={showPreview}>
           Посмотреть результат
         </Button>
-        <Button size={isMobile ? 'small' : 'large'} onClick={generatePdf}>
+        <Button size="large" onClick={generatePdf}>
           Скачать в PDF
         </Button>
         {isAuthorized && !isViewMode && (
           <Button
             type="primary"
-            size={isMobile ? 'small' : 'large'}
+            size="large"
             loading={isSaving}
             disabled={!builderLength || isInputEmpty}
             block={isMobile}
