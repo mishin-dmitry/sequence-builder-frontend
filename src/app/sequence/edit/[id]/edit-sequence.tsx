@@ -14,7 +14,7 @@ import {Meta} from 'components/meta'
 import {SearchFilter} from 'components/serch-filter'
 import {AsanasList} from 'components/asanas-list'
 import {useSequence} from '../../hooks'
-import {useRouter, useSearchParams} from 'next/navigation'
+import {useParams, useRouter} from 'next/navigation'
 import {useUser} from 'context/user'
 import {Urls} from 'lib/urls'
 import {useAsanas} from 'context/asanas'
@@ -79,8 +79,8 @@ export const EditSequence: React.FC<EditSequenceProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [asanasMap])
 
+  const params = useParams<{id: string}>()
   const router = useRouter()
-  const searchParams = useSearchParams()
 
   const {updateSequence, isFetching, deleteSequence} = useSequence()
   const {user, isAuthorized} = useUser()
@@ -105,14 +105,14 @@ export const EditSequence: React.FC<EditSequenceProps> = ({
       )
     }
 
-    await updateSequence(searchParams.get('id') as string, data)
+    await updateSequence(params.id, data)
   }, [
     documentTitle,
     description,
     isPublic,
     builderData,
     updateSequence,
-    searchParams
+    params.id
   ])
 
   const searchAsanaString = useRef<string>('')
