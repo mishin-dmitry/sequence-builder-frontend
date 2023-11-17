@@ -45,37 +45,41 @@ export const SequenceViewer: React.FC<SequenceViewerProps> = ({
               (
                 {id, alias, isAsanaInRepeatingBlock, isAsanaInDynamicBlock},
                 index
-              ) => (
-                <div
-                  className={clsx(
-                    styles.imageWrapper,
-                    isAsanaInRepeatingBlock &&
-                      !isAsanaInDynamicBlock &&
-                      styles.repeating,
-                    !isAsanaInRepeatingBlock &&
-                      isAsanaInDynamicBlock &&
-                      styles.dynamic,
-                    isAsanaInRepeatingBlock &&
-                      isAsanaInDynamicBlock &&
-                      styles.bothBlocks
-                  )}
-                  key={index}>
-                  <img
-                    width={70}
-                    height={70}
-                    key={id}
-                    src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                      iconsMap[alias].replaceAll(
-                        '$COLOR',
-                        isDarkTheme
-                          ? 'rgba(255, 255, 255, 0.85)'
-                          : 'rgba(0, 0, 0, 0.88)'
-                      )
-                    )}`}
-                    alt="Изображение асаны"
-                  />
-                </div>
-              )
+              ) => {
+                if (alias === 'separator' || alias === 'empty') return null
+
+                return (
+                  <div
+                    className={clsx(
+                      styles.imageWrapper,
+                      isAsanaInRepeatingBlock &&
+                        !isAsanaInDynamicBlock &&
+                        styles.repeating,
+                      !isAsanaInRepeatingBlock &&
+                        isAsanaInDynamicBlock &&
+                        styles.dynamic,
+                      isAsanaInRepeatingBlock &&
+                        isAsanaInDynamicBlock &&
+                        styles.bothBlocks
+                    )}
+                    key={index}>
+                    <img
+                      width={70}
+                      height={70}
+                      key={id}
+                      src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                        iconsMap[alias].replaceAll(
+                          '$COLOR',
+                          isDarkTheme
+                            ? 'rgba(255, 255, 255, 0.85)'
+                            : 'rgba(0, 0, 0, 0.88)'
+                        )
+                      )}`}
+                      alt="Изображение асаны"
+                    />
+                  </div>
+                )
+              }
             )}
           </div>
         </div>
