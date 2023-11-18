@@ -62,7 +62,12 @@ const RootLayout: React.FC<PropsWithChildren> = async ({children}) => {
               <body {...(isMobile ? {'data-mobile': true} : {})}>
                 <Layout className={styles.layout}>
                   <Header />
-                  <main className={styles.main}>{children}</main>
+                  <main className={styles.main}>
+                    <h1 className={styles.visuallyHidden}>
+                      Построение последовательностей для йога
+                    </h1>
+                    {children}
+                  </main>
                 </Layout>
               </body>
             </StyledComponentsRegistry>
