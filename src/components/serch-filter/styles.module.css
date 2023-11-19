@@ -1,6 +1,5 @@
 .searchWrapper {
   padding: 10px 10px 0;
-  margin-bottom: 30px;
   display: flex;
 }
 
@@ -30,6 +29,5 @@
 body[data-mobile='true'] {
   & .searchWrapper {
     padding: 0;
-    margin-bottom: 10px;
   }
 }

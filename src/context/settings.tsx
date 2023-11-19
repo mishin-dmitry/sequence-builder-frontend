@@ -9,6 +9,8 @@ import React, {
 
 import {ConfigProvider, theme as antdTheme} from 'antd'
 
+import {useCookies} from 'react-cookie'
+
 interface UseSettings {
   toggleTheme: () => void
   isDarkTheme: boolean
@@ -36,6 +38,7 @@ export const ProvideSettings: React.FC<ProvideSettingsProps> = ({
   const [theme, setTheme] = useState(initialTheme)
 
   const {defaultAlgorithm, darkAlgorithm} = antdTheme
+  const [_, setCookie] = useCookies(['seq_theme'])
 
   const toggleTheme = useCallback(() => {
     setTheme((prevState) => {
@@ -43,15 +46,17 @@ export const ProvideSettings: React.FC<ProvideSettingsProps> = ({
 
       if (isDark) {
         document.documentElement.setAttribute('data-theme', 'dark')
-        document.cookie = 'seq_theme=dark'
+
+        setCookie('seq_theme', 'dark')
       } else {
         document.documentElement.removeAttribute('data-theme')
-        document.cookie = 'seq_theme=light'
+
+        setCookie('seq_theme', 'light')
       }
 
       return isDark ? 'dark' : 'light'
     })
-  }, [])
+  }, [setCookie])
 
   const value = useMemo(
     () => ({
