@@ -38,16 +38,18 @@ export const AsanasList: React.FC<AsanaCardsListProps> = ({
   }
 
   return (
-    <ul className={clsx(styles.list, className)}>
-      {asanas.map((asana: Asana) => (
-        <AsanaCard
-          data={asana}
-          key={asana.id}
-          size={size}
-          onAsanaClick={onAsanaClick}
-          className={styles.asana}
-        />
-      ))}
-    </ul>
+    <div className={styles.listWrapper}>
+      <ul className={clsx(styles.list, className)}>
+        {asanas.map((asana: Asana) => (
+          <AsanaCard
+            data={asana}
+            key={asana.id}
+            size={size}
+            onAsanaClick={onAsanaClick}
+            className={styles.asana}
+          />
+        ))}
+      </ul>
+    </div>
   )
 }

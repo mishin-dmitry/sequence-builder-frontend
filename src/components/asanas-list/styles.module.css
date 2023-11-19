@@ -2,11 +2,14 @@
   padding: 0 10px 10px;
   margin: -10px 0 0;
   column-gap: 10px;
+  columns: 160px;
+}
+
+.listWrapper {
+  padding-top: 30px;
+  overflow-y: scroll;
   -ms-overflow-style: none;
   scrollbar-width: none;
-  columns: 160px;
-  overflow: hidden;
-  overflow-y: scroll;
 
   &::-webkit-scrollbar {
     display: none;
