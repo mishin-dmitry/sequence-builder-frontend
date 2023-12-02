@@ -34,13 +34,8 @@ export interface Sequence extends BaseSequence {
   isFound?: boolean
   blocks: {
     id: number
-    asanas: {
-      id: number
-      alias: string
-      options: {
-        inRepeatingBlock: boolean
-        inDynamicBlock: boolean
-      }
-    }[]
-  }[]
+    alias: string
+    inRepeatingBlock: boolean
+    inDynamicBlock: boolean
+  }[][]
 }

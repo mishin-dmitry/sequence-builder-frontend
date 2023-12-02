@@ -222,7 +222,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
             </Tooltip>
           </>
         )}
-        {count && <span className={styles.index}>{count}</span>}
+        {!!count && <span className={styles.index}>{count}</span>}
       </div>
     </div>
   )

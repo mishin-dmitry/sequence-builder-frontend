@@ -29,16 +29,16 @@ interface EditSequenceProps {
   sequence: SequenceType
 }
 
-export const EditSequence: React.FC<EditSequenceProps> = ({
-  sequence: {
+export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
+  const {
     userId,
     id,
     title = '',
     description: initialDescription = '',
     isPublic: initialIsPublic,
     blocks
-  }
-}) => {
+  } = sequence
+
   const {asanas: allAsanas, asanaGroups, asanasMap} = useAsanas()
   const [documentTitle, setDocumentTitle] = useState<string>(title)
   const [description, setDescription] = useState<string>(initialDescription)
@@ -50,13 +50,11 @@ export const EditSequence: React.FC<EditSequenceProps> = ({
 
   const [builderData, setBuilderData] = useState<Record<string, Asana[]>>(
     blocks.reduce((acc: Record<string, Asana[]>, curValue, index) => {
-      acc[index] = curValue.asanas.map(
-        ({id, options: {inRepeatingBlock, inDynamicBlock}}) => ({
-          ...asanasMap[id],
-          isAsanaInRepeatingBlock: inRepeatingBlock,
-          isAsanaInDynamicBlock: inDynamicBlock
-        })
-      )
+      acc[index] = curValue.map(({id, inRepeatingBlock, inDynamicBlock}) => ({
+        ...asanasMap[id],
+        isAsanaInRepeatingBlock: inRepeatingBlock,
+        isAsanaInDynamicBlock: inDynamicBlock
+      }))
 
       return acc
     }, {})
@@ -65,13 +63,11 @@ export const EditSequence: React.FC<EditSequenceProps> = ({
   useEffect(() => {
     setBuilderData(
       blocks.reduce((acc: Record<string, Asana[]>, curValue, index) => {
-        acc[index] = curValue.asanas.map(
-          ({id, options: {inRepeatingBlock, inDynamicBlock}}) => ({
-            ...asanasMap[id],
-            isAsanaInRepeatingBlock: inRepeatingBlock,
-            isAsanaInDynamicBlock: inDynamicBlock
-          })
-        )
+        acc[index] = curValue.map(({id, inRepeatingBlock, inDynamicBlock}) => ({
+          ...asanasMap[id],
+          isAsanaInRepeatingBlock: inRepeatingBlock,
+          isAsanaInDynamicBlock: inDynamicBlock
+        }))
 
         return acc
       }, {})

@@ -21,13 +21,11 @@ export const ViewSequence: React.FC<{sequence: SequenceType}> = ({
   const data = useMemo(
     () =>
       blocks.reduce((acc: Record<string, Asana[]>, curValue, index) => {
-        acc[index] = curValue.asanas.map(
-          ({id, options: {inRepeatingBlock, inDynamicBlock}}) => ({
-            ...asanasMap[id],
-            isAsanaInRepeatingBlock: inRepeatingBlock,
-            isAsanaInDynamicBlock: inDynamicBlock
-          })
-        )
+        acc[index] = curValue.map(({id, inRepeatingBlock, inDynamicBlock}) => ({
+          ...asanasMap[id],
+          isAsanaInRepeatingBlock: inRepeatingBlock,
+          isAsanaInDynamicBlock: inDynamicBlock
+        }))
 
         return acc
       }, {}),
