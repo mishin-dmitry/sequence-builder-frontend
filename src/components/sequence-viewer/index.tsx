@@ -109,11 +109,11 @@ export const SequenceViewer: React.FC<SequenceViewerProps> = ({
   return (
     <div className={styles.previewWrapper}>
       <div className={styles.scrollContainer}>
-        <div className={styles.repeat}>
+        <div className={styles.repeatRow}>
           <span />
           Повторить асану на другую сторону
         </div>
-        <div className={styles.dynamic}>
+        <div className={styles.dynamicRow}>
           <span />
           Сделать асану в динамике
         </div>
