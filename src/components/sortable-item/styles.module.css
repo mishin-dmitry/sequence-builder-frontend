@@ -78,11 +78,11 @@
   left: 5px;
   display: flex;
   justify-content: center;
-  align-self: center;
+  align-items: center;
   color: var(--text-color);
   border: 1px solid var(--text-color);
   background-color: var(--card-bg);
-  font-size: 11px;
+  font-size: 9px;
 }
 
 .deleteButton {

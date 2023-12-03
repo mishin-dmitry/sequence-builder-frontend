@@ -54,7 +54,7 @@ const DEFAULT_TIME_SETTINGS = {
 
 export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   onSave,
-  data,
+  data: dataProp,
   onChange,
   editingBlock,
   onChangeEditingBlock,
@@ -84,6 +84,29 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   const [timeSettings, setTimeSettings] = useState<TimeSettingsFormInputs>(
     DEFAULT_TIME_SETTINGS
   )
+
+  const data = useMemo(() => {
+    let count = 0
+
+    const result: Record<string, Asana[]> = {}
+
+    Object.keys(dataProp).forEach((key) => {
+      const currentBlock = dataProp[key]
+
+      result[key] = currentBlock.map((asana) => {
+        if (asana.alias === 'separator') return asana
+
+        count++
+
+        return {
+          ...asana,
+          count
+        }
+      })
+    })
+
+    return result
+  }, [dataProp])
 
   useEffect(() => {
     const timeSettingsFromLS = getItem<
@@ -341,7 +364,6 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     ))
   }, [
     data,
-    isMobile,
     deleteAsanaById,
     deleteAsanasBlock,
     onDragEnd,
