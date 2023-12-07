@@ -4,6 +4,7 @@
   align-items: center;
   flex: 1;
   padding: 10px;
+  overflow: scroll;
 }
 
 body[data-mobile='true'] {
