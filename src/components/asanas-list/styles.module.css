@@ -23,19 +23,26 @@
 }
 
 body[data-mobile='true'] {
+  & .listWrapper {
+    padding-top: 10px;
+  }
+
   & .list {
     columns: 3;
     margin: 0;
-    padding: 0;
+    padding: 0 5px;
     column-gap: 5px;
     overflow: auto;
     overflow-y: auto;
 
     & .asana {
       width: 100%;
+      break-inside: avoid;
+      display: inline-flex;
+      margin-top: 5px;
 
-      &:not(:first-child) {
-        margin-top: 5px;
+      &:first-child {
+        margin-top: 10px;
       }
     }
   }
