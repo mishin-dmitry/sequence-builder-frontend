@@ -162,6 +162,24 @@ import {ekaBhudjaSvastikasana} from './eka-bhudja-svastikasana'
 import {ekapadaMardjariasana} from './ekapada-mardjariasana'
 import {vadjrasana} from './vadjrasana'
 import {virasana} from './virasana'
+import {funkyPincha} from './funky-pincha'
+import {agniStambhasana} from './agni-stambhasana'
+import {adhoHastaPadangushthasana4} from './adho-hasta-padangushthasana-4'
+import {adhomukhaEkapadaUtkatasana} from './adhomukha-ekapada-utkatasana'
+import {ardhaVatayanasana} from './ardha-vatayanasana'
+import {ardhaSamakonasana} from './ardha-samakonasana'
+import {baddhaArdhaChandrasana} from './baddha-ardha-chandrasana'
+import {parivrittaBadhaArdhaChandrasana} from './parivritta-baddha-ardha-chandrasana'
+import {vishvamitrasana} from './vishvamitrasana'
+import {dvipadaKaundiniasana} from './dvipada-kaundiniasana'
+import {laghuVishvamitrasana} from './laghu-vishvamitrasana'
+import {padahastasana} from './padahastasana'
+import {parivrittaMardjariasana} from './parivritta-mardjariasana'
+import {parivrittaNavasana} from './parivritta-navasana'
+import {suptaParivrittaGarudasana} from './supta-parivritta-garudasana'
+import {urdhvaMukhaPashimottanasana2} from './urdhva-mukha-pashimottanasana-2'
+import {ekapadaAgnistambhasana} from './ekapada-agnistambhasana'
+import {ekapadaViparitaParivrittaAgniStambkhasana} from './ekapada-viparita-parivritta-agni-stambkhasana'
 
 export const iconsMap: Record<string, string> = {
   adhomukhaShvanasana,
@@ -327,5 +345,23 @@ export const iconsMap: Record<string, string> = {
   ekaBhudjaSvastikasana,
   ekapadaMardjariasana,
   vadjrasana,
-  virasana
+  virasana,
+  funkyPincha,
+  agniStambhasana,
+  adhoHastaPadangushthasana4,
+  adhomukhaEkapadaUtkatasana,
+  ardhaVatayanasana,
+  ardhaSamakonasana,
+  baddhaArdhaChandrasana,
+  parivrittaBadhaArdhaChandrasana,
+  vishvamitrasana,
+  dvipadaKaundiniasana,
+  laghuVishvamitrasana,
+  padahastasana,
+  parivrittaMardjariasana,
+  parivrittaNavasana,
+  suptaParivrittaGarudasana,
+  urdhvaMukhaPashimottanasana2,
+  ekapadaAgnistambhasana,
+  ekapadaViparitaParivrittaAgniStambkhasana
 }
