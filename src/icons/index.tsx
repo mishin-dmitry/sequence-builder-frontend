@@ -101,7 +101,7 @@ import {parivrittaShashankasana} from './parivritta-shashankasana'
 import {pinchaMayurasana} from './pincha-mayurasana'
 import {ardhaUttanasana} from './ardha-uttanasana'
 import {hastaPadangushthasana3} from './utthita-hasta-padangushthasana-3'
-import {skrutkaSidya} from './skrutka-sidya'
+import {parivrittaSukhasana} from './parivritta-sukhasana'
 import {suptaArdhaMatsiendrasana} from './supta-ardha-matsiendrasana'
 import {purvottanasana} from './purvottanasana'
 import {parivrittaUtkatasana} from './parivritta-utkatasana'
@@ -130,7 +130,6 @@ import {utthanPrishthasana} from './utthan-prishthasana'
 import {padangushthasana} from './padangushthasana'
 import {ardhaPavanamuktasana} from './ardha-pavanamuktasana'
 import {malasana} from './malasana'
-import {suptaMatsiendrasana} from './supta-matsiendrasana'
 import {radjaBhudjangasana} from './radja-bhudjangasana'
 import {chaturanga} from './chaturanga'
 import {bhaktiVirabhadrasana} from './bhakti-virabhadrasana'
@@ -180,6 +179,10 @@ import {suptaParivrittaGarudasana} from './supta-parivritta-garudasana'
 import {urdhvaMukhaPashimottanasana2} from './urdhva-mukha-pashimottanasana-2'
 import {ekapadaAgnistambhasana} from './ekapada-agnistambhasana'
 import {ekapadaViparitaParivrittaAgniStambkhasana} from './ekapada-viparita-parivritta-agni-stambkhasana'
+import {urdhvaHastasana} from './urdhva-hastasana'
+import {ardhaNataradjasana} from './ardha-nataradjasana'
+import {ardhaPadangushthasana} from './ardha-padangushthasana'
+import {tolasana} from './tolasana'
 
 export const iconsMap: Record<string, string> = {
   adhomukhaShvanasana,
@@ -285,7 +288,7 @@ export const iconsMap: Record<string, string> = {
   pinchaMayurasana,
   ardhaUttanasana,
   hastaPadangushthasana3,
-  skrutkaSidya,
+  parivrittaSukhasana,
   suptaArdhaMatsiendrasana,
   purvottanasana,
   parivrittaUtkatasana,
@@ -314,7 +317,6 @@ export const iconsMap: Record<string, string> = {
   padangushthasana,
   ardhaPavanamuktasana,
   malasana,
-  suptaMatsiendrasana,
   radjaBhudjangasana,
   chaturanga,
   bhaktiVirabhadrasana,
@@ -363,5 +365,9 @@ export const iconsMap: Record<string, string> = {
   suptaParivrittaGarudasana,
   urdhvaMukhaPashimottanasana2,
   ekapadaAgnistambhasana,
-  ekapadaViparitaParivrittaAgniStambkhasana
+  ekapadaViparitaParivrittaAgniStambkhasana,
+  urdhvaHastasana,
+  ardhaNataradjasana,
+  ardhaPadangushthasana,
+  tolasana
 }

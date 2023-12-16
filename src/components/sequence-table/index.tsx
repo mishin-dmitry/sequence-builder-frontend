@@ -41,7 +41,12 @@ export const SequenceTable: React.FC<SequenceTableProps> = ({
   const columns = useMemo(() => {
     return [
       {title: 'Название', dataIndex: 'title', key: 'title'},
-      {title: 'Описание', dataIndex: 'description', key: 'description'},
+      {
+        title: 'Описание',
+        dataIndex: 'description',
+        key: 'description',
+        width: 400
+      },
       {
         title: (
           <span>
@@ -148,6 +153,7 @@ export const SequenceTable: React.FC<SequenceTableProps> = ({
       className={styles.table}
       locale={locale}
       size="small"
+      scroll={{x: 'max-content'}}
     />
   )
 }
