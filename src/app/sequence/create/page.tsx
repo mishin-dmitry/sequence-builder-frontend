@@ -10,6 +10,7 @@ import {getItem, removeItem, setItem} from 'lib/local-storage'
 
 import {
   LOCAL_STORAGE_DESCRIPTION_KEY,
+  LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY,
   LOCAL_STORAGE_EDITING_BLOCK,
   LOCAL_STORAGE_IS_PUBLIC_KEY,
   LOCAL_STORAGE_SEQUENCE_KEY,
@@ -109,6 +110,18 @@ const CreateSequencePage: React.FC = () => {
     const sequenceFromLS = getItem<Record<string, Asana[]>>(
       LOCAL_STORAGE_SEQUENCE_KEY
     )
+
+    const duplicatedSequenceFromLS = getItem<Record<string, Asana[]>>(
+      LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY
+    )
+
+    if (duplicatedSequenceFromLS) {
+      setBuilderData(duplicatedSequenceFromLS)
+
+      removeItem(LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY)
+
+      return
+    }
 
     const editingBlockFromLS = getItem<string>(LOCAL_STORAGE_EDITING_BLOCK)
     const titleFromLS = getItem<string>(LOCAL_STORAGE_TITLE_KEY)
@@ -258,6 +271,10 @@ const CreateSequencePage: React.FC = () => {
     [allAsanas, asanas, onSearchAsana]
   )
 
+  const duplicateSequence = useCallback(() => {
+    setItem(LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY, builderData)
+  }, [builderData])
+
   return (
     <div className={styles.root}>
       <>
@@ -293,6 +310,7 @@ const CreateSequencePage: React.FC = () => {
           onChangeEditingBlock={setEditingBlock}
           title={title}
           onChangeTitle={setTitle}
+          onDuplicate={duplicateSequence}
           description={description}
           onChangeDescription={setDescription}
           isPublic={isPublic}

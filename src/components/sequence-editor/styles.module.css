@@ -68,7 +68,9 @@
   white-space: nowrap;
   text-align: right;
 
-  button + button {
+  button + button,
+  button + a,
+  a + button {
     margin: 0 0 0 10px;
   }
 }
@@ -78,7 +80,9 @@ body[data-mobile='true'] {
     display: flex;
     flex-direction: column;
 
-    & button + button {
+    button + button,
+    button + a,
+    a + button {
       margin: 10px 0 0;
     }
   }

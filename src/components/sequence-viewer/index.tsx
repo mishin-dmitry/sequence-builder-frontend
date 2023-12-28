@@ -7,12 +7,15 @@ import {saveAs} from 'file-saver'
 import {pdf} from '@react-pdf/renderer'
 import {iconsMap} from 'icons'
 import {useSettings} from 'context/settings'
+import {Urls} from 'lib/urls'
 
 import type {Asana} from 'types'
 
 import styles from './styles.module.css'
 import PdfViewer from 'components/pdf-viewer'
 import clsx from 'clsx'
+import {setItem} from 'lib/local-storage'
+import {LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY} from 'lib/constants'
 
 interface SequenceViewerProps {
   data: Record<string, Asana[]>
@@ -106,6 +109,22 @@ export const SequenceViewer: React.FC<SequenceViewerProps> = ({
     reachGoal('save_pdf')
   }, [pdfAsanaData, title])
 
+  const duplicate = useCallback(
+    (event: React.SyntheticEvent) => {
+      event.preventDefault()
+
+      setItem(LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY, data)
+
+      window.setTimeout(() => {
+        window.open(
+          `${window.location.origin}/${Urls.CREATE_SEQUENCE}`,
+          '_blank'
+        )
+      }, 0)
+    },
+    [data]
+  )
+
   return (
     <div className={styles.previewWrapper}>
       <div className={styles.scrollContainer}>
@@ -121,6 +140,9 @@ export const SequenceViewer: React.FC<SequenceViewerProps> = ({
       </div>
 
       <div className={styles.actionButtons}>
+        <Button size="large" block={isMobile} onClick={duplicate}>
+          Дублировать
+        </Button>
         <Button size="large" block={isMobile} onClick={showPreview}>
           Посмотреть PDF
         </Button>

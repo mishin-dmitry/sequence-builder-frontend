@@ -22,6 +22,7 @@ import type {DragStartEvent, DragEndEvent} from '@dnd-kit/core'
 import type {Asana} from 'types'
 
 import {LOCAL_STORAGE_TIME_SETTINGS} from 'lib/constants'
+import {Urls} from 'lib/urls'
 
 import dayjs from 'dayjs'
 import styles from './styles.module.css'
@@ -37,6 +38,7 @@ interface SequenceEditorProps {
   isViewMode?: boolean
   onSave: () => Promise<void>
   onDelete?: () => Promise<void>
+  onDuplicate: () => void
   onChange: (data: Record<string, Asana[]>) => void
   onChangeEditingBlock: (id: string) => void
   onChangeTitle: (title: string) => void
@@ -66,7 +68,8 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   isPublic,
   asanasListNode,
   onDelete,
-  isViewMode
+  isViewMode,
+  onDuplicate: onDuplicateProp
 }) => {
   const [isSaving, setIsSaving] = useState(false)
   const [isPdfModalVisible, setIsPdfModalVisible] = useState(false)
@@ -450,6 +453,22 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     reachGoal('save_pdf')
   }, [pdfAsanaData, title])
 
+  const onDuplicate = useCallback(
+    (event: React.SyntheticEvent) => {
+      event.preventDefault()
+
+      onDuplicateProp()
+
+      window.setTimeout(() => {
+        window.open(
+          `${window.location.origin}/${Urls.CREATE_SEQUENCE}`,
+          '_blank'
+        )
+      }, 0)
+    },
+    [onDuplicateProp]
+  )
+
   return (
     <div className={styles.previewWrapper}>
       <div className={styles.scrollContainer}>
@@ -538,6 +557,16 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
               Очистить
             </ConfirmButton>
           ))}
+        {isAuthorized && (
+          <Button
+            size="large"
+            href={Urls.CREATE_SEQUENCE}
+            rel="noopener noreferrer"
+            target="_blank"
+            onClick={onDuplicate}>
+            Дублировать
+          </Button>
+        )}
         <Button size="large" onClick={showPreview}>
           Посмотреть результат
         </Button>

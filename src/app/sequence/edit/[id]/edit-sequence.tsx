@@ -21,6 +21,8 @@ import {useAsanas} from 'context/asanas'
 import {SequenceEditor} from 'components/sequence-editor'
 import {Spinner} from 'components/spinner'
 import {useSettings} from 'context/settings'
+import {LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY} from 'lib/constants'
+import {setItem} from 'lib/local-storage'
 
 import styles from './styles.module.css'
 import debounce from 'lodash.debounce'
@@ -220,6 +222,10 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
 
   const shouldShowSpinner = false
 
+  const duplicateSequence = useCallback(() => {
+    setItem(LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY, builderData)
+  }, [builderData])
+
   return (
     <>
       <Meta
@@ -267,6 +273,7 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
             onChangeDescription={setDescription}
             isPublic={isPublic}
             onDelete={onDelete}
+            onDuplicate={duplicateSequence}
             onChangePublic={setIsPublic}
             asanasListNode={
               <div className={styles.listWrapper}>

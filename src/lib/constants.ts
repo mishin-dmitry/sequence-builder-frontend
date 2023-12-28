@@ -1,4 +1,5 @@
 export const LOCAL_STORAGE_SEQUENCE_KEY = 'sequence'
+export const LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY = 'duplicated_sequence'
 export const LOCAL_STORAGE_TITLE_KEY = 'title'
 export const LOCAL_STORAGE_DESCRIPTION_KEY = 'description'
 export const LOCAL_STORAGE_IS_PUBLIC_KEY = 'isPublic'
