@@ -117,7 +117,7 @@ export const SequenceViewer: React.FC<SequenceViewerProps> = ({
 
       window.setTimeout(() => {
         window.open(
-          `${window.location.origin}/${Urls.CREATE_SEQUENCE}`,
+          `${window.location.origin}${Urls.CREATE_SEQUENCE}`,
           '_blank'
         )
       }, 0)
