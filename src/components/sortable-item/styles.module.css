@@ -116,6 +116,7 @@
 .repeatButton,
 .dynamicButton,
 .copyButton,
+.scrollButton,
 .deleteButton {
   min-width: 17px !important;
   width: 17px !important;
@@ -130,6 +131,11 @@
     width: 10px;
     height: 10px;
   }
+}
+
+.scrollButton {
+  right: -5px !important;
+  top: 14px !important;
 }
 
 body[data-mobile='true'] {

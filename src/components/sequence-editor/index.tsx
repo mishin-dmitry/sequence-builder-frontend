@@ -39,6 +39,7 @@ interface SequenceEditorProps {
   onSave: () => Promise<void>
   onDelete?: () => Promise<void>
   onDuplicate: () => void
+  scrollToAsana: (id: number) => void
   onChange: (data: Record<string, Asana[]>) => void
   onChangeEditingBlock: (id: string) => void
   onChangeTitle: (title: string) => void
@@ -69,6 +70,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   asanasListNode,
   onDelete,
   isViewMode,
+  scrollToAsana,
   onDuplicate: onDuplicateProp
 }) => {
   const [isSaving, setIsSaving] = useState(false)
@@ -362,6 +364,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
           addAsanaToBlock={addAsanaToBlock}
           isEditing={editingBlock === key}
           copyAsana={copyAsana}
+          scrollToAsana={scrollToAsana}
         />
       </div>
     ))
@@ -375,6 +378,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     addAsanaToBlock,
     editingBlock,
     copyAsana,
+    scrollToAsana,
     onChangeEditingBlock
   ])
 

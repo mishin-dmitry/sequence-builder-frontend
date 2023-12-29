@@ -15,6 +15,7 @@ export interface AsanaCardsListProps {
   className?: string
   withLinks?: boolean
   isLoading?: boolean
+  selectedId?: number
   onAsanaClick?: (asana: Asana) => void
 }
 
@@ -23,7 +24,8 @@ export const AsanasList: React.FC<AsanaCardsListProps> = ({
   size,
   className,
   isLoading,
-  onAsanaClick
+  onAsanaClick,
+  selectedId
 }) => {
   if (isLoading) {
     return <Spinner />
@@ -47,6 +49,7 @@ export const AsanasList: React.FC<AsanaCardsListProps> = ({
             size={size}
             onAsanaClick={onAsanaClick}
             className={styles.asana}
+            isAsanaSelected={asana.id === selectedId}
           />
         ))}
       </ul>

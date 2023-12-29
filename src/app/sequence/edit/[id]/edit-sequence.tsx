@@ -31,6 +31,8 @@ interface EditSequenceProps {
   sequence: SequenceType
 }
 
+const RESET_SELECTED_ASANA_ID_TIMEOUT = 1000
+
 export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
   const {
     userId,
@@ -47,8 +49,11 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
   const [asanas, setAsanas] = useState(allAsanas)
   const [editingBlock, setEditingBlock] = useState('0')
   const [isPublic, setIsPublic] = useState(initialIsPublic)
+  const [selectedAsanaId, setSelectedAsanaId] = useState(-1)
 
   const {isMobile} = useSettings()
+
+  const resetSelectedAsanaIdTimer = useRef<number>()
 
   const [builderData, setBuilderData] = useState<Record<string, Asana[]>>(
     blocks.reduce((acc: Record<string, Asana[]>, curValue, index) => {
@@ -76,6 +81,20 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [asanasMap])
+
+  useEffect(() => {
+    if (selectedAsanaId) {
+      resetSelectedAsanaIdTimer.current = window.setTimeout(() => {
+        setSelectedAsanaId(-1)
+      }, RESET_SELECTED_ASANA_ID_TIMEOUT)
+    }
+
+    return () => {
+      if (resetSelectedAsanaIdTimer.current) {
+        window.clearTimeout(resetSelectedAsanaIdTimer.current)
+      }
+    }
+  }, [selectedAsanaId])
 
   const params = useParams<{id: string}>()
   const router = useRouter()
@@ -226,6 +245,23 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
     setItem(LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY, builderData)
   }, [builderData])
 
+  const scrollToAsana = useCallback(
+    (id: number) => {
+      if (resetSelectedAsanaIdTimer.current) {
+        window.clearTimeout(resetSelectedAsanaIdTimer.current)
+      }
+
+      if (id !== selectedAsanaId) {
+        if (resetSelectedAsanaIdTimer.current) {
+          window.clearTimeout(resetSelectedAsanaIdTimer.current)
+        }
+
+        setSelectedAsanaId(id)
+      }
+    },
+    [selectedAsanaId]
+  )
+
   return (
     <>
       <Meta
@@ -257,6 +293,7 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
                   asanas={asanas}
                   onAsanaClick={onAsanaClick}
                   size="small"
+                  selectedId={selectedAsanaId}
                 />
               </div>
             </Resizable>
@@ -275,6 +312,7 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
             onDelete={onDelete}
             onDuplicate={duplicateSequence}
             onChangePublic={setIsPublic}
+            scrollToAsana={scrollToAsana}
             asanasListNode={
               <div className={styles.listWrapper}>
                 <SearchFilter

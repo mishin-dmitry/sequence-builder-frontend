@@ -7,7 +7,8 @@ import {
   ArrowLeftOutlined,
   CopyOutlined,
   DeleteOutlined,
-  RetweetOutlined
+  RetweetOutlined,
+  ToTopOutlined
 } from '@ant-design/icons'
 
 import {useSettings} from 'context/settings'
@@ -30,6 +31,7 @@ interface SortableItemProps {
     action: 'add' | 'delete'
   ) => void
   copyAsana: () => void
+  scrollToAsana: (id: number) => void
 }
 
 export const SortableItem: React.FC<SortableItemProps> = ({
@@ -40,7 +42,14 @@ export const SortableItem: React.FC<SortableItemProps> = ({
   onDelete,
   addAsanasToBlock,
   copyAsana,
-  asana: {isAsanaInDynamicBlock, isAsanaInRepeatingBlock, count, name}
+  scrollToAsana: scrollToAsanaProp,
+  asana: {
+    isAsanaInDynamicBlock,
+    isAsanaInRepeatingBlock,
+    count,
+    name,
+    id: asanaId
+  }
 }) => {
   const [isButtonsVisible, setIsButtonsVisible] = useState(false)
 
@@ -149,6 +158,11 @@ export const SortableItem: React.FC<SortableItemProps> = ({
     ]
   )
 
+  const scrollToAsana = useCallback(
+    () => scrollToAsanaProp(asanaId),
+    [asanaId, scrollToAsanaProp]
+  )
+
   return (
     <Tooltip title={name}>
       <div
@@ -225,6 +239,17 @@ export const SortableItem: React.FC<SortableItemProps> = ({
                   onClick={copyAsana}
                 />
               </Tooltip>
+              {!isMobile && (
+                <Tooltip style={{width: 100}} title="Перейти к асане">
+                  <Button
+                    shape="circle"
+                    data-no-dnd="true"
+                    className={styles.scrollButton}
+                    icon={<ToTopOutlined />}
+                    onClick={scrollToAsana}
+                  />
+                </Tooltip>
+              )}
             </>
           )}
           {!!count && <span className={styles.index}>{count}</span>}

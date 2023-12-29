@@ -29,6 +29,8 @@ import {useSettings} from 'context/settings'
 import styles from './styles.module.css'
 import debounce from 'lodash.debounce'
 
+const RESET_SELECTED_ASANA_ID_TIMEOUT = 1000
+
 const CreateSequencePage: React.FC = () => {
   const {asanas: allAsanas, asanaGroups, asanasMap} = useAsanas()
   const {isMobile} = useSettings()
@@ -36,6 +38,7 @@ const CreateSequencePage: React.FC = () => {
   const [asanas, setAsanas] = useState(allAsanas)
   const [editingBlock, setEditingBlock] = useState('0')
   const [builderData, setBuilderData] = useState<Record<string, Asana[]>>({})
+  const [selectedAsanaId, setSelectedAsanaId] = useState(-1)
 
   const [title, setTitle] = useState<string>('')
   const [description, setDescription] = useState<string>('')
@@ -45,6 +48,7 @@ const CreateSequencePage: React.FC = () => {
   const {isAuthorized} = useUser()
 
   const router = useRouter()
+  const resetSelectedAsanaIdTimer = useRef<number>()
 
   const clearLocalStorage = useCallback(() => {
     removeItem(LOCAL_STORAGE_SEQUENCE_KEY)
@@ -105,6 +109,20 @@ const CreateSequencePage: React.FC = () => {
   useEffect(() => {
     setAsanas(allAsanas)
   }, [allAsanas])
+
+  useEffect(() => {
+    if (selectedAsanaId) {
+      resetSelectedAsanaIdTimer.current = window.setTimeout(() => {
+        setSelectedAsanaId(-1)
+      }, RESET_SELECTED_ASANA_ID_TIMEOUT)
+    }
+
+    return () => {
+      if (resetSelectedAsanaIdTimer.current) {
+        window.clearTimeout(resetSelectedAsanaIdTimer.current)
+      }
+    }
+  }, [selectedAsanaId])
 
   useEffect(() => {
     const sequenceFromLS = getItem<Record<string, Asana[]>>(
@@ -275,6 +293,23 @@ const CreateSequencePage: React.FC = () => {
     setItem(LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY, builderData)
   }, [builderData])
 
+  const scrollToAsana = useCallback(
+    (id: number) => {
+      if (resetSelectedAsanaIdTimer.current) {
+        window.clearTimeout(resetSelectedAsanaIdTimer.current)
+      }
+
+      if (id !== selectedAsanaId) {
+        if (resetSelectedAsanaIdTimer.current) {
+          window.clearTimeout(resetSelectedAsanaIdTimer.current)
+        }
+
+        setSelectedAsanaId(id)
+      }
+    },
+    [selectedAsanaId]
+  )
+
   return (
     <div className={styles.root}>
       <>
@@ -298,6 +333,7 @@ const CreateSequencePage: React.FC = () => {
                 asanas={asanas}
                 onAsanaClick={onAsanaClick}
                 size="small"
+                selectedId={selectedAsanaId}
               />
             </div>
           </Resizable>
@@ -314,6 +350,7 @@ const CreateSequencePage: React.FC = () => {
           description={description}
           onChangeDescription={setDescription}
           isPublic={isPublic}
+          scrollToAsana={scrollToAsana}
           onChangePublic={setIsPublic}
           asanasListNode={
             <div className={styles.listWrapper}>

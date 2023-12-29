@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef} from 'react'
 
 import type {Asana} from 'types'
 
@@ -16,6 +16,7 @@ interface AsanaCardProps {
   isButton?: boolean
   hideText?: boolean
   className?: string
+  isAsanaSelected?: boolean
   onAsanaClick?: (asana: Asana) => void
 }
 
@@ -25,14 +26,26 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
   size = 'default',
   hideText,
   isButton = true,
-  className
+  className,
+  isAsanaSelected
 }) => {
+  const ref = useRef<any>(null)
+
   const {isDarkTheme} = useSettings()
   const {name, alias = '', alignment} = data
 
   const onAsanaClick = useCallback(() => {
     onAsanaClickProp?.(data)
   }, [data, onAsanaClickProp])
+
+  useEffect(() => {
+    if (isAsanaSelected) {
+      ref.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      })
+    }
+  }, [isAsanaSelected])
 
   const image = useMemo(
     () =>
@@ -59,6 +72,7 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
 
   return (
     <TagName
+      ref={ref}
       className={clsx(
         styles.card,
         styles[size],

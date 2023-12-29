@@ -41,6 +41,7 @@ interface SequenceProps {
   onDragEnd: (event: any) => void
   onDragStart: (event: any) => void
   onAddAsanaButtonClick?: () => void
+  scrollToAsana: (id: number) => void
   copyAsana: (asana: Asana, index: number, blockId: string) => void
 }
 
@@ -54,7 +55,8 @@ export const Sequence: React.FC<SequenceProps> = ({
   onDeleteAsana: onDeleteAsanaProp,
   onDeleteBlock: onDeleteBlockProp,
   isEditing,
-  copyAsana
+  copyAsana,
+  scrollToAsana
 }) => {
   const {isDarkTheme, isMobile} = useSettings()
 
@@ -126,6 +128,7 @@ export const Sequence: React.FC<SequenceProps> = ({
                 asana={asana}
                 addAsanasToBlock={addAsanaToBlock}
                 copyAsana={() => copyAsana(asana, index, id)}
+                scrollToAsana={scrollToAsana}
                 className={styles.sortableWrapper}>
                 <div
                   className={clsx(
