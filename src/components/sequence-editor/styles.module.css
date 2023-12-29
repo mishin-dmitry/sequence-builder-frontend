@@ -26,6 +26,12 @@
   overflow: hidden;
   overflow-y: scroll;
   flex: 1;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   .mobile & {
     height: auto;

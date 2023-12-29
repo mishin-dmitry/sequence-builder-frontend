@@ -2,9 +2,10 @@ import React, {useCallback, useMemo} from 'react'
 
 import type {Asana} from 'types'
 
-import {Typography} from 'antd'
+import {Tooltip, Typography} from 'antd'
 import {iconsMap} from 'icons'
 import {useSettings} from 'context/settings'
+import {FileTextOutlined} from '@ant-design/icons'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
@@ -27,7 +28,7 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
   className
 }) => {
   const {isDarkTheme} = useSettings()
-  const {name, alias = '', description} = data
+  const {name, alias = '', alignment} = data
 
   const onAsanaClick = useCallback(() => {
     onAsanaClickProp?.(data)
@@ -73,10 +74,13 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
               {name}
             </Typography.Title>
           )}
-          {!!description && size === 'default' && (
-            <Typography>{description}</Typography>
-          )}
         </div>
+      )}
+
+      {!!alignment && (
+        <Tooltip title={<span className={styles.tooltip}>{alignment}</span>}>
+          <FileTextOutlined className={styles.icon} />
+        </Tooltip>
       )}
     </TagName>
   )

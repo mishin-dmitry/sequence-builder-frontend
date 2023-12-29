@@ -8,14 +8,14 @@ import {pdf} from '@react-pdf/renderer'
 import {iconsMap} from 'icons'
 import {useSettings} from 'context/settings'
 import {Urls} from 'lib/urls'
+import {setItem} from 'lib/local-storage'
+import {LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY} from 'lib/constants'
 
 import type {Asana} from 'types'
 
 import styles from './styles.module.css'
 import PdfViewer from 'components/pdf-viewer'
 import clsx from 'clsx'
-import {setItem} from 'lib/local-storage'
-import {LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY} from 'lib/constants'
 
 interface SequenceViewerProps {
   data: Record<string, Asana[]>
@@ -141,7 +141,7 @@ export const SequenceViewer: React.FC<SequenceViewerProps> = ({
 
       <div className={styles.actionButtons}>
         <Button size="large" block={isMobile} onClick={duplicate}>
-          Дублировать
+          Дублировать последовательность
         </Button>
         <Button size="large" block={isMobile} onClick={showPreview}>
           Посмотреть PDF

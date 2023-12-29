@@ -3,6 +3,7 @@ export interface Asana {
   name: string
   description: string
   alias: string
+  alignment: string
   searchKeys: string
   // Признак того, что асана находится в блоке,
   // который надо сделать на обратную сторону

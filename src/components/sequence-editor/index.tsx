@@ -564,7 +564,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
             rel="noopener noreferrer"
             target="_blank"
             onClick={onDuplicate}>
-            Дублировать
+            Дублировать последовательность
           </Button>
         )}
         <Button size="large" onClick={showPreview}>

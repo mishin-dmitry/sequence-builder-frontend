@@ -12,17 +12,17 @@ import {
 
 import {useSettings} from 'context/settings'
 
+import type {Asana} from 'types'
+
 import styles from './styles.module.css'
 import clsx from 'clsx'
 
 interface SortableItemProps {
   children: React.ReactNode
   id: string
+  asana: Asana & {count?: number}
   index: number
-  count?: number
   className?: string
-  isAsanaInRepeatingBlock?: boolean
-  isAsanaInDynamicBlock?: boolean
   onDelete: (id: number) => void
   addAsanasToBlock: (
     id: number,
@@ -37,12 +37,10 @@ export const SortableItem: React.FC<SortableItemProps> = ({
   children,
   className,
   index,
-  count,
   onDelete,
-  isAsanaInRepeatingBlock,
-  isAsanaInDynamicBlock,
   addAsanasToBlock,
-  copyAsana
+  copyAsana,
+  asana: {isAsanaInDynamicBlock, isAsanaInRepeatingBlock, count, name}
 }) => {
   const [isButtonsVisible, setIsButtonsVisible] = useState(false)
 
@@ -152,78 +150,86 @@ export const SortableItem: React.FC<SortableItemProps> = ({
   )
 
   return (
-    <div
-      ref={setNodeRef}
-      className={clsx(
-        styles.wrapper,
-        isSorting && styles.sorting,
-        isDragging && styles.dragOverlay,
-        className
-      )}
-      style={style}
-      {...props}
-      {...attributes}
-      {...listeners}>
+    <Tooltip title={name}>
       <div
+        ref={setNodeRef}
         className={clsx(
-          styles.item,
-          isDragging && styles.dragging,
-          isAsanaInRepeatingBlock && !isAsanaInDynamicBlock && styles.repeating,
-          isAsanaInDynamicBlock && !isAsanaInRepeatingBlock && styles.dynamic,
-          isAsanaInRepeatingBlock && isAsanaInDynamicBlock && styles.bothBlocks
-        )}>
-        {children}
-        {(isButtonsVisible || isAsanaInRepeatingBlock) &&
-          (isMobile ? (
-            repeatingBlockButton
-          ) : (
-            <Tooltip
-              title={`${
-                isAsanaInRepeatingBlock ? 'Убрать из блока' : 'Добавить в блок'
-              } с повтором на другую сторону`}
-              style={{width: 100}}>
-              {repeatingBlockButton}
-            </Tooltip>
-          ))}
-        {(isButtonsVisible || isAsanaInDynamicBlock) &&
-          (isMobile ? (
-            dynamicBlockButton
-          ) : (
-            <Tooltip
-              title={`${
-                isAsanaInDynamicBlock ? 'Убрать из блока' : 'Добавить в блок'
-              } с динамикой`}
-              style={{width: 100}}>
-              {dynamicBlockButton}
-            </Tooltip>
-          ))}
-        {isButtonsVisible && (
-          <>
-            <Button
-              danger
-              shape="circle"
-              type="primary"
-              data-no-dnd="true"
-              className={styles.deleteButton}
-              icon={<DeleteOutlined />}
-              onClick={() => onDelete(index)}
-            />
-            <Tooltip
-              {...(isMobile && {open: false})}
-              style={{width: 100}}
-              title="Скопировать асану">
-              <Button
-                shape="circle"
-                data-no-dnd="true"
-                className={styles.copyButton}
-                icon={<CopyOutlined />}
-                onClick={copyAsana}
-              />
-            </Tooltip>
-          </>
+          styles.wrapper,
+          isSorting && styles.sorting,
+          isDragging && styles.dragOverlay,
+          className
         )}
-        {!!count && <span className={styles.index}>{count}</span>}
+        style={style}
+        {...props}
+        {...attributes}
+        {...listeners}>
+        <div
+          className={clsx(
+            styles.item,
+            isDragging && styles.dragging,
+            isAsanaInRepeatingBlock &&
+              !isAsanaInDynamicBlock &&
+              styles.repeating,
+            isAsanaInDynamicBlock && !isAsanaInRepeatingBlock && styles.dynamic,
+            isAsanaInRepeatingBlock &&
+              isAsanaInDynamicBlock &&
+              styles.bothBlocks
+          )}>
+          {children}
+          {(isButtonsVisible || isAsanaInRepeatingBlock) &&
+            (isMobile ? (
+              repeatingBlockButton
+            ) : (
+              <Tooltip
+                title={`${
+                  isAsanaInRepeatingBlock
+                    ? 'Убрать из блока'
+                    : 'Добавить в блок'
+                } с повтором на другую сторону`}
+                style={{width: 100}}>
+                {repeatingBlockButton}
+              </Tooltip>
+            ))}
+          {(isButtonsVisible || isAsanaInDynamicBlock) &&
+            (isMobile ? (
+              dynamicBlockButton
+            ) : (
+              <Tooltip
+                title={`${
+                  isAsanaInDynamicBlock ? 'Убрать из блока' : 'Добавить в блок'
+                } с динамикой`}
+                style={{width: 100}}>
+                {dynamicBlockButton}
+              </Tooltip>
+            ))}
+          {isButtonsVisible && (
+            <>
+              <Button
+                danger
+                shape="circle"
+                type="primary"
+                data-no-dnd="true"
+                className={styles.deleteButton}
+                icon={<DeleteOutlined />}
+                onClick={() => onDelete(index)}
+              />
+              <Tooltip
+                {...(isMobile && {open: false})}
+                style={{width: 100}}
+                title="Скопировать асану">
+                <Button
+                  shape="circle"
+                  data-no-dnd="true"
+                  className={styles.copyButton}
+                  icon={<CopyOutlined />}
+                  onClick={copyAsana}
+                />
+              </Tooltip>
+            </>
+          )}
+          {!!count && <span className={styles.index}>{count}</span>}
+        </div>
       </div>
-    </div>
+    </Tooltip>
   )
 }

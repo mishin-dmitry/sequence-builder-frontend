@@ -113,13 +113,7 @@ export const Sequence: React.FC<SequenceProps> = ({
       <div className={clsx(styles.sequenceRow, isEditing && styles.editing)}>
         <div className={styles.sequence}>
           {data.map((asana, index) => {
-            const {
-              id: asanaId,
-              alias,
-              isAsanaInRepeatingBlock,
-              isAsanaInDynamicBlock,
-              count
-            } = asana
+            const {id: asanaId, alias} = asana
 
             const uniqueId = `${asanaId}-${index}`
 
@@ -128,10 +122,8 @@ export const Sequence: React.FC<SequenceProps> = ({
                 key={index}
                 id={uniqueId}
                 index={index}
-                count={count}
                 onDelete={onDeleteAsana}
-                isAsanaInRepeatingBlock={isAsanaInRepeatingBlock}
-                isAsanaInDynamicBlock={isAsanaInDynamicBlock}
+                asana={asana}
                 addAsanasToBlock={addAsanaToBlock}
                 copyAsana={() => copyAsana(asana, index, id)}
                 className={styles.sortableWrapper}>
