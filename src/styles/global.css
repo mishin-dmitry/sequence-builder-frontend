@@ -63,3 +63,22 @@ input {
 .ant-modal-content {
   padding: 10px !important;
 }
+
+.ant-tabs-nav-list {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ant-tabs-tab-btn {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ant-tabs-tab {
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  & + .ant-tabs-tab {
+    margin: 0 0 0 20px !important;
+  }
+}

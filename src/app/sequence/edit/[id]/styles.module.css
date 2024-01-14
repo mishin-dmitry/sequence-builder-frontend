@@ -53,7 +53,7 @@
 }
 
 .listWrapper {
-  height: calc(100vh - 90px);
+  height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -94,6 +94,10 @@
   align-items: center;
   justify-content: center;
   border-right: 1px solid var(--resizable-border-color);
+}
+
+.tabs {
+  margin: 0 10px !important;
 }
 
 body[data-mobile='true'] {

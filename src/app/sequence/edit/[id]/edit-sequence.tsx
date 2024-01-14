@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useCallback, useEffect, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import type {
   Asana,
@@ -23,15 +23,28 @@ import {Spinner} from 'components/spinner'
 import {useSettings} from 'context/settings'
 import {LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY} from 'lib/constants'
 import {setItem} from 'lib/local-storage'
+import {Tabs} from 'antd'
 
 import styles from './styles.module.css'
 import debounce from 'lodash.debounce'
+import {PirsList} from 'components/pirs-list'
 
 interface EditSequenceProps {
   sequence: SequenceType
 }
 
 const RESET_SELECTED_ASANA_ID_TIMEOUT = 1000
+
+const TABS = [
+  {
+    key: 'all',
+    label: 'Все асаны'
+  },
+  {
+    key: 'pirs',
+    label: 'Связки ПИРов'
+  }
+]
 
 export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
   const {
@@ -50,10 +63,20 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
   const [editingBlock, setEditingBlock] = useState('0')
   const [isPublic, setIsPublic] = useState(initialIsPublic)
   const [selectedAsanaId, setSelectedAsanaId] = useState(-1)
+  const [activeTab, setActiveTab] = useState<'all' | 'pirs'>('all')
 
   const {isMobile} = useSettings()
 
   const resetSelectedAsanaIdTimer = useRef<number>()
+  const searchAsanaString = useRef<string>('')
+  const filterAsanaGroups = useRef<AsanaGroup[]>([])
+
+  const onTabChange = useCallback((key: string) => {
+    filterAsanaGroups.current = []
+    searchAsanaString.current = ''
+
+    setActiveTab(key as 'all' | 'pirs')
+  }, [])
 
   const [builderData, setBuilderData] = useState<Record<string, Asana[]>>(
     blocks.reduce((acc: Record<string, Asana[]>, curValue, index) => {
@@ -132,9 +155,6 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
     params.id
   ])
 
-  const searchAsanaString = useRef<string>('')
-  const filterAsanaGroups = useRef<AsanaGroup[]>([])
-
   useEffect(() => {
     setAsanas(allAsanas)
   }, [allAsanas])
@@ -153,7 +173,9 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
 
   // Добавить асану в ряд последовательности
   const onAsanaClick = useCallback(
-    ({id}: Asana) => {
+    (asana: Asana | [number, number]) => {
+      const isArray = Array.isArray(asana)
+
       // Если слетел редактируемый блок
       if (!editingBlock) {
         const blockIds = Object.keys(builderData)
@@ -166,7 +188,12 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
       setBuilderData((prevData) => {
         return {
           ...prevData,
-          [editingBlock]: [...(prevData[editingBlock] ?? []), asanasMap[id]]
+          [editingBlock]: [
+            ...(prevData[editingBlock] ?? []),
+            ...(isArray
+              ? [asanasMap[asana[0]], asanasMap[asana[1]]]
+              : [asanasMap[asana.id]])
+          ]
         }
       })
     },
@@ -262,6 +289,58 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
     [selectedAsanaId]
   )
 
+  const pirPairs = useMemo<[number, number][]>(() => {
+    const result = [] as [number, number][]
+
+    asanas.forEach(({id, pirs = []}) => {
+      if (pirs.length) {
+        pirs.forEach((pirId) => {
+          result.push([id, pirId])
+        })
+      }
+    })
+
+    return result
+  }, [asanas])
+
+  const asanaActions = useMemo(
+    () => (
+      <div className={styles.listWrapper}>
+        <Tabs className={styles.tabs} onChange={onTabChange} items={TABS} />
+        {activeTab === 'pirs' && (
+          <PirsList onClick={onAsanaClick} pairs={pirPairs} />
+        )}
+        {activeTab === 'all' && (
+          <>
+            <SearchFilter
+              onSearchAsana={onSearchAsana}
+              filterItems={asanaGroups}
+              onFilterAsanas={onFilterAsana}
+              searchItems={asanas}
+            />
+            <AsanasList
+              asanas={asanas}
+              onAsanaClick={onAsanaClick}
+              size="small"
+              selectedId={selectedAsanaId}
+            />
+          </>
+        )}
+      </div>
+    ),
+    [
+      activeTab,
+      asanaGroups,
+      asanas,
+      onAsanaClick,
+      onFilterAsana,
+      onSearchAsana,
+      onTabChange,
+      pirPairs,
+      selectedAsanaId
+    ]
+  )
+
   return (
     <>
       <Meta
@@ -280,22 +359,9 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
                 width: '352px',
                 height: '100%'
               }}
-              maxWidth="535px"
-              minWidth="170px">
-              <div className={styles.listWrapper}>
-                <SearchFilter
-                  onSearchAsana={onSearchAsana}
-                  filterItems={asanaGroups}
-                  onFilterAsanas={onFilterAsana}
-                  searchItems={asanas}
-                />
-                <AsanasList
-                  asanas={asanas}
-                  onAsanaClick={onAsanaClick}
-                  size="small"
-                  selectedId={selectedAsanaId}
-                />
-              </div>
+              maxWidth={activeTab === 'all' ? '535px' : '200px'}
+              minWidth={activeTab === 'all' ? '200px' : '250px'}>
+              {asanaActions}
             </Resizable>
           )}
           <SequenceEditor
@@ -313,21 +379,7 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
             onDuplicate={duplicateSequence}
             onChangePublic={setIsPublic}
             scrollToAsana={scrollToAsana}
-            asanasListNode={
-              <div className={styles.listWrapper}>
-                <SearchFilter
-                  onSearchAsana={onSearchAsana}
-                  filterItems={asanaGroups}
-                  onFilterAsanas={onFilterAsana}
-                  searchItems={asanas}
-                />
-                <AsanasList
-                  asanas={asanas}
-                  onAsanaClick={onAsanaClick}
-                  size="small"
-                />
-              </div>
-            }
+            asanasListNode={asanaActions}
           />
         </div>
       )}

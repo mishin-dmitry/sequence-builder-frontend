@@ -10,6 +10,7 @@ import {StyledComponentsRegistry} from 'lib/antd-registry'
 import {ProvideUser} from 'context/user'
 import {ProvideAsanas} from 'context/asanas'
 import {ProvideSettings} from 'context/settings'
+import Favicon from '/public/static/favicon.ico'
 
 import styles from './styles.module.css'
 import '../styles/global.css'
@@ -19,7 +20,8 @@ export const metadata: Metadata = {
   title: 'Построение последовательностей для йоги',
   description:
     'Создайте свой идеальный путь в йоге с нашим приложением для построения последовательностей. Планируйте, комбинируйте и улучшайте свою практику йоги с Sequoia – вашим верным спутником на пути к гармонии и благополучию.',
-  keywords: 'Йога, построение последовательностей, асаны'
+  keywords: 'Йога, построение последовательностей, асаны',
+  icons: [{rel: 'icon', url: Favicon.src}]
 }
 
 const RootLayout: React.FC<PropsWithChildren> = async ({children}) => {
