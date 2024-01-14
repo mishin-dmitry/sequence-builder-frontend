@@ -18,15 +18,17 @@ export const PirsList: React.FC<PirsListProps> = ({pairs, onClick}) => {
   }
 
   return (
-    <div className={styles.list}>
-      {pairs.map(([sourceId, pirId], index) => (
-        <PirCard
-          key={index}
-          source={asanasMap[sourceId]}
-          pir={asanasMap[pirId]}
-          onClick={onClick}
-        />
-      ))}
+    <div className={styles.listWrapper}>
+      <div className={styles.list}>
+        {pairs.map(([sourceId, pirId], index) => (
+          <PirCard
+            key={index}
+            source={asanasMap[sourceId]}
+            pir={asanasMap[pirId]}
+            onClick={onClick}
+          />
+        ))}
+      </div>
     </div>
   )
 }
