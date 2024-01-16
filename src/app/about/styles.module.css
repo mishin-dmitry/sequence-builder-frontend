@@ -1,0 +1,26 @@
+.page {
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+
+.button {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.iframeWrapper {
+  overflow: hidden;
+  padding-bottom: 56.25%;
+  position: relative;
+  height: 0;
+}
+
+.iframeWrapper iframe {
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}

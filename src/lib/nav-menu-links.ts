@@ -7,6 +7,7 @@ interface NavMenuLink {
 }
 
 export const NAV_MENU_LINKS: NavMenuLink[] = [
+  {title: 'О платформе', href: Urls.ABOUT},
   {title: 'Создать последовательность', href: Urls.CREATE_SEQUENCE},
   {
     title: 'Мои последовательности',

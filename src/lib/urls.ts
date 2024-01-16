@@ -5,9 +5,14 @@ export enum Urls {
   VIEW_SEQUENCE = '/sequence/view',
   PUBLIC_SEQUENCES = '/sequence/public',
   QUIZ = '/quiz',
+  ABOUT = '/about',
   FEEDBACK = '/feedback',
   LOGIN = '/login',
   REGISTRATION = '/registration',
   REQUEST_RESET_PASSWORD = '/request-reset-password',
   LOGOUT = '/logout'
+}
+
+export enum ExternalUrls {
+  BOOSTY = 'https://boosty.to/sequoia-flow/donate'
 }
