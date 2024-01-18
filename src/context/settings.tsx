@@ -47,11 +47,11 @@ export const ProvideSettings: React.FC<ProvideSettingsProps> = ({
       if (isDark) {
         document.documentElement.setAttribute('data-theme', 'dark')
 
-        setCookie('seq_theme', 'dark')
+        setCookie('seq_theme', 'dark', {path: '/'})
       } else {
         document.documentElement.removeAttribute('data-theme')
 
-        setCookie('seq_theme', 'light')
+        setCookie('seq_theme', 'light', {path: '/'})
       }
 
       return isDark ? 'dark' : 'light'

@@ -177,13 +177,14 @@ export const Sequence: React.FC<SequenceProps> = ({
       </div>
     )
   }, [
-    isMobile,
     isEditing,
     data,
+    isMobile,
     onAddAsanaButtonClick,
     onDeleteBlock,
     onDeleteAsana,
     addAsanaToBlock,
+    scrollToAsana,
     id,
     isDarkTheme,
     copyAsana
