@@ -219,6 +219,8 @@ export const PDFDocument = ({asanas: asanasProp}: Sequence): any => {
                               <View
                                 style={{
                                   borderBottom: '1px solid black',
+                                  display: 'flex',
+                                  alignItems: 'center',
                                   paddingBottom: 5
                                 }}>
                                 {renderSvg(asana, _index)}
@@ -259,136 +261,6 @@ export const PDFDocument = ({asanas: asanasProp}: Sequence): any => {
                   }
 
                   return renderSvg(asana as Asana, index)
-                  //   if (Array.isArray(asana)) {
-                  //     const isDynamicBlock = asana.every(
-                  //       ({isAsanaInDynamicBlock}) => isAsanaInDynamicBlock
-                  //     )
-                  //     const middleAsana = Math.floor(
-                  //       calculateAsanasLength(asana) / 2
-                  //     )
-                  //     return asana.map((_asana, index, asanaSelf) => {
-                  //       // Если попали сюда, значит асана находится и в динамике, и в блоке на обратную сторону
-                  //       if (Array.isArray(_asana)) {
-                  //         const middleAsanaIndex = Math.floor(_asana.length / 2)
-                  //         const nextBlockOfAsanas =
-                  //           index + 1 <= asanaSelf.length
-                  //             ? asanaSelf[index + 1]
-                  //             : null
-                  //         let isNextBlockOfDynamicAsanas = false
-                  //         let isNextBlockOfRepeatingAsanas = false
-                  //         let shouldShowDynamicText = true
-                  //         let shouldShowRepeatingText = true
-                  //         if (Array.isArray(nextBlockOfAsanas)) {
-                  // isNextBlockOfDynamicAsanas = nextBlockOfAsanas.every(
-                  //   ({isAsanaInDynamicBlock}) => isAsanaInDynamicBlock
-                  // )
-                  // isNextBlockOfRepeatingAsanas =
-                  //   nextBlockOfAsanas.every(
-                  //     ({isAsanaInRepeatingBlock}) =>
-                  //       isAsanaInRepeatingBlock
-                  //   )
-                  // const currentAndNextArraysLength =
-                  //   nextBlockOfAsanas.length + _asana.length
-                  // const _middleAsanaIndex = Math.floor(
-                  //   currentAndNextArraysLength / 2
-                  // )
-                  // shouldShowDynamicText =
-                  //   !isNextBlockOfDynamicAsanas ||
-                  //   _middleAsanaIndex <= middleAsanaIndex
-                  // shouldShowRepeatingText =
-                  //   !isNextBlockOfRepeatingAsanas ||
-                  //   _middleAsanaIndex <= middleAsanaIndex
-                  //         }
-                  // return _asana.map((_curAsana, _index) => (
-                  //   <React.Fragment key={index}>
-                  //     <View>
-                  //       <View
-                  //         style={{
-                  //           borderBottom: '1px solid black',
-                  //           paddingBottom: 5
-                  //         }}>
-                  //         {renderSvg(_curAsana, _index)}
-                  //       </View>
-                  //       {middleAsanaIndex !== _index && (
-                  //         <View
-                  //           style={{
-                  //             height: 17.6,
-                  //             borderBottom: '1px solid black'
-                  //           }}
-                  //         />
-                  //       )}
-                  //       {middleAsanaIndex === _index && (
-                  //         <View>
-                  //           <Text style={styles.text}>
-                  //             {shouldShowDynamicText ? 'в динамике' : ''}
-                  //           </Text>
-                  //           <Text
-                  //             style={{
-                  //               ...styles.text,
-                  //               borderTop: '1px solid black',
-                  //               marginTop: 5
-                  //             }}>
-                  //             {shouldShowRepeatingText
-                  //               ? 'смена сторон'
-                  //               : ''}
-                  //           </Text>
-                  //         </View>
-                  //       )}
-                  //     </View>
-                  //   </React.Fragment>
-                  // ))
-                  //       }
-                  //       const previousElement = index
-                  //         ? asanaSelf[index - 1]
-                  //         : null
-                  //       // const previousElement = preparedAsanaIndex
-                  //       //   ? preparedAsanasSelf[preparedAsanaIndex - 1]
-                  //       //   : null
-                  //       const isLastPreviousElementHasBothBlocks =
-                  //         Array.isArray(previousElement)
-                  //       // const isLastPreviousElementHasBothBlocks =
-                  //       //   Array.isArray(previousElement) &&
-                  //       //   Array.isArray(previousElement[0])
-                  //       let shouldRenderText = middleAsana === index
-                  //       // Если предыдущий элемент имеет и динамику и смену сторон, мы должны пересчитать средний индекс
-                  //       if (isLastPreviousElementHasBothBlocks) {
-                  //         const prevElementLength =
-                  //           previousElement.flat(Infinity).length
-                  //         const currentAndPreviousArraysLength =
-                  //           prevElementLength + asanaSelf.length
-                  //         const _middleAsanaIndex = Math.floor(
-                  //           currentAndPreviousArraysLength / 2
-                  //         )
-                  // shouldRenderText =
-                  //   index + prevElementLength === _middleAsanaIndex
-                  //       }
-                  // // Если попали сюда, значит мы находимся в блоке асан с динамикой или на другую сторону
-                  // return (
-                  //   <React.Fragment key={index}>
-                  //     <View>
-                  //       <View
-                  //         style={{
-                  //           borderBottom: '1px solid black',
-                  //           paddingBottom:
-                  //             isLastPreviousElementHasBothBlocks &&
-                  //             !isDynamicBlock
-                  //               ? 22.6
-                  //               : 5
-                  //         }}>
-                  //         {renderSvg(_asana, index)}
-                  //       </View>
-                  //       {shouldRenderText && (
-                  //         <Text style={styles.text}>
-                  //           {isDynamicBlock ? 'в динамике' : 'смена сторон'}
-                  //         </Text>
-                  //       )}
-                  //     </View>
-                  //   </React.Fragment>
-                  // )
-                  //     })
-                  //   } else {
-                  //     return renderSvg(asana, preparedAsanaIndex)
-                  //   }
                 })}
               </View>
             )
