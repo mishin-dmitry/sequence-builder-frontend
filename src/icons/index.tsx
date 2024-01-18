@@ -88,7 +88,7 @@ import {akarnaDhanurasana} from './akarna-dhanurasana'
 import {parivrittaVirabhadrasana} from './parivrita-virabhadrasana'
 import {suptaBadhaKonasana} from './supta-badha-konasana'
 import {hanumanasana} from './hanumanasana'
-import {golub} from './golub'
+import {ardhaEkapadaRadjakapotasana} from './ardha-ekapada-radjakapotasana'
 import {kakasana} from './kakasana'
 import {ardhaHanumanasana} from './ardha-hanumanasana'
 import {skandasana} from './skandasana'
@@ -166,7 +166,7 @@ import {agniStambhasana} from './agni-stambhasana'
 import {adhoHastaPadangushthasana4} from './adho-hasta-padangushthasana-4'
 import {adhomukhaEkapadaUtkatasana} from './adhomukha-ekapada-utkatasana'
 import {ardhaVatayanasana} from './ardha-vatayanasana'
-import {ardhaSamakonasana} from './ardha-samakonasana'
+import {ardhaBaddhaSamakonasana} from './ardha-baddha-samakonasana'
 import {baddhaArdhaChandrasana} from './baddha-ardha-chandrasana'
 import {parivrittaBadhaArdhaChandrasana} from './parivritta-baddha-ardha-chandrasana'
 import {vishvamitrasana} from './vishvamitrasana'
@@ -183,6 +183,20 @@ import {urdhvaHastasana} from './urdhva-hastasana'
 import {ardhaNataradjasana} from './ardha-nataradjasana'
 import {ardhaPadangushthasana} from './ardha-padangushthasana'
 import {tolasana} from './tolasana'
+import {ardhaSamakonasana} from './ardha-samakonasana'
+import {ardhaSamakonasanaSilovaya} from './ardha-samakonasana-silovaya'
+import {utthitaParshvakonasanaSilovaya} from './utthita-parshvakonasana-silovaya'
+import {ekaPadaUtkatasana} from './eka-pada-utkatasana'
+import {adhomukhaUtthitahastaPadangushthasana2} from './adhomukha-utthitahasta-padangushthasana-2'
+import {ardhaHanumanasanaSilovaya} from './ardha-hanumanasana-silovaya'
+import {ardhaEkapadaRadjakapotasana2} from './ardha-ekapada-radjakapotasana-2'
+import {ardhaBrahmachariasana} from './ardha-brahmachariasana'
+import {ardhaVishvamitrasana} from './ardha-vishvamitrasana'
+import {makarasana} from './makarasana'
+import {muktaArdhaVishvamitrasana} from './mukta-ardha-vishvamitrasana'
+import {muktaDvipadaAnantasana} from './mukta-dvipada-anantasana'
+import {parivrittaEkapadaAgnistambhasana} from './parivritta-ekapada-agnistambhasana'
+import {utthitaParshvaPadaUpaveshasana} from './utthita-parshva-pada-upaveshasana'
 
 export const iconsMap: Record<string, string> = {
   adhomukhaShvanasana,
@@ -275,7 +289,7 @@ export const iconsMap: Record<string, string> = {
   parivrittaVirabhadrasana,
   suptaBadhaKonasana,
   hanumanasana,
-  golub,
+  ardhaEkapadaRadjakapotasana,
   kakasana,
   ardhaHanumanasana,
   skandasana,
@@ -353,7 +367,7 @@ export const iconsMap: Record<string, string> = {
   adhoHastaPadangushthasana4,
   adhomukhaEkapadaUtkatasana,
   ardhaVatayanasana,
-  ardhaSamakonasana,
+  ardhaBaddhaSamakonasana,
   baddhaArdhaChandrasana,
   parivrittaBadhaArdhaChandrasana,
   vishvamitrasana,
@@ -369,5 +383,19 @@ export const iconsMap: Record<string, string> = {
   urdhvaHastasana,
   ardhaNataradjasana,
   ardhaPadangushthasana,
-  tolasana
+  tolasana,
+  ardhaSamakonasana,
+  ardhaSamakonasanaSilovaya,
+  utthitaParshvakonasanaSilovaya,
+  ekaPadaUtkatasana,
+  adhomukhaUtthitahastaPadangushthasana2,
+  ardhaHanumanasanaSilovaya,
+  ardhaEkapadaRadjakapotasana2,
+  ardhaBrahmachariasana,
+  ardhaVishvamitrasana,
+  makarasana,
+  muktaArdhaVishvamitrasana,
+  muktaDvipadaAnantasana,
+  parivrittaEkapadaAgnistambhasana,
+  utthitaParshvaPadaUpaveshasana
 }
