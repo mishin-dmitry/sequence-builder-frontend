@@ -98,7 +98,9 @@ export const PDFDocument = ({asanas: asanasProp}: Sequence): any => {
                         let shouldRenderText = _index === blockMiddleAsanaIndex
 
                         const shouldInsertSeparator =
-                          isNextElementBlock && _index === self.length - 1
+                          isNextElementBlock &&
+                          nextElement.type !== BlockType.BOTH &&
+                          _index === self.length - 1
 
                         if (isPreviousElementHasBothBlocks) {
                           const prevElementLength = prevElement.asanas.length
@@ -139,7 +141,9 @@ export const PDFDocument = ({asanas: asanasProp}: Sequence): any => {
                         let shouldRenderText = _index === blockMiddleAsanaIndex
 
                         const shouldInsertSeparator =
-                          isNextElementBlock && _index === self.length - 1
+                          isNextElementBlock &&
+                          nextElement.type !== BlockType.BOTH &&
+                          _index === self.length - 1
 
                         if (isPreviousElementHasBothBlocks) {
                           const prevElementLength = prevElement.asanas.length
