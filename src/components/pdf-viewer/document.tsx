@@ -10,8 +10,14 @@ import {
   Svg
 } from '@react-pdf/renderer'
 
-import {Asana} from 'types'
-import {createSVGPdfRendererComponent} from 'lib/svg-to-components'
+import {type Asana} from 'types'
+
+import {
+  DEFAULT_ICON_HEIGHT,
+  createSVGPdfRendererComponent,
+  DEFAULT_ICON_WIDTH
+} from 'lib/svg-to-components'
+
 import {iconsMap} from 'icons'
 
 import {type AsanaBlock, prepareAsanasBlock, isBlock, BlockType} from './utils'
@@ -53,9 +59,15 @@ export interface Sequence {
 
 const renderSvg = ({alias}: Asana, index: number): any => {
   if (alias === 'empty') {
-    return <Svg width={70} height={70} key={index} />
+    return (
+      <Svg
+        width={DEFAULT_ICON_WIDTH}
+        height={DEFAULT_ICON_HEIGHT}
+        key={index}
+      />
+    )
   } else if (alias === 'separator') {
-    return <Svg width={10} height={70} key={index} />
+    return <Svg width={10} height={DEFAULT_ICON_HEIGHT} key={index} debug />
   } else {
     return iconsMap[alias]
       ? createSVGPdfRendererComponent(iconsMap[alias])

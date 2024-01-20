@@ -17,6 +17,9 @@ const formatStringToCamelCase = (str: string): string => {
   )
 }
 
+export const DEFAULT_ICON_HEIGHT = 64
+export const DEFAULT_ICON_WIDTH = 74
+
 export const getStyleObjectFromString = (
   str?: string
 ): Record<string, string> => {
@@ -63,8 +66,11 @@ export const svgToComponent = (node: any): any => {
         Component = Svg
         componentProps = {
           viewBox: node.properties?.viewBox,
-          height: parseIntAttributes(node.properties?.height) || 64,
-          width: hasWidth ? parseIntAttributes(node.properties?.width) : 74,
+          height:
+            parseIntAttributes(node.properties?.height) || DEFAULT_ICON_HEIGHT,
+          width: hasWidth
+            ? parseIntAttributes(node.properties?.width)
+            : DEFAULT_ICON_WIDTH,
           style: {
             fontSize: 12
           }
