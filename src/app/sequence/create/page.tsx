@@ -37,11 +37,11 @@ const TABS = [
   {
     key: 'all',
     label: 'Все асаны'
-  },
-  {
-    key: 'pirs',
-    label: 'Связки ПИРов'
   }
+  // {
+  //   key: 'pirs',
+  //   label: 'Связки ПИРов'
+  // }
 ]
 
 const CreateSequencePage: React.FC = () => {

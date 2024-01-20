@@ -39,11 +39,11 @@ const TABS = [
   {
     key: 'all',
     label: 'Все асаны'
-  },
-  {
-    key: 'pirs',
-    label: 'Связки ПИРов'
   }
+  // {
+  //   key: 'pirs',
+  //   label: 'Связки ПИРов'
+  // }
 ]
 
 export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
