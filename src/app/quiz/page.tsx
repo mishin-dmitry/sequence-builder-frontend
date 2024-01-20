@@ -28,7 +28,7 @@ const QuizPage: React.FC = () => {
   const asanas = useMemo<Asana[]>(
     () =>
       initialAsanas.filter(
-        ({name}) => name !== 'separator' && name !== 'empty'
+        ({alias}) => alias !== 'separator' && alias !== 'empty'
       ),
     [initialAsanas]
   )
