@@ -104,7 +104,7 @@ export const SequenceViewer: React.FC<SequenceViewerProps> = ({
 
     const blob = await pdfDoc.toBlob()
 
-    saveAs(blob, title)
+    saveAs(blob, title.replaceAll('.', '_'))
 
     reachGoal('save_pdf')
   }, [pdfAsanaData, title])

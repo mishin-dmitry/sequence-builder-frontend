@@ -452,7 +452,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
 
     const blob = await pdfDoc.toBlob()
 
-    saveAs(blob, title)
+    saveAs(blob, title.replaceAll('.', '_'))
 
     reachGoal('save_pdf')
   }, [pdfAsanaData, title])
