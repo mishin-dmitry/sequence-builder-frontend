@@ -17,6 +17,7 @@ interface AsanaCardProps {
   hideText?: boolean
   className?: string
   isAsanaSelected?: boolean
+  hideAlignment?: boolean
   onAsanaClick?: (asana: Asana) => void
 }
 
@@ -27,7 +28,8 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
   hideText,
   isButton = true,
   className,
-  isAsanaSelected
+  isAsanaSelected,
+  hideAlignment
 }) => {
   const ref = useRef<any>(null)
 
@@ -91,7 +93,7 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
         </div>
       )}
 
-      {!!alignment && (
+      {!!alignment && !hideAlignment && (
         <Tooltip title={<span className={styles.tooltip}>{alignment}</span>}>
           <FileTextOutlined className={styles.icon} />
         </Tooltip>

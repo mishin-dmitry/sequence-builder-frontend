@@ -23,7 +23,15 @@ const QuizPage: React.FC = () => {
   const [showedAnswer, setShowedAnswer] = useState<Asana | null>(null)
   const [quizVariations, setQuizVariations] = useState<Asana[]>([])
 
-  const {asanas} = useAsanas()
+  const {asanas: initialAsanas} = useAsanas()
+
+  const asanas = useMemo<Asana[]>(
+    () =>
+      initialAsanas.filter(
+        ({name}) => name !== 'separator' && name !== 'empty'
+      ),
+    [initialAsanas]
+  )
 
   const prepareVariations = useCallback(() => {
     const variations = sampleSize(asanas, VARIATIONS_LENGTH)
@@ -92,6 +100,7 @@ const QuizPage: React.FC = () => {
       <AsanaCard
         data={rightAnswer}
         hideText
+        hideAlignment
         isButton={false}
         className={styles.card}
       />
