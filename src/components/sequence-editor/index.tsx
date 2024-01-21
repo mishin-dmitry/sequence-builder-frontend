@@ -4,8 +4,8 @@ import {Input} from 'components/input'
 import {useUser} from 'context/user'
 
 import {Textarea} from 'components/textarea'
-import {Button, Checkbox, Modal, Tooltip} from 'antd'
-import {QuestionCircleOutlined, SettingOutlined} from '@ant-design/icons'
+import {Button, Modal} from 'antd'
+import {SettingOutlined} from '@ant-design/icons'
 import {Sequence} from 'components/sequence'
 import {arrayMove} from 'lib/array-move'
 import {reachGoal} from 'lib/metrics'
@@ -17,7 +17,6 @@ import {getItem, setItem} from 'lib/local-storage'
 import {ConfirmButton} from 'components/confirm-button'
 import {useSettings} from 'context/settings'
 
-import {type CheckboxChangeEvent} from 'antd/es/checkbox'
 import type {DragStartEvent, DragEndEvent} from '@dnd-kit/core'
 import type {Asana} from 'types'
 
@@ -29,22 +28,23 @@ import styles from './styles.module.css'
 import PdfViewer from 'components/pdf-viewer'
 
 interface SequenceEditorProps {
-  data: Record<string, Asana[]>
+  data: Record<string, Asana[]> | Asana[]
   editingBlock: string
   title: string
   description?: string
   isPublic?: boolean
   asanasListNode: React.ReactNode
   isViewMode?: boolean
+  target?: 'sequence' | 'bunch'
   onSave: () => Promise<void>
   onDelete?: () => Promise<void>
-  onDuplicate: () => void
+  onDuplicate?: () => void
   scrollToAsana: (id: number) => void
   onChange: (data: Record<string, Asana[]>) => void
-  onChangeEditingBlock: (id: string) => void
+  onChangeEditingBlock?: (id: string) => void
   onChangeTitle: (title: string) => void
-  onChangeDescription: (description: string) => void
-  onChangePublic: (checked: boolean) => void
+  onChangeDescription?: (description: string) => void
+  onChangePublic?: (checked: boolean) => void
 }
 
 const DEFAULT_TIME_SETTINGS = {
@@ -65,13 +65,12 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   onChangeTitle,
   description,
   onChangeDescription,
-  onChangePublic,
-  isPublic,
   asanasListNode,
   onDelete,
   isViewMode,
   scrollToAsana,
-  onDuplicate: onDuplicateProp
+  onDuplicate: onDuplicateProp,
+  target = 'sequence'
 }) => {
   const [isSaving, setIsSaving] = useState(false)
   const [isPdfModalVisible, setIsPdfModalVisible] = useState(false)
@@ -80,6 +79,8 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   const [isInputEmpty, setIsInputEmpty] = useState(false)
 
   const {isMobile} = useSettings()
+
+  const isTargetSequence = target === 'sequence'
 
   const [sequenceDuration, setSequenceDuration] = useState<{
     hours?: number
@@ -95,8 +96,14 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
 
     const result: Record<string, Asana[]> = {}
 
-    Object.keys(dataProp).forEach((key) => {
-      const currentBlock = dataProp[key]
+    const currentData: Record<string, Asana[]> = Array.isArray(dataProp)
+      ? dataProp.length
+        ? {0: dataProp}
+        : {}
+      : dataProp
+
+    Object.keys(currentData ?? {}).forEach((key) => {
+      const currentBlock = currentData[key] as Asana[]
 
       result[key] = currentBlock.map((asana) => {
         if (asana.alias === 'separator') return asana
@@ -114,6 +121,8 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   }, [dataProp])
 
   useEffect(() => {
+    if (!isTargetSequence) return
+
     const timeSettingsFromLS = getItem<
       Record<keyof TimeSettingsFormInputs, string>
     >(LOCAL_STORAGE_TIME_SETTINGS)
@@ -129,9 +138,11 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
           }
         : DEFAULT_TIME_SETTINGS
     )
-  }, [])
+  }, [isTargetSequence])
 
   useEffect(() => {
+    if (!isTargetSequence) return
+
     const time = Object.entries(timeSettings).reduce(
       (acc, curValue) => {
         const [key, time] = curValue
@@ -167,7 +178,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
 
     setSequenceDuration({hours, minutes})
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timeSettings, data])
+  }, [timeSettings, data, isTargetSequence])
 
   // Если добавили асану, закрое модалку с выбором асан
   useEffect(() => {
@@ -208,16 +219,9 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
 
   const onDescriptionChange = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      onChangeDescription(event.target.value)
+      onChangeDescription?.(event.target.value)
     },
     [onChangeDescription]
-  )
-
-  const onCheckboxChange = useCallback(
-    (event: CheckboxChangeEvent) => {
-      onChangePublic(event.target.checked)
-    },
-    [onChangePublic]
   )
 
   // Удалить асану в редактируемой последовательности
@@ -244,7 +248,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
 
       onChange(newData)
 
-      if (editingBlock === id) {
+      if (editingBlock === id && onChangeEditingBlock) {
         const blockIds = Object.keys(data)
 
         // Если вообще нет блоков асан, то добавим редактируемый блок - 0
@@ -282,7 +286,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     ({active}: DragStartEvent) => {
       const {containerId} = active.data.current?.sortable ?? {}
 
-      if (containerId && containerId !== editingBlock) {
+      if (containerId && containerId !== editingBlock && onChangeEditingBlock) {
         onChangeEditingBlock(containerId)
       }
     },
@@ -352,12 +356,14 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
       <div
         key={index}
         className={styles.blockWrapper}
-        onClick={() => onChangeEditingBlock(key)}>
+        onClick={
+          onChangeEditingBlock ? () => onChangeEditingBlock(key) : undefined
+        }>
         <Sequence
           id={key}
           data={data[key]}
           onDeleteAsana={deleteAsanaById}
-          onDeleteBlock={deleteAsanasBlock}
+          onDeleteBlock={isTargetSequence ? deleteAsanasBlock : undefined}
           onDragEnd={onDragEnd}
           onDragStart={onDragStart}
           onAddAsanaButtonClick={showAsanasModal}
@@ -370,7 +376,9 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     ))
   }, [
     data,
+    onChangeEditingBlock,
     deleteAsanaById,
+    isTargetSequence,
     deleteAsanasBlock,
     onDragEnd,
     onDragStart,
@@ -378,8 +386,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     addAsanaToBlock,
     editingBlock,
     copyAsana,
-    scrollToAsana,
-    onChangeEditingBlock
+    scrollToAsana
   ])
 
   const addAsanasBlock = useCallback(() => {
@@ -391,7 +398,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
       }
     })
 
-    onChangeEditingBlock(nextEditingBlockId)
+    onChangeEditingBlock?.(nextEditingBlockId)
 
     const newData = {
       ...data,
@@ -432,8 +439,8 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   const clearSequence = useCallback(() => {
     onChange({})
     onChangeTitle('')
-    onChangeDescription('')
-    onChangeEditingBlock('0')
+    onChangeDescription?.('')
+    onChangeEditingBlock?.('0')
 
     reachGoal('clear_sequence')
   }, [onChange, onChangeDescription, onChangeEditingBlock, onChangeTitle])
@@ -461,7 +468,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     (event: React.SyntheticEvent) => {
       event.preventDefault()
 
-      onDuplicateProp()
+      onDuplicateProp?.()
 
       window.setTimeout(() => {
         window.open(
@@ -480,36 +487,41 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
           {isAuthorized && !isViewMode && (
             <div className={styles.controls}>
               <Input
-                placeholder="Введите название вашей последовательности..."
-                label="Название последовательности"
+                placeholder={
+                  isTargetSequence
+                    ? 'Введите название вашей последовательности...'
+                    : 'Введите название связки асан...'
+                }
+                label={
+                  isTargetSequence
+                    ? 'Название последовательности'
+                    : 'Название связки асан'
+                }
                 value={title}
                 onChange={onTitleChange}
                 name="title"
                 errorMessage={
-                  isInputEmpty ? 'Введите название последовательности' : ''
+                  isInputEmpty
+                    ? isTargetSequence
+                      ? 'Введите название последовательности'
+                      : 'Введите название связки асан'
+                    : ''
                 }
               />
-              <Textarea
-                name="description"
-                label="Описание последовательности"
-                placeholder="Введите описание вашей последовательности..."
-                className={styles.withTopMargin}
-                value={description}
-                onChange={onDescriptionChange}
-              />
-
-              <div className={styles.withTopMargin}>
-                <Checkbox checked={isPublic} onChange={onCheckboxChange}>
-                  Видна другим
-                </Checkbox>
-                <Tooltip title="Последовательность будет доступна для просмотра другим пользователям">
-                  <QuestionCircleOutlined />
-                </Tooltip>
-              </div>
+              {onDescriptionChange && isTargetSequence && (
+                <Textarea
+                  name="description"
+                  label="Описание последовательности"
+                  placeholder="Введите описание вашей последовательности..."
+                  className={styles.withTopMargin}
+                  value={description}
+                  onChange={onDescriptionChange}
+                />
+              )}
             </div>
           )}
           <div className={styles.sequenceBlocks}>{sequenceBlocks}</div>
-          {!isViewMode && (
+          {!isViewMode && isTargetSequence && (
             <Button
               block
               size="large"
@@ -522,7 +534,8 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
       </div>
 
       {!!builderLength &&
-        (!!sequenceDuration.hours || !!sequenceDuration.minutes) && (
+        (!!sequenceDuration.hours || !!sequenceDuration.minutes) &&
+        isTargetSequence && (
           <div className={styles.timeWrapper}>
             {!isViewMode && (
               <Button
@@ -561,7 +574,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
               Очистить
             </ConfirmButton>
           ))}
-        {isAuthorized && (
+        {isAuthorized && isTargetSequence && (
           <Button
             size="large"
             href={Urls.CREATE_SEQUENCE}
@@ -571,12 +584,16 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
             Дублировать последовательность
           </Button>
         )}
-        <Button size="large" onClick={showPreview}>
-          Посмотреть результат
-        </Button>
-        <Button size="large" onClick={generatePdf}>
-          Скачать в PDF
-        </Button>
+        {isTargetSequence && (
+          <>
+            <Button size="large" onClick={showPreview}>
+              Посмотреть результат
+            </Button>
+            <Button size="large" onClick={generatePdf}>
+              Скачать в PDF
+            </Button>
+          </>
+        )}
         {isAuthorized && !isViewMode && (
           <Button
             type="primary"

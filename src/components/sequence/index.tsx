@@ -30,8 +30,9 @@ interface SequenceProps {
   data: (Asana & {count?: number})[]
   id: string
   isEditing: boolean
+  className?: string
   onDeleteAsana: (id: number, blockId: string) => void
-  onDeleteBlock: (id: string) => void
+  onDeleteBlock?: (id: string) => void
   addAsanaToBlock: (
     id: number,
     block: 'repeating' | 'dynamic',
@@ -56,12 +57,13 @@ export const Sequence: React.FC<SequenceProps> = ({
   onDeleteBlock: onDeleteBlockProp,
   isEditing,
   copyAsana,
-  scrollToAsana
+  scrollToAsana,
+  className
 }) => {
   const {isDarkTheme, isMobile} = useSettings()
 
   const onDeleteBlock = useCallback(
-    () => onDeleteBlockProp(id),
+    () => (onDeleteBlockProp as (id: string) => void)(id),
     [onDeleteBlockProp, id]
   )
 
@@ -113,7 +115,7 @@ export const Sequence: React.FC<SequenceProps> = ({
   const sequence = useMemo(() => {
     return (
       <div className={clsx(styles.sequenceRow, isEditing && styles.editing)}>
-        <div className={styles.sequence}>
+        <div className={clsx(styles.sequence, className)}>
           {data.map((asana, index) => {
             const {id: asanaId, alias} = asana
 
@@ -165,15 +167,17 @@ export const Sequence: React.FC<SequenceProps> = ({
             </button>
           )}
         </div>
-        <div className={styles.buttonWrapper}>
-          <ConfirmButton
-            okText="Удалить"
-            title="Удалить блок асан"
-            description="Вы действительно хотите удалить блок асан?"
-            onClick={onDeleteBlock}>
-            Удалить блок асан
-          </ConfirmButton>
-        </div>
+        {onDeleteBlockProp && (
+          <div className={styles.buttonWrapper}>
+            <ConfirmButton
+              okText="Удалить"
+              title="Удалить блок асан"
+              description="Вы действительно хотите удалить блок асан?"
+              onClick={onDeleteBlock}>
+              Удалить блок асан
+            </ConfirmButton>
+          </div>
+        )}
       </div>
     )
   }, [
@@ -181,6 +185,7 @@ export const Sequence: React.FC<SequenceProps> = ({
     data,
     isMobile,
     onAddAsanaButtonClick,
+    onDeleteBlockProp,
     onDeleteBlock,
     onDeleteAsana,
     addAsanaToBlock,

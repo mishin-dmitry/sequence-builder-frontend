@@ -10,11 +10,15 @@ import type {Asana, AsanaGroup} from 'types'
 import styles from './styles.module.css'
 
 interface AsanaActionsProps {
-  pirPairs: [number, number][]
+  pirPairs?: [number, number][]
   asanaGroups: AsanaGroup[]
   asanas: Asana[]
   selectedAsanaId: number
-  onTabChange: () => void
+  tabs?: {
+    key: string
+    label: string
+  }[]
+  onTabChange?: () => void
   onSearchAsana: (value: string) => void
   onAsanaClick: (asana: Asana | [number, number]) => void
   onFilterAsanaByGroups: (groups: AsanaGroup[]) => void
@@ -34,18 +38,19 @@ const TABS = [
 export const AsanaActions: React.FC<AsanaActionsProps> = ({
   onTabChange: onTabChangeProp,
   onAsanaClick,
-  pirPairs,
+  pirPairs = [],
   onSearchAsana,
   asanaGroups,
   onFilterAsanaByGroups,
   asanas,
-  selectedAsanaId
+  selectedAsanaId,
+  tabs = TABS
 }) => {
   const [activeTab, setActiveTab] = useState<'all' | 'pirs'>('all')
 
   const onTabChange = useCallback(
     (key: string) => {
-      onTabChangeProp()
+      onTabChangeProp?.()
 
       setActiveTab(key as 'all' | 'pirs')
     },
@@ -54,7 +59,7 @@ export const AsanaActions: React.FC<AsanaActionsProps> = ({
 
   return (
     <div className={styles.listWrapper}>
-      <Tabs className={styles.tabs} onChange={onTabChange} items={TABS} />
+      <Tabs className={styles.tabs} onChange={onTabChange} items={tabs} />
       {activeTab === 'pirs' && (
         <PirsList onClick={onAsanaClick} pairs={pirPairs} />
       )}
