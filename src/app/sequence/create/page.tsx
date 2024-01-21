@@ -37,11 +37,11 @@ const TABS = [
   {
     key: 'all',
     label: 'Все асаны'
+  },
+  {
+    key: 'pirs',
+    label: 'Связки ПИРов'
   }
-  // {
-  //   key: 'pirs',
-  //   label: 'Связки ПИРов'
-  // }
 ]
 
 const CreateSequencePage: React.FC = () => {
@@ -342,7 +342,7 @@ const CreateSequencePage: React.FC = () => {
 
     asanas.forEach(({id, pirs = []}) => {
       if (pirs.length) {
-        pirs.forEach((pirId) => {
+        pirs.forEach(({pirId}) => {
           result.push([id, pirId])
         })
       }

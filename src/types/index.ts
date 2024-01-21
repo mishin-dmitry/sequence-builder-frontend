@@ -12,7 +12,7 @@ export interface Asana {
   // который надо сделать в динамике
   isAsanaInDynamicBlock?: boolean
   groups: AsanaGroup[]
-  pirs: number[]
+  pirs: {pirId: number; title: string}[]
 }
 
 export interface AsanaGroup {
