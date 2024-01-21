@@ -18,7 +18,12 @@
   overflow: auto;
 
   & > li {
-    padding: 0 !important;
+    padding: 5px !important;
+
+    &:last-child {
+      padding: 0 !important;
+      margin-top: 10px !important;
+    }
   }
 }
 

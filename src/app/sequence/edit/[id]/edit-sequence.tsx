@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 
 import type {
   Asana,
@@ -11,8 +11,6 @@ import type {
 
 import {Resizable} from 're-resizable'
 import {Meta} from 'components/meta'
-import {SearchFilter} from 'components/serch-filter'
-import {AsanasList} from 'components/asanas-list'
 import {useSequence} from '../../hooks'
 import {useParams, useRouter} from 'next/navigation'
 import {useUser} from 'context/user'
@@ -23,28 +21,16 @@ import {Spinner} from 'components/spinner'
 import {useSettings} from 'context/settings'
 import {LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY} from 'lib/constants'
 import {setItem} from 'lib/local-storage'
-import {Tabs} from 'antd'
+import {AsanaActions} from 'components/asana-actions'
 
 import styles from './styles.module.css'
 import debounce from 'lodash.debounce'
-import {PirsList} from 'components/pirs-list'
 
 interface EditSequenceProps {
   sequence: SequenceType
 }
 
 const RESET_SELECTED_ASANA_ID_TIMEOUT = 1000
-
-const TABS = [
-  {
-    key: 'all',
-    label: 'Все асаны'
-  },
-  {
-    key: 'pirs',
-    label: 'Связки ПИРов'
-  }
-]
 
 export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
   const {
@@ -56,14 +42,13 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
     blocks
   } = sequence
 
-  const {asanas: allAsanas, asanaGroups, asanasMap} = useAsanas()
+  const {asanas: allAsanas, asanaGroups, asanasMap, pirPairs} = useAsanas()
   const [documentTitle, setDocumentTitle] = useState<string>(title)
   const [description, setDescription] = useState<string>(initialDescription)
   const [asanas, setAsanas] = useState(allAsanas)
   const [editingBlock, setEditingBlock] = useState('0')
   const [isPublic, setIsPublic] = useState(initialIsPublic)
   const [selectedAsanaId, setSelectedAsanaId] = useState(-1)
-  const [activeTab, setActiveTab] = useState<'all' | 'pirs'>('all')
 
   const {isMobile} = useSettings()
 
@@ -71,11 +56,9 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
   const searchAsanaString = useRef<string>('')
   const filterAsanaGroups = useRef<AsanaGroup[]>([])
 
-  const onTabChange = useCallback((key: string) => {
+  const onTabChange = useCallback(() => {
     filterAsanaGroups.current = []
     searchAsanaString.current = ''
-
-    setActiveTab(key as 'all' | 'pirs')
   }, [])
 
   const [builderData, setBuilderData] = useState<Record<string, Asana[]>>(
@@ -205,7 +188,7 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
       searchAsanaString.current = value ?? ''
 
       if (!value && filterAsanaGroups.current.length) {
-        onFilterAsana(filterAsanaGroups.current)
+        onFilterAsanaByGroups(filterAsanaGroups.current)
 
         return
       }
@@ -230,7 +213,7 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
     [allAsanas, asanas]
   )
 
-  const onFilterAsana = useCallback(
+  const onFilterAsanaByGroups = useCallback(
     (groups: AsanaGroup[] = []) => {
       let filteredAsanas
 
@@ -289,56 +272,17 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
     [selectedAsanaId]
   )
 
-  const pirPairs = useMemo<[number, number][]>(() => {
-    const result = [] as [number, number][]
-
-    asanas.forEach(({id, pirs = []}) => {
-      if (pirs.length) {
-        pirs.forEach(({pirId}) => {
-          result.push([id, pirId])
-        })
-      }
-    })
-
-    return result
-  }, [asanas])
-
-  const asanaActions = useMemo(
-    () => (
-      <div className={styles.listWrapper}>
-        <Tabs className={styles.tabs} onChange={onTabChange} items={TABS} />
-        {activeTab === 'pirs' && (
-          <PirsList onClick={onAsanaClick} pairs={pirPairs} />
-        )}
-        {activeTab === 'all' && (
-          <>
-            <SearchFilter
-              onSearchAsana={onSearchAsana}
-              filterItems={asanaGroups}
-              onFilterAsanas={onFilterAsana}
-              searchItems={asanas}
-            />
-            <AsanasList
-              asanas={asanas}
-              onAsanaClick={onAsanaClick}
-              size="small"
-              selectedId={selectedAsanaId}
-            />
-          </>
-        )}
-      </div>
-    ),
-    [
-      activeTab,
-      asanaGroups,
-      asanas,
-      onAsanaClick,
-      onFilterAsana,
-      onSearchAsana,
-      onTabChange,
-      pirPairs,
-      selectedAsanaId
-    ]
+  const asanaActions = (
+    <AsanaActions
+      onTabChange={onTabChange}
+      asanaGroups={asanaGroups}
+      asanas={asanas}
+      selectedAsanaId={selectedAsanaId}
+      pirPairs={pirPairs}
+      onSearchAsana={onSearchAsana}
+      onFilterAsanaByGroups={onFilterAsanaByGroups}
+      onAsanaClick={onAsanaClick}
+    />
   )
 
   return (
@@ -359,8 +303,8 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
                 width: '352px',
                 height: '100%'
               }}
-              maxWidth={activeTab === 'all' ? '535px' : '200px'}
-              minWidth={activeTab === 'all' ? '200px' : '250px'}>
+              maxWidth="535px"
+              minWidth="200px">
               {asanaActions}
             </Resizable>
           )}

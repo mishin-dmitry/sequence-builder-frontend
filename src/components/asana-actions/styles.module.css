@@ -1,0 +1,17 @@
+.listWrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+}
+
+.tabs {
+  padding: 0 10px !important;
+}
+
+body[data-mobile='true'] {
+  & .listWrapper {
+    height: auto;
+  }
+}

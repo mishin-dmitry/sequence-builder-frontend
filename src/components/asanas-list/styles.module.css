@@ -3,6 +3,10 @@
   margin: -10px 0 0;
   column-gap: 10px;
   columns: 160px;
+
+  &.empty {
+    margin: 10px 0 0;
+  }
 }
 
 .listWrapper {

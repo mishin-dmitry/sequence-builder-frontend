@@ -8,12 +8,14 @@ interface AsanasContext {
   asanas: Asana[]
   asanaGroups: AsanaGroup[]
   asanasMap: Record<string, Asana>
+  pirPairs: [number, number][]
 }
 
 const initialData: AsanasContext = {
   asanas: [],
   asanaGroups: [],
-  asanasMap: {}
+  asanasMap: {},
+  pirPairs: []
 }
 
 const AsanasContext = React.createContext(initialData)
@@ -22,17 +24,19 @@ interface ProvideAsanasProps extends PropsWithChildren {
   asanas: Asana[]
   asanaGroups: AsanaGroup[]
   asanasMap: Record<string, Asana>
+  pirPairs: [number, number][]
 }
 
 export const ProvideAsanas: React.FC<ProvideAsanasProps> = ({
   children,
   asanas,
   asanaGroups,
-  asanasMap
+  asanasMap,
+  pirPairs
 }) => {
   const value = useMemo<AsanasContext>(
-    () => ({asanas, asanaGroups, asanasMap}),
-    [asanaGroups, asanas, asanasMap]
+    () => ({asanas, asanaGroups, asanasMap, pirPairs}),
+    [asanaGroups, asanas, asanasMap, pirPairs]
   )
 
   return (

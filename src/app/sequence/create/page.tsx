@@ -5,7 +5,6 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import type {Asana, AsanaGroup, SequenceRequest} from 'types'
 
 import {Resizable} from 're-resizable'
-import {SearchFilter} from 'components/serch-filter'
 import {getItem, removeItem, setItem} from 'lib/local-storage'
 
 import {
@@ -17,35 +16,22 @@ import {
   LOCAL_STORAGE_TITLE_KEY
 } from 'lib/constants'
 
-import {AsanasList} from 'components/asanas-list'
 import {useSequence} from '../hooks'
-import {PirsList} from 'components/pirs-list'
 import {useAsanas} from 'context/asanas'
 import {SequenceEditor} from 'components/sequence-editor'
 import {useUser} from 'context/user'
 import {Urls} from 'lib/urls'
 import {useRouter} from 'next/navigation'
 import {useSettings} from 'context/settings'
-import {Tabs} from 'antd'
+import {AsanaActions} from 'components/asana-actions'
 
 import styles from './styles.module.css'
 import debounce from 'lodash.debounce'
 
 const RESET_SELECTED_ASANA_ID_TIMEOUT = 1000
 
-const TABS = [
-  {
-    key: 'all',
-    label: 'Все асаны'
-  },
-  {
-    key: 'pirs',
-    label: 'Связки ПИРов'
-  }
-]
-
 const CreateSequencePage: React.FC = () => {
-  const {asanas: allAsanas, asanaGroups, asanasMap} = useAsanas()
+  const {asanas: allAsanas, asanaGroups, asanasMap, pirPairs} = useAsanas()
   const {isMobile} = useSettings()
 
   const [asanas, setAsanas] = useState(allAsanas)
@@ -56,7 +42,6 @@ const CreateSequencePage: React.FC = () => {
   const [title, setTitle] = useState<string>('')
   const [description, setDescription] = useState<string>('')
   const [isPublic, setIsPublic] = useState(true)
-  const [activeTab, setActiveTab] = useState<'all' | 'pirs'>('all')
 
   const {createSequence} = useSequence()
   const {isAuthorized} = useUser()
@@ -66,12 +51,14 @@ const CreateSequencePage: React.FC = () => {
   const searchAsanaString = useRef<string>('')
   const filterAsanaGroups = useRef<AsanaGroup[]>([])
 
-  const onTabChange = useCallback((key: string) => {
-    filterAsanaGroups.current = []
-    searchAsanaString.current = ''
+  const onTabChange = useCallback(() => {
+    if (searchAsanaString.current) {
+      searchAsanaString.current = ''
+      setAsanas(allAsanas)
+    }
 
-    setActiveTab(key as 'all' | 'pirs')
-  }, [])
+    filterAsanaGroups.current = []
+  }, [allAsanas])
 
   const clearLocalStorage = useCallback(() => {
     removeItem(LOCAL_STORAGE_SEQUENCE_KEY)
@@ -178,7 +165,6 @@ const CreateSequencePage: React.FC = () => {
 
     if (isAuthorized) {
       const isPublicFromLS = getItem<boolean>(LOCAL_STORAGE_IS_PUBLIC_KEY)
-
       const descriptionFromLS = getItem<string>(LOCAL_STORAGE_DESCRIPTION_KEY)
 
       if (descriptionFromLS) {
@@ -261,7 +247,7 @@ const CreateSequencePage: React.FC = () => {
       searchAsanaString.current = value ?? ''
 
       if (!value && filterAsanaGroups.current.length) {
-        onFilterAsana(filterAsanaGroups.current)
+        onFilterAsanaByGroups(filterAsanaGroups.current)
 
         return
       }
@@ -283,10 +269,10 @@ const CreateSequencePage: React.FC = () => {
 
       setAsanas(filteredAsanas)
     }, 200),
-    [allAsanas, asanas]
+    []
   )
 
-  const onFilterAsana = useCallback(
+  const onFilterAsanaByGroups = useCallback(
     (groups: AsanaGroup[] = []) => {
       let filteredAsanas
 
@@ -337,56 +323,17 @@ const CreateSequencePage: React.FC = () => {
     [selectedAsanaId]
   )
 
-  const pirPairs = useMemo<[number, number][]>(() => {
-    const result = [] as [number, number][]
-
-    asanas.forEach(({id, pirs = []}) => {
-      if (pirs.length) {
-        pirs.forEach(({pirId}) => {
-          result.push([id, pirId])
-        })
-      }
-    })
-
-    return result
-  }, [asanas])
-
-  const asanaActions = useMemo(
-    () => (
-      <div className={styles.listWrapper}>
-        <Tabs className={styles.tabs} onChange={onTabChange} items={TABS} />
-        {activeTab === 'pirs' && (
-          <PirsList onClick={onAsanaClick} pairs={pirPairs} />
-        )}
-        {activeTab === 'all' && (
-          <>
-            <SearchFilter
-              onSearchAsana={onSearchAsana}
-              filterItems={asanaGroups}
-              onFilterAsanas={onFilterAsana}
-              searchItems={asanas}
-            />
-            <AsanasList
-              asanas={asanas}
-              onAsanaClick={onAsanaClick}
-              size="small"
-              selectedId={selectedAsanaId}
-            />
-          </>
-        )}
-      </div>
-    ),
-    [
-      activeTab,
-      asanaGroups,
-      asanas,
-      onAsanaClick,
-      onFilterAsana,
-      onSearchAsana,
-      onTabChange,
-      pirPairs,
-      selectedAsanaId
-    ]
+  const asanaActions = (
+    <AsanaActions
+      onTabChange={onTabChange}
+      asanaGroups={asanaGroups}
+      asanas={asanas}
+      selectedAsanaId={selectedAsanaId}
+      pirPairs={pirPairs}
+      onSearchAsana={onSearchAsana}
+      onFilterAsanaByGroups={onFilterAsanaByGroups}
+      onAsanaClick={onAsanaClick}
+    />
   )
 
   return (
@@ -399,8 +346,8 @@ const CreateSequencePage: React.FC = () => {
               width: '352px',
               height: '100%'
             }}
-            maxWidth={activeTab === 'all' ? '535px' : '200px'}
-            minWidth={activeTab === 'all' ? '200px' : '250px'}>
+            maxWidth="535px"
+            minWidth="200px">
             {asanaActions}
           </Resizable>
         )}

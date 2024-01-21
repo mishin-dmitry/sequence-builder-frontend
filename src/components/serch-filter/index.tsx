@@ -10,14 +10,14 @@ import styles from './styles.module.css'
 
 interface SearchFilterProps {
   onSearchAsana: (value: string) => void
-  onFilterAsanas: (groups: AsanaGroup[]) => void
+  onFilterAsanaByGroups: (groups: AsanaGroup[]) => void
   filterItems: AsanaGroup[]
   searchItems: Asana[]
 }
 
 export const SearchFilter: React.FC<SearchFilterProps> = ({
   onSearchAsana,
-  onFilterAsanas,
+  onFilterAsanaByGroups,
   filterItems,
   searchItems: propsSearchItems
 }) => {
@@ -40,7 +40,7 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
   )
 
   useEffect(() => {
-    onFilterAsanas(chosenFilters)
+    onFilterAsanaByGroups(chosenFilters)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chosenFilters])
 

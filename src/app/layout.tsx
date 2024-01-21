@@ -40,6 +40,16 @@ const RootLayout: React.FC<PropsWithChildren> = async ({children}) => {
     return acc
   }, {})
 
+  const pirPairs = asanas.reduce((acc: [number, number][], curValue: Asana) => {
+    if (curValue.pirs.length) {
+      curValue.pirs.forEach(({pirId}) => {
+        acc.push([curValue.id, pirId])
+      })
+    }
+
+    return acc
+  }, [])
+
   const UA = headers().get('user-agent')
 
   const isMobile = Boolean(
@@ -58,6 +68,7 @@ const RootLayout: React.FC<PropsWithChildren> = async ({children}) => {
         <ProvideAsanas
           asanas={asanas}
           asanaGroups={asanaGroups}
+          pirPairs={pirPairs}
           asanasMap={asanasMap}>
           <ProvideSettings theme={theme} isMobile={isMobile}>
             <StyledComponentsRegistry>
