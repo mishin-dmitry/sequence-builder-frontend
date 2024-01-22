@@ -52,4 +52,5 @@ export interface AsanaBunch {
   id?: string
   title: string
   asanas: Asana[]
+  isFound?: boolean
 }
