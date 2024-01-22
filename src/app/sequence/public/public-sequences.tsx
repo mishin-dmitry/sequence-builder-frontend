@@ -37,7 +37,7 @@ export const PublicSequences: React.FC<PublicSequenceProps> = ({
 
   return (
     <div className={styles.pageWrapper}>
-      <SequenceTable items={sequences} onShow={onShow} source="public" />
+      <SequenceTable items={sequences} onShow={onShow} />
     </div>
   )
 }

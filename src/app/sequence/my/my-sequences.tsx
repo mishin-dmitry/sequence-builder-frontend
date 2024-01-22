@@ -56,7 +56,6 @@ export const MySequences: React.FC<PageProps> = ({sequences}) => {
         <Spinner />
       ) : (
         <SequenceTable
-          source="my"
           items={userSequences}
           onDelete={onDelete}
           onEdit={onEdit}
