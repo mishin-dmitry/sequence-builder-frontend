@@ -67,7 +67,7 @@ const renderSvg = ({alias}: Asana, index: number): any => {
       />
     )
   } else if (alias === 'separator') {
-    return <Svg width={10} height={DEFAULT_ICON_HEIGHT} key={index} debug />
+    return <Svg width={10} height={DEFAULT_ICON_HEIGHT} key={index} />
   } else {
     return iconsMap[alias]
       ? createSVGPdfRendererComponent(iconsMap[alias])

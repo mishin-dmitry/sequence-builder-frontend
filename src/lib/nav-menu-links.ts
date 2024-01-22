@@ -15,8 +15,8 @@ export const NAV_MENU_LINKS: NavMenuLink[] = [
     forAuthorized: true
   },
   {
-    title: 'Библиотека последовательностей',
-    href: Urls.PUBLIC_SEQUENCES,
+    title: 'Связки асан',
+    href: Urls.ASANAS_BUNCH,
     forAuthorized: true
   },
   {title: 'Учить асаны', href: Urls.QUIZ},

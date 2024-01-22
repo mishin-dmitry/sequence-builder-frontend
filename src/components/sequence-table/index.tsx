@@ -1,22 +1,16 @@
 import React, {useMemo, useState} from 'react'
 
-import {Badge, Button, Popconfirm, Table, Tooltip} from 'antd'
+import {Button, Popconfirm, Table, Tooltip} from 'antd'
 
 import type {ColumnsType, TableLocale} from 'antd/es/table/interface'
 import type {Sequence} from 'types'
 
-import {
-  DeleteOutlined,
-  EditOutlined,
-  EyeOutlined,
-  QuestionCircleOutlined
-} from '@ant-design/icons'
+import {DeleteOutlined, EditOutlined, EyeOutlined} from '@ant-design/icons'
 
 import styles from './styles.module.css'
 
 interface SequenceTableProps {
   items: Sequence[]
-  source: 'my' | 'public'
   onDelete?: (id: number) => Promise<void>
   onEdit?: (id: number) => void
   onShow?: (id: number) => void
@@ -26,8 +20,7 @@ export const SequenceTable: React.FC<SequenceTableProps> = ({
   items,
   onDelete,
   onEdit,
-  onShow,
-  source
+  onShow
 }) => {
   const [isConfirmLoading, setIsConfirmLoading] = useState(false)
 
@@ -46,26 +39,6 @@ export const SequenceTable: React.FC<SequenceTableProps> = ({
         dataIndex: 'description',
         key: 'description',
         width: 400
-      },
-      {
-        title: (
-          <span>
-            Открытый доступ
-            <Tooltip
-              className={styles.tooltip}
-              title="Последовательность доступна для просмотра другим пользователям">
-              <QuestionCircleOutlined />
-            </Tooltip>
-          </span>
-        ),
-        hidden: source === 'public',
-        dataIndex: 'isPublic',
-        key: 'isPublic',
-        render: (isPublic: boolean) => (
-          <Badge status={isPublic ? 'success' : 'error'} />
-        ),
-        align: 'center',
-        width: 170
       },
       {
         title: '',
@@ -129,20 +102,17 @@ export const SequenceTable: React.FC<SequenceTableProps> = ({
           </div>
         )
       }
-    ].filter((item) => !item.hidden)
-  }, [source, onDelete, isConfirmLoading, onEdit, onShow])
+    ]
+  }, [onDelete, isConfirmLoading, onEdit, onShow])
 
   const dataSource = useMemo(
     () =>
-      items.map(
-        ({isPublic, title, description, id}: Sequence, index: number) => ({
-          isPublic,
-          title,
-          description,
-          key: index,
-          actions: {id, title}
-        })
-      ),
+      items.map(({title, description, id}: Sequence, index: number) => ({
+        title,
+        description,
+        key: index,
+        actions: {id, title}
+      })),
     [items]
   )
 

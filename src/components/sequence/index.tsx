@@ -182,6 +182,7 @@ export const Sequence: React.FC<SequenceProps> = ({
     )
   }, [
     isEditing,
+    className,
     data,
     isMobile,
     onAddAsanaButtonClick,

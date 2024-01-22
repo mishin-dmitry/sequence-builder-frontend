@@ -21,3 +21,12 @@ export {
 
 export {getAsanasList, getAsanaGroupsList} from './data'
 export {getUser} from './user'
+
+export {
+  createAsanasBunch,
+  updateAsanasBunch,
+  getAsanasBunch,
+  getUserAsanasBunches,
+  deleteAsanasBunch,
+  type AsanasBunchRequest
+} from './asanas-bunch'

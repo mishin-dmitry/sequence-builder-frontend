@@ -1,33 +1,47 @@
 'use client'
 
-import React, {useCallback, useEffect, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Resizable} from 're-resizable'
-import {AsanaActions} from 'components/asana-actions'
+import {AsanaActions, TABS} from 'components/asana-actions'
 import {useAsanas} from 'context/asanas'
 import {useSettings} from 'context/settings'
 import {useUser} from 'context/user'
 import {useRouter} from 'next/navigation'
-import {Urls} from 'lib/urls'
 import {SequenceEditor} from 'components/sequence-editor'
+import {useAsanaBunch} from '../../hooks'
+import {useAsanasBunches} from 'context/asanas-bunches'
+import {Urls} from 'lib/urls'
 
-import type {Asana, AsanaGroup} from 'types'
+import type {Asana, AsanaBunch, AsanaGroup} from 'types'
 import debounce from 'lodash.debounce'
 
-import styles from '../styles.module.css'
+import styles from '../../styles.module.css'
 
 const RESET_SELECTED_ASANA_ID_TIMEOUT = 1000
 
-const CreateAsanaBunchPage: React.FC = () => {
-  const {asanas: allAsanas, asanaGroups, asanasMap} = useAsanas()
-  const {isMobile} = useSettings()
+interface EditAsanasBunchPageProps {
+  asanasBunch: AsanaBunch
+}
+
+export const EditAsanasBunch: React.FC<EditAsanasBunchPageProps> = ({
+  asanasBunch: propAsanasBunch
+}) => {
+  const {asanas: allAsanas, asanaGroups, pirPairs} = useAsanas()
 
   const [asanas, setAsanas] = useState(allAsanas)
-  const [asanasBunch, setAsanasBunch] = useState<Asana[]>([])
+
+  const [asanasBunch, setAsanasBunch] = useState<Asana[]>(
+    propAsanasBunch.asanas
+  )
+
   const [selectedAsanaId, setSelectedAsanaId] = useState(-1)
 
-  const [title, setTitle] = useState<string>('')
+  const [title, setTitle] = useState<string>(propAsanasBunch.title)
 
+  const {updateAsanasBunch} = useAsanaBunch()
+  const {updateAsanasBunches: contextUpdateAsanasBunches} = useAsanasBunches()
+  const {isMobile} = useSettings()
   const {isAuthorized} = useUser()
 
   const router = useRouter()
@@ -37,31 +51,32 @@ const CreateAsanaBunchPage: React.FC = () => {
 
   // Сохранить последовательность
   const onSave = useCallback(async () => {
-    // const data: SequenceRequest = {
-    //   title,
-    //   blocks: Object.values(builderData).map((block) =>
-    //     block.map(
-    //       ({
-    //         id,
-    //         isAsanaInRepeatingBlock = false,
-    //         isAsanaInDynamicBlock = false
-    //       }) => ({
-    //         asanaId: id,
-    //         inRepeatingBlock: isAsanaInRepeatingBlock,
-    //         inDynamicBlock: isAsanaInDynamicBlock
-    //       })
-    //     )
-    //   )
-    // }
-    // const {id} = (await createSequence(data)) || {}
-    // if (id) {
-    //   router.push(`${Urls.EDIT_SEQUENCE}/${id}`)
-    // }
-  }, [])
+    await updateAsanasBunch(propAsanasBunch.id as string, {
+      title,
+      asanas: asanasBunch
+    })
+
+    await contextUpdateAsanasBunches()
+
+    router.push(Urls.ASANAS_BUNCH)
+  }, [
+    updateAsanasBunch,
+    propAsanasBunch.id,
+    title,
+    asanasBunch,
+    contextUpdateAsanasBunches,
+    router
+  ])
 
   useEffect(() => {
     setAsanas(allAsanas)
   }, [allAsanas])
+
+  useEffect(() => {
+    if (!isAuthorized) {
+      router.push(Urls.LOGIN)
+    }
+  }, [isAuthorized, router])
 
   useEffect(() => {
     if (selectedAsanaId) {
@@ -79,8 +94,11 @@ const CreateAsanaBunchPage: React.FC = () => {
 
   // Добавить асану в ряд последовательности
   const onAsanaClick = useCallback(
-    (asana: Asana | [number, number]) =>
-      setAsanasBunch((prevBunch = []) => [...prevBunch, asana as Asana]),
+    (asana: Asana | Asana[]) =>
+      setAsanasBunch((prevBunch = []) => [
+        ...prevBunch,
+        ...(Array.isArray(asana) ? asana : [asana])
+      ]),
     []
   )
 
@@ -165,6 +183,11 @@ const CreateAsanaBunchPage: React.FC = () => {
     setAsanasBunch(data['0'])
   }, [])
 
+  const tabs = useMemo(
+    () => TABS.filter(({forAuthorized}) => !forAuthorized),
+    []
+  )
+
   const asanaActions = (
     <AsanaActions
       asanaGroups={asanaGroups}
@@ -173,9 +196,12 @@ const CreateAsanaBunchPage: React.FC = () => {
       onSearchAsana={onSearchAsana}
       onFilterAsanaByGroups={onFilterAsanaByGroups}
       onAsanaClick={onAsanaClick}
-      tabs={[{key: 'all', label: 'Все асаны'}]}
+      tabs={tabs}
+      pirPairs={pirPairs}
     />
   )
+
+  const sequenceData = useMemo(() => ({0: asanasBunch}), [asanasBunch])
 
   return (
     <div className={styles.root}>
@@ -194,7 +220,7 @@ const CreateAsanaBunchPage: React.FC = () => {
         )}
         <SequenceEditor
           onSave={onSave}
-          data={asanasBunch}
+          data={sequenceData}
           onChange={onChangeAsanasBunch}
           editingBlock="0"
           title={title}
@@ -202,10 +228,9 @@ const CreateAsanaBunchPage: React.FC = () => {
           scrollToAsana={scrollToAsana}
           asanasListNode={asanaActions}
           target="bunch"
+          maxBlocksCount={1}
         />
       </>
     </div>
   )
 }
-
-export default CreateAsanaBunchPage

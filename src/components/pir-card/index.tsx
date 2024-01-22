@@ -10,7 +10,7 @@ import styles from './styles.module.css'
 interface PirCardProps {
   source: Asana
   pir: Asana
-  onClick: (pir: [number, number]) => void
+  onClick: (pir: Asana[]) => void
 }
 
 export const PirCard: React.FC<PirCardProps> = ({source, pir, onClick}) => {
@@ -63,9 +63,7 @@ export const PirCard: React.FC<PirCardProps> = ({source, pir, onClick}) => {
   }, [isDarkTheme, pir])
 
   return (
-    <div
-      className={styles.pirCard}
-      onClick={() => onClick([source.id, pir.id])}>
+    <div className={styles.pirCard} onClick={() => onClick([source, pir])}>
       <div className={styles.images}>
         {sourceAsanaImage}
         {pirAsanaImage}

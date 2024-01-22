@@ -8,7 +8,7 @@ import React, {
   useCallback
 } from 'react'
 
-import {type User} from 'types/user'
+import {type User} from 'types'
 
 interface UserContext {
   user: User | null
@@ -25,7 +25,7 @@ const initialData: UserContext = {
 const UserContext = React.createContext(initialData)
 
 interface ProvideUserProps extends PropsWithChildren {
-  user: User
+  user: User | null
 }
 
 export const ProvideUser: React.FC<ProvideUserProps> = ({

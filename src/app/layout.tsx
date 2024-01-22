@@ -1,6 +1,6 @@
 import React, {type PropsWithChildren} from 'react'
 
-import {cookies, headers} from 'next/headers'
+import {cookies as nextCookies, headers} from 'next/headers'
 import {Layout} from 'antd'
 import {type Metadata} from 'next'
 import {getAsanaGroupsList, getAsanasList, getUser} from 'api'
@@ -10,6 +10,8 @@ import {StyledComponentsRegistry} from 'lib/antd-registry'
 import {ProvideUser} from 'context/user'
 import {ProvideAsanas} from 'context/asanas'
 import {ProvideSettings} from 'context/settings'
+import {ProvideAsanasBunches} from 'context/asanas-bunches'
+
 import Favicon from '/public/static/favicon.ico'
 
 import styles from './styles.module.css'
@@ -25,8 +27,10 @@ export const metadata: Metadata = {
 }
 
 const RootLayout: React.FC<PropsWithChildren> = async ({children}) => {
+  const cookies = nextCookies().toString()
+
   const [{isFound, ...user}, asanas, asanaGroups] = await Promise.all([
-    getUser({cookies: cookies().toString()}),
+    getUser({cookies}),
     getAsanasList(),
     getAsanaGroupsList()
   ])
@@ -58,7 +62,7 @@ const RootLayout: React.FC<PropsWithChildren> = async ({children}) => {
     )
   )
 
-  const theme = (cookies().get('seq_theme')?.value || 'light') as
+  const theme = (nextCookies().get('seq_theme')?.value || 'light') as
     | 'light'
     | 'dark'
 
@@ -70,21 +74,23 @@ const RootLayout: React.FC<PropsWithChildren> = async ({children}) => {
           asanaGroups={asanaGroups}
           pirPairs={pirPairs}
           asanasMap={asanasMap}>
-          <ProvideSettings theme={theme} isMobile={isMobile}>
-            <StyledComponentsRegistry>
-              <body {...(isMobile ? {'data-mobile': true} : {})}>
-                <Layout className={styles.layout}>
-                  <Header />
-                  <main className={styles.main}>
-                    <h1 className={styles.visuallyHidden}>
-                      Построение последовательностей для йога
-                    </h1>
-                    {children}
-                  </main>
-                </Layout>
-              </body>
-            </StyledComponentsRegistry>
-          </ProvideSettings>
+          <ProvideAsanasBunches>
+            <ProvideSettings theme={theme} isMobile={isMobile}>
+              <StyledComponentsRegistry>
+                <body {...(isMobile ? {'data-mobile': true} : {})}>
+                  <Layout className={styles.layout}>
+                    <Header />
+                    <main className={styles.main}>
+                      <h1 className={styles.visuallyHidden}>
+                        Построение последовательностей для йога
+                      </h1>
+                      {children}
+                    </main>
+                  </Layout>
+                </body>
+              </StyledComponentsRegistry>
+            </ProvideSettings>
+          </ProvideAsanasBunches>
         </ProvideAsanas>
       </ProvideUser>
     </html>

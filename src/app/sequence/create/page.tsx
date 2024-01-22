@@ -24,6 +24,7 @@ import {Urls} from 'lib/urls'
 import {useRouter} from 'next/navigation'
 import {useSettings} from 'context/settings'
 import {AsanaActions} from 'components/asana-actions'
+import {useAsanasBunches} from 'context/asanas-bunches'
 
 import styles from './styles.module.css'
 import debounce from 'lodash.debounce'
@@ -31,7 +32,7 @@ import debounce from 'lodash.debounce'
 const RESET_SELECTED_ASANA_ID_TIMEOUT = 1000
 
 const CreateSequencePage: React.FC = () => {
-  const {asanas: allAsanas, asanaGroups, asanasMap, pirPairs} = useAsanas()
+  const {asanas: allAsanas, asanaGroups, pirPairs} = useAsanas()
   const {isMobile} = useSettings()
 
   const [asanas, setAsanas] = useState(allAsanas)
@@ -45,6 +46,7 @@ const CreateSequencePage: React.FC = () => {
 
   const {createSequence} = useSequence()
   const {isAuthorized} = useUser()
+  const {asanasBunches} = useAsanasBunches()
 
   const router = useRouter()
   const resetSelectedAsanaIdTimer = useRef<number>()
@@ -215,7 +217,7 @@ const CreateSequencePage: React.FC = () => {
 
   // Добавить асану в ряд последовательности
   const onAsanaClick = useCallback(
-    (asana: Asana | [number, number]) => {
+    (asana: Asana | Asana[]) => {
       const isArray = Array.isArray(asana)
 
       // Если слетел редактируемый блок
@@ -232,14 +234,13 @@ const CreateSequencePage: React.FC = () => {
           ...prevData,
           [editingBlock]: [
             ...(prevData[editingBlock] ?? []),
-            ...(isArray
-              ? [asanasMap[asana[0]], asanasMap[asana[1]]]
-              : [asanasMap[asana.id]])
+            ...(isArray ? asana : [asana])
+            // ...(isArray ? [asanasMap[asana[0]], asanasMap[asana[1]]] : [asana])
           ]
         }
       })
     },
-    [asanasMap, builderData, editingBlock]
+    [builderData, editingBlock]
   )
 
   const onSearchAsana = useCallback(
@@ -333,6 +334,7 @@ const CreateSequencePage: React.FC = () => {
       onSearchAsana={onSearchAsana}
       onFilterAsanaByGroups={onFilterAsanaByGroups}
       onAsanaClick={onAsanaClick}
+      asanasBunches={asanasBunches}
     />
   )
 

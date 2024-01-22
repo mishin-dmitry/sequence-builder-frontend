@@ -1,0 +1,21 @@
+.list {
+  padding: 0 10px;
+}
+
+.listWrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+}
+
+body[data-mobile='true'] {
+  & .listWrapper {
+    height: auto;
+  }
+
+  & .list {
+    padding: 0 5px;
+  }
+}

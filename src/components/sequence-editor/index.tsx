@@ -28,7 +28,7 @@ import styles from './styles.module.css'
 import PdfViewer from 'components/pdf-viewer'
 
 interface SequenceEditorProps {
-  data: Record<string, Asana[]> | Asana[]
+  data: Record<string, Asana[]>
   editingBlock: string
   title: string
   description?: string
@@ -36,6 +36,7 @@ interface SequenceEditorProps {
   asanasListNode: React.ReactNode
   isViewMode?: boolean
   target?: 'sequence' | 'bunch'
+  maxBlocksCount?: number
   onSave: () => Promise<void>
   onDelete?: () => Promise<void>
   onDuplicate?: () => void
@@ -70,7 +71,8 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   isViewMode,
   scrollToAsana,
   onDuplicate: onDuplicateProp,
-  target = 'sequence'
+  target = 'sequence',
+  maxBlocksCount = 10
 }) => {
   const [isSaving, setIsSaving] = useState(false)
   const [isPdfModalVisible, setIsPdfModalVisible] = useState(false)
@@ -96,14 +98,8 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
 
     const result: Record<string, Asana[]> = {}
 
-    const currentData: Record<string, Asana[]> = Array.isArray(dataProp)
-      ? dataProp.length
-        ? {0: dataProp}
-        : {}
-      : dataProp
-
-    Object.keys(currentData ?? {}).forEach((key) => {
-      const currentBlock = currentData[key] as Asana[]
+    Object.keys(dataProp ?? {}).forEach((key) => {
+      const currentBlock = dataProp[key] ?? []
 
       result[key] = currentBlock.map((asana) => {
         if (asana.alias === 'separator') return asana
@@ -521,7 +517,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
             </div>
           )}
           <div className={styles.sequenceBlocks}>{sequenceBlocks}</div>
-          {!isViewMode && isTargetSequence && (
+          {!isViewMode && maxBlocksCount > Object.keys(data).length && (
             <Button
               block
               size="large"

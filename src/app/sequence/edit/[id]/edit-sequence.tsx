@@ -156,7 +156,7 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
 
   // Добавить асану в ряд последовательности
   const onAsanaClick = useCallback(
-    (asana: Asana | [number, number]) => {
+    (asana: Asana | Asana[]) => {
       const isArray = Array.isArray(asana)
 
       // Если слетел редактируемый блок
@@ -173,14 +173,12 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
           ...prevData,
           [editingBlock]: [
             ...(prevData[editingBlock] ?? []),
-            ...(isArray
-              ? [asanasMap[asana[0]], asanasMap[asana[1]]]
-              : [asanasMap[asana.id]])
+            ...(isArray ? asana : [asana])
           ]
         }
       })
     },
-    [asanasMap, builderData, editingBlock]
+    [builderData, editingBlock]
   )
 
   const onSearchAsana = useCallback(

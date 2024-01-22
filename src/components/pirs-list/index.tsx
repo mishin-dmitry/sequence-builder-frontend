@@ -3,11 +3,12 @@ import React from 'react'
 import {PirCard} from 'components/pir-card'
 import {useAsanas} from 'context/asanas'
 
+import type {Asana} from 'types'
 import styles from './styles.module.css'
 
 interface PirsListProps {
   pairs: [number, number][]
-  onClick: (pir: [number, number]) => void
+  onClick: (pir: Asana[]) => void
 }
 
 export const PirsList: React.FC<PirsListProps> = ({pairs, onClick}) => {

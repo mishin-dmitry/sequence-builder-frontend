@@ -41,3 +41,15 @@ export interface Sequence extends BaseSequence {
     inDynamicBlock: boolean
   }[][]
 }
+
+export interface User {
+  id: number
+  email: string
+  isFound?: boolean
+}
+
+export interface AsanaBunch {
+  id?: string
+  title: string
+  asanas: Asana[]
+}
