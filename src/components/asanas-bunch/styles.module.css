@@ -34,6 +34,10 @@
   &.empty {
     justify-content: flex-end;
   }
+
+  & + .asanaBunch {
+    margin-top: 10px;
+  }
 }
 
 button.asanaBunch {

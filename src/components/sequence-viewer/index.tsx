@@ -45,25 +45,16 @@ export const SequenceViewer: React.FC<SequenceViewerProps> = ({
         <div className={styles.sequenceRow}>
           <div className={styles.sequence}>
             {data[key].map(
-              (
-                {id, alias, isAsanaInRepeatingBlock, isAsanaInDynamicBlock},
-                index
-              ) => {
+              ({id, alias, inRepeatingBlock, inDynamicBlock}, index) => {
                 if (alias === 'separator' || alias === 'empty') return null
 
                 return (
                   <div
                     className={clsx(
                       styles.imageWrapper,
-                      isAsanaInRepeatingBlock &&
-                        !isAsanaInDynamicBlock &&
-                        styles.repeating,
-                      !isAsanaInRepeatingBlock &&
-                        isAsanaInDynamicBlock &&
-                        styles.dynamic,
-                      isAsanaInRepeatingBlock &&
-                        isAsanaInDynamicBlock &&
-                        styles.bothBlocks
+                      inRepeatingBlock && !inDynamicBlock && styles.repeating,
+                      !inRepeatingBlock && inDynamicBlock && styles.dynamic,
+                      inRepeatingBlock && inDynamicBlock && styles.bothBlocks
                     )}
                     key={index}>
                     <img

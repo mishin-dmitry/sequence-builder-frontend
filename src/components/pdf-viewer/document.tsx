@@ -200,13 +200,12 @@ export const PDFDocument = ({asanas: asanasProp}: Sequence): any => {
                       if (isNextElementBlock) {
                         const isNextBlockOfDynamicAsanas =
                           nextElement.asanas.every(
-                            ({isAsanaInDynamicBlock}) => isAsanaInDynamicBlock
+                            ({inDynamicBlock}) => inDynamicBlock
                           )
 
                         const isNextBlockOfRepeatingAsanas =
                           nextElement.asanas.every(
-                            ({isAsanaInRepeatingBlock}) =>
-                              isAsanaInRepeatingBlock
+                            ({inRepeatingBlock}) => inRepeatingBlock
                           )
 
                         const currentAndNextArraysLength =

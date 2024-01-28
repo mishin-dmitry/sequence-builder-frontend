@@ -1,5 +1,6 @@
 .list {
-  padding: 0 10px;
+  padding: 0 10px 10px;
+  margin: 0;
 }
 
 .listWrapper {
@@ -8,6 +9,13 @@
   flex-direction: column;
   overflow: hidden;
   flex: 1;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 body[data-mobile='true'] {

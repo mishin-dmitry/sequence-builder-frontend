@@ -22,13 +22,12 @@ export const prepareAsanasBlock = (asanas: Asana[]): AsanasSequence => {
     const lastElement = acc.length ? acc[acc.length - 1] : null
 
     const hasOnlyRepeatingBlock =
-      curValue.isAsanaInRepeatingBlock && !curValue.isAsanaInDynamicBlock
+      curValue.inRepeatingBlock && !curValue.inDynamicBlock
 
     const hasOnlyDynamicBlock =
-      curValue.isAsanaInDynamicBlock && !curValue.isAsanaInRepeatingBlock
+      curValue.inDynamicBlock && !curValue.inRepeatingBlock
 
-    const hasOneBlock =
-      curValue.isAsanaInRepeatingBlock || curValue.isAsanaInDynamicBlock
+    const hasOneBlock = curValue.inRepeatingBlock || curValue.inDynamicBlock
 
     if (hasOneBlock) {
       const type = hasOnlyRepeatingBlock

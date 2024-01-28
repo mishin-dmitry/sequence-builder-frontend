@@ -7,10 +7,10 @@ export interface Asana {
   searchKeys: string
   // Признак того, что асана находится в блоке,
   // который надо сделать на обратную сторону
-  isAsanaInRepeatingBlock?: boolean
+  inRepeatingBlock?: boolean
   // Признак того, что асана находится в блоке,
   // который надо сделать в динамике
-  isAsanaInDynamicBlock?: boolean
+  inDynamicBlock?: boolean
   groups: AsanaGroup[]
   pirs: {pirId: number; title: string}[]
 }
@@ -28,18 +28,17 @@ interface BaseSequence {
 }
 
 export interface SequenceRequest extends BaseSequence {
-  blocks: {asanaId: number; inRepeatingBlock: boolean}[][]
+  blocks: {
+    asanaId: number
+    inRepeatingBlock: boolean
+    inDynamicBlock: boolean
+  }[][]
 }
 
 export interface Sequence extends BaseSequence {
   userId: number
   isFound?: boolean
-  blocks: {
-    id: number
-    alias: string
-    inRepeatingBlock: boolean
-    inDynamicBlock: boolean
-  }[][]
+  blocks: Asana[][]
 }
 
 export interface User {

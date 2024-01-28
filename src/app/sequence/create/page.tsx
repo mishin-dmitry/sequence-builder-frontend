@@ -77,17 +77,11 @@ const CreateSequencePage: React.FC = () => {
       description,
       isPublic,
       blocks: Object.values(builderData).map((block) =>
-        block.map(
-          ({
-            id,
-            isAsanaInRepeatingBlock = false,
-            isAsanaInDynamicBlock = false
-          }) => ({
-            asanaId: id,
-            inRepeatingBlock: isAsanaInRepeatingBlock,
-            inDynamicBlock: isAsanaInDynamicBlock
-          })
-        )
+        block.map(({id, inRepeatingBlock = false, inDynamicBlock = false}) => ({
+          asanaId: id,
+          inRepeatingBlock,
+          inDynamicBlock
+        }))
       )
     }
 
@@ -235,7 +229,6 @@ const CreateSequencePage: React.FC = () => {
           [editingBlock]: [
             ...(prevData[editingBlock] ?? []),
             ...(isArray ? asana : [asana])
-            // ...(isArray ? [asanasMap[asana[0]], asanasMap[asana[1]]] : [asana])
           ]
         }
       })

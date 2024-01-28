@@ -42,7 +42,7 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
     blocks
   } = sequence
 
-  const {asanas: allAsanas, asanaGroups, asanasMap, pirPairs} = useAsanas()
+  const {asanas: allAsanas, asanaGroups, pirPairs} = useAsanas()
   const [documentTitle, setDocumentTitle] = useState<string>(title)
   const [description, setDescription] = useState<string>(initialDescription)
   const [asanas, setAsanas] = useState(allAsanas)
@@ -63,30 +63,11 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
 
   const [builderData, setBuilderData] = useState<Record<string, Asana[]>>(
     blocks.reduce((acc: Record<string, Asana[]>, curValue, index) => {
-      acc[index] = curValue.map(({id, inRepeatingBlock, inDynamicBlock}) => ({
-        ...asanasMap[id],
-        isAsanaInRepeatingBlock: inRepeatingBlock,
-        isAsanaInDynamicBlock: inDynamicBlock
-      }))
+      acc[index] = curValue
 
       return acc
     }, {})
   )
-
-  useEffect(() => {
-    setBuilderData(
-      blocks.reduce((acc: Record<string, Asana[]>, curValue, index) => {
-        acc[index] = curValue.map(({id, inRepeatingBlock, inDynamicBlock}) => ({
-          ...asanasMap[id],
-          isAsanaInRepeatingBlock: inRepeatingBlock,
-          isAsanaInDynamicBlock: inDynamicBlock
-        }))
-
-        return acc
-      }, {})
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [asanasMap])
 
   useEffect(() => {
     if (selectedAsanaId) {
@@ -114,17 +95,11 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
       description,
       isPublic,
       blocks: Object.values(builderData).map((block) =>
-        block.map(
-          ({
-            id,
-            isAsanaInRepeatingBlock = false,
-            isAsanaInDynamicBlock = false
-          }) => ({
-            asanaId: id,
-            inRepeatingBlock: isAsanaInRepeatingBlock,
-            inDynamicBlock: isAsanaInDynamicBlock
-          })
-        )
+        block.map(({id, inRepeatingBlock = false, inDynamicBlock = false}) => ({
+          asanaId: id,
+          inRepeatingBlock,
+          inDynamicBlock
+        }))
       )
     }
 

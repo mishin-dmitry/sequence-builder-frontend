@@ -150,9 +150,9 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
 
         if (key === 'asanaTime') {
           Object.values(data).forEach((asanasBlock) => {
-            asanasBlock.forEach(({isAsanaInRepeatingBlock}) => {
-              acc.seconds += isAsanaInRepeatingBlock ? seconds * 2 : seconds
-              acc.minutes += isAsanaInRepeatingBlock ? minutes * 2 : minutes
+            asanasBlock.forEach(({inRepeatingBlock}) => {
+              acc.seconds += inRepeatingBlock ? seconds * 2 : seconds
+              acc.minutes += inRepeatingBlock ? minutes * 2 : minutes
             })
           })
         } else {
@@ -319,8 +319,8 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
             ? {
                 ...asana,
                 ...(block === 'repeating'
-                  ? {isAsanaInRepeatingBlock: action === 'add'}
-                  : {isAsanaInDynamicBlock: action === 'add'})
+                  ? {inRepeatingBlock: action === 'add'}
+                  : {inDynamicBlock: action === 'add'})
               }
             : asana
         )

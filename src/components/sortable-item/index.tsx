@@ -43,13 +43,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
   addAsanasToBlock,
   copyAsana,
   scrollToAsana: scrollToAsanaProp,
-  asana: {
-    isAsanaInDynamicBlock,
-    isAsanaInRepeatingBlock,
-    count,
-    name,
-    id: asanaId
-  }
+  asana: {inRepeatingBlock, inDynamicBlock, count, name, id: asanaId}
 }) => {
   const [isButtonsVisible, setIsButtonsVisible] = useState(false)
 
@@ -107,19 +101,19 @@ export const SortableItem: React.FC<SortableItemProps> = ({
         data-no-dnd="true"
         className={clsx(
           styles.repeatButton,
-          !isButtonsVisible && isAsanaInRepeatingBlock && styles.singleButton
+          !isButtonsVisible && inRepeatingBlock && styles.singleButton
         )}
         icon={<ArrowLeftOutlined />}
         onClick={() =>
           addAsanasToBlock(
             index,
             'repeating',
-            isAsanaInRepeatingBlock ? 'delete' : 'add'
+            inRepeatingBlock ? 'delete' : 'add'
           )
         }
       />
     ),
-    [addAsanasToBlock, index, isAsanaInRepeatingBlock, isButtonsVisible]
+    [addAsanasToBlock, index, inRepeatingBlock, isButtonsVisible]
   )
 
   const dynamicBlockButton = useMemo(
@@ -131,29 +125,25 @@ export const SortableItem: React.FC<SortableItemProps> = ({
         className={clsx(
           styles.dynamicButton,
           !isButtonsVisible &&
-            isAsanaInDynamicBlock &&
-            !isAsanaInRepeatingBlock &&
+            inDynamicBlock &&
+            !inRepeatingBlock &&
             styles.singleButton,
           !isButtonsVisible &&
-            isAsanaInDynamicBlock &&
-            isAsanaInRepeatingBlock &&
+            inDynamicBlock &&
+            inRepeatingBlock &&
             styles.multipleButton
         )}
         icon={<RetweetOutlined />}
         onClick={() =>
-          addAsanasToBlock(
-            index,
-            'dynamic',
-            isAsanaInDynamicBlock ? 'delete' : 'add'
-          )
+          addAsanasToBlock(index, 'dynamic', inDynamicBlock ? 'delete' : 'add')
         }
       />
     ),
     [
       addAsanasToBlock,
       index,
-      isAsanaInDynamicBlock,
-      isAsanaInRepeatingBlock,
+      inDynamicBlock,
+      inRepeatingBlock,
       isButtonsVisible
     ]
   )
@@ -181,36 +171,30 @@ export const SortableItem: React.FC<SortableItemProps> = ({
           className={clsx(
             styles.item,
             isDragging && styles.dragging,
-            isAsanaInRepeatingBlock &&
-              !isAsanaInDynamicBlock &&
-              styles.repeating,
-            isAsanaInDynamicBlock && !isAsanaInRepeatingBlock && styles.dynamic,
-            isAsanaInRepeatingBlock &&
-              isAsanaInDynamicBlock &&
-              styles.bothBlocks
+            inRepeatingBlock && !inDynamicBlock && styles.repeating,
+            inDynamicBlock && !inRepeatingBlock && styles.dynamic,
+            inRepeatingBlock && inDynamicBlock && styles.bothBlocks
           )}>
           {children}
-          {(isButtonsVisible || isAsanaInRepeatingBlock) &&
+          {(isButtonsVisible || inRepeatingBlock) &&
             (isMobile ? (
               repeatingBlockButton
             ) : (
               <Tooltip
                 title={`${
-                  isAsanaInRepeatingBlock
-                    ? 'Убрать из блока'
-                    : 'Добавить в блок'
+                  inRepeatingBlock ? 'Убрать из блока' : 'Добавить в блок'
                 } с повтором на другую сторону`}
                 style={{width: 100}}>
                 {repeatingBlockButton}
               </Tooltip>
             ))}
-          {(isButtonsVisible || isAsanaInDynamicBlock) &&
+          {(isButtonsVisible || inDynamicBlock) &&
             (isMobile ? (
               dynamicBlockButton
             ) : (
               <Tooltip
                 title={`${
-                  isAsanaInDynamicBlock ? 'Убрать из блока' : 'Добавить в блок'
+                  inDynamicBlock ? 'Убрать из блока' : 'Добавить в блок'
                 } с динамикой`}
                 style={{width: 100}}>
                 {dynamicBlockButton}
