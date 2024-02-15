@@ -22,10 +22,10 @@ export const AsanaBunch: React.FC<AsanaBunchProps> = ({
   const {isDarkTheme} = useSettings()
 
   const renderImage = useCallback(
-    ({alias}: Asana) => {
+    ({alias}: Asana, index: number) => {
       return (
         iconsMap[alias] && (
-          <div className={styles.imageContainer}>
+          <div className={styles.imageContainer} key={index}>
             <img
               alt="Изображение асаны"
               loading="lazy"
