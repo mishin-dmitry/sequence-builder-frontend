@@ -120,7 +120,7 @@ export const AsanaActions: React.FC<AsanaActionsProps> = ({
       {activeTab === Tabs.BUNCHES && (
         <AsanasBunchesList
           asanasBunches={asanasBunches}
-          onAsanasBunchClick={onAsanaClick as any}
+          onAsanasBunchClick={onAsanaClick}
         />
       )}
     </div>

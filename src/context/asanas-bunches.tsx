@@ -16,12 +16,14 @@ import type {AsanaBunch} from 'types'
 
 interface AsanasBunchesContext {
   asanasBunches: AsanaBunch[]
+  isLoading: boolean
   updateAsanasBunches: () => Promise<void>
 }
 
 const initialData: AsanasBunchesContext = {
   asanasBunches: [],
-  updateAsanasBunches: async () => undefined
+  updateAsanasBunches: async () => undefined,
+  isLoading: false
 }
 
 const AsanasBunchesContext = React.createContext(initialData)
@@ -30,6 +32,7 @@ export const ProvideAsanasBunches: React.FC<PropsWithChildren> = ({
   children
 }) => {
   const [asanasBunches, setAsanasBunches] = useState<AsanaBunch[]>([])
+  const [isLoading, setIsLoading] = useState(false)
 
   const {isAuthorized} = useUser()
 
@@ -37,11 +40,15 @@ export const ProvideAsanasBunches: React.FC<PropsWithChildren> = ({
     if (!isAuthorized) return
 
     try {
+      setIsLoading(true)
+
       const response = await getUserAsanasBunches()
 
       setAsanasBunches(response)
     } catch (error) {
       setAsanasBunches([])
+    } finally {
+      setIsLoading(false)
     }
   }, [isAuthorized])
 
@@ -53,8 +60,8 @@ export const ProvideAsanasBunches: React.FC<PropsWithChildren> = ({
   }, [isAuthorized])
 
   const value = useMemo<AsanasBunchesContext>(
-    () => ({asanasBunches, updateAsanasBunches}),
-    [asanasBunches, updateAsanasBunches]
+    () => ({asanasBunches, updateAsanasBunches, isLoading}),
+    [asanasBunches, updateAsanasBunches, isLoading]
   )
 
   return (

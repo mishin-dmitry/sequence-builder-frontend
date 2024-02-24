@@ -6,6 +6,7 @@ import {Typography} from 'antd'
 import {Spinner} from 'components/spinner'
 import {Urls} from 'lib/urls'
 import {AsanaBunch} from 'components/asanas-bunch'
+import {useAsanasBunches} from 'context/asanas-bunches'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
@@ -14,16 +15,16 @@ import Link from 'next/link'
 export interface AsanaCardsListProps {
   asanasBunches: TAsanaBunch[]
   className?: string
-  isLoading?: boolean
   onAsanasBunchClick: (asanas: Asana[]) => void
 }
 
 export const AsanasBunchesList: React.FC<AsanaCardsListProps> = ({
   asanasBunches = [],
   className,
-  isLoading,
   onAsanasBunchClick
 }) => {
+  const {isLoading} = useAsanasBunches()
+
   if (isLoading) {
     return <Spinner />
   }
