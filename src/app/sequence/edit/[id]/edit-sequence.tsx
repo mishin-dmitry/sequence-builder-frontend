@@ -25,6 +25,7 @@ import {AsanaActions} from 'components/asana-actions'
 
 import styles from './styles.module.css'
 import debounce from 'lodash.debounce'
+import {useAsanasBunches} from 'context/asanas-bunches'
 
 interface EditSequenceProps {
   sequence: SequenceType
@@ -51,6 +52,7 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
   const [selectedAsanaId, setSelectedAsanaId] = useState(-1)
 
   const {isMobile} = useSettings()
+  const {asanasBunches} = useAsanasBunches()
 
   const resetSelectedAsanaIdTimer = useRef<number>()
   const searchAsanaString = useRef<string>('')
@@ -255,6 +257,7 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
       onSearchAsana={onSearchAsana}
       onFilterAsanaByGroups={onFilterAsanaByGroups}
       onAsanaClick={onAsanaClick}
+      asanasBunches={asanasBunches}
     />
   )
 
