@@ -4,7 +4,7 @@
   align-items: center;
   flex: 1;
   padding: 10px;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 
 body[data-mobile='true'] {
