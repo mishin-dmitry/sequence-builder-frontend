@@ -41,10 +41,10 @@ export const TABS: Tab[] = [
     key: Tabs.ALL,
     label: 'Все асаны'
   },
-  // {
-  //   key: Tabs.PIRS,
-  //   label: 'Связки ПИРов'
-  // },
+  {
+    key: Tabs.PIRS,
+    label: 'Связки ПИРов'
+  },
   {
     key: Tabs.BUNCHES,
     label: 'Связки асан',
