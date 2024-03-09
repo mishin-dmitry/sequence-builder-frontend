@@ -36,7 +36,7 @@ const CreateSequencePage: React.FC = () => {
   const {isMobile} = useSettings()
 
   const [asanas, setAsanas] = useState(allAsanas)
-  const [editingBlock, setEditingBlock] = useState('0')
+  const [editingBlock, setEditingBlock] = useState('block-1')
   const [builderData, setBuilderData] = useState<Record<string, Asana[]>>({})
   const [selectedAsanaId, setSelectedAsanaId] = useState(-1)
 
@@ -220,7 +220,11 @@ const CreateSequencePage: React.FC = () => {
 
         // Если вообще нет блоков асан, то добавим редактируемый блок - 0
         // Иначе найдем последний
-        setEditingBlock(!blockIds.length ? '0' : blockIds[blockIds.length - 1])
+        setEditingBlock(
+          !blockIds.length
+            ? 'block-1'
+            : `block-${blockIds[blockIds.length - 1]}`
+        )
       }
 
       setBuilderData((prevData) => {
@@ -331,6 +335,11 @@ const CreateSequencePage: React.FC = () => {
     />
   )
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const onChange = useCallback(setBuilderData, [])
+
+  const data = useMemo(() => builderData, [builderData])
+
   return (
     <div className={styles.root}>
       <>
@@ -348,8 +357,8 @@ const CreateSequencePage: React.FC = () => {
         )}
         <SequenceEditor
           onSave={onSave}
-          data={builderData}
-          onChange={setBuilderData}
+          data={data}
+          onChange={onChange}
           editingBlock={editingBlock}
           onChangeEditingBlock={setEditingBlock}
           title={title}

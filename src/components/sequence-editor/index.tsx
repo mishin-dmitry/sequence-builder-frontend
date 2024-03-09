@@ -1,3 +1,5 @@
+'use client'
+
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Input} from 'components/input'
@@ -17,8 +19,28 @@ import {getItem, setItem} from 'lib/local-storage'
 import {ConfirmButton} from 'components/confirm-button'
 import {useSettings} from 'context/settings'
 
-import type {DragStartEvent, DragEndEvent} from '@dnd-kit/core'
-import type {Asana} from 'types'
+import {
+  type DragStartEvent,
+  type DragEndEvent,
+  DndContext,
+  useSensors,
+  useSensor,
+  MouseSensor,
+  TouchSensor,
+  PointerSensor,
+  KeyboardSensor,
+  closestCorners,
+  MeasuringStrategy,
+  DragOverlay
+} from '@dnd-kit/core'
+
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy
+} from '@dnd-kit/sortable'
+
+import type {Asana as TAsana} from 'types'
 
 import {LOCAL_STORAGE_TIME_SETTINGS} from 'lib/constants'
 import {Urls} from 'lib/urls'
@@ -26,9 +48,12 @@ import {Urls} from 'lib/urls'
 import dayjs from 'dayjs'
 import styles from './styles.module.css'
 import PdfViewer from 'components/pdf-viewer'
+import {createPortal} from 'react-dom'
+import clsx from 'clsx'
+import {Asana} from 'components/asana'
 
 interface SequenceEditorProps {
-  data: Record<string, Asana[]>
+  data: Record<string, TAsana[]>
   editingBlock: string
   title: string
   description?: string
@@ -41,7 +66,7 @@ interface SequenceEditorProps {
   onDelete?: () => Promise<void>
   onDuplicate?: () => void
   scrollToAsana: (id: number) => void
-  onChange: (data: Record<string, Asana[]>) => void
+  onChange: (data: Record<string, TAsana[]>) => void
   onChangeEditingBlock?: (id: string) => void
   onChangeTitle: (title: string) => void
   onChangeDescription?: (description: string) => void
@@ -74,11 +99,21 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   target = 'sequence',
   maxBlocksCount = 10
 }) => {
+  const [data, setData] = useState(dataProp)
   const [isSaving, setIsSaving] = useState(false)
   const [isPdfModalVisible, setIsPdfModalVisible] = useState(false)
   const [isAsanasModalVisible, setIsAsanasModalVisible] = useState(false)
   const [isTimeSettingsVisible, setIsTimeSettingsVisible] = useState(false)
   const [isInputEmpty, setIsInputEmpty] = useState(false)
+
+  const [shouldUpdate, setShouldUpdate] = useState(false)
+
+  const [draggingAsana, setDraggingAsana] = useState<null | TAsana>(null)
+  const [draggingRowId, setDraggingRowId] = useState<string | null>(null)
+
+  const [rows, setRows] = useState<string[]>(
+    Object.keys(dataProp ?? {}).map((key) => key)
+  )
 
   const {isMobile} = useSettings()
 
@@ -93,27 +128,64 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     DEFAULT_TIME_SETTINGS
   )
 
-  const data = useMemo(() => {
+  useEffect(() => {
     let count = 0
 
-    const result: Record<string, Asana[]> = {}
+    const result: Record<string, TAsana[]> = {}
 
     Object.keys(dataProp ?? {}).forEach((key) => {
       const currentBlock = dataProp[key] ?? []
 
-      result[key] = currentBlock.map((asana) => {
-        if (asana.alias === 'separator') return asana
+      result[key] = currentBlock.map((asana, index) => {
+        if (asana.alias === 'separator')
+          return {
+            ...asana,
+            key: `${key}.${asana.id}.${index}`
+          }
 
         count++
 
         return {
           ...asana,
+          key: `${key}.${asana.id}.${index}`,
           count
         }
       })
     })
 
-    return result
+    setData(result)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataProp])
+
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      // Require the mouse to move by 10 pixels before activating
+      activationConstraint: {
+        distance: 10,
+        delay: 100
+      }
+    }),
+    useSensor(TouchSensor, {
+      // Press delay of 250ms, with tolerance of 5px of movement
+      activationConstraint: {
+        delay: 100,
+        tolerance: 5
+      }
+    }),
+    useSensor(PointerSensor, {
+      // Press delay of 250ms, with tolerance of 5px of movement
+      activationConstraint: {
+        delay: 100,
+        tolerance: 5
+      }
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  )
+
+  useEffect(() => {
+    setRows(Object.keys(dataProp ?? {}).map((key) => key))
   }, [dataProp])
 
   useEffect(() => {
@@ -184,6 +256,14 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
 
+  useEffect(() => {
+    if (shouldUpdate) {
+      onChange?.(data)
+      setShouldUpdate(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldUpdate])
+
   const {isAuthorized} = useUser()
 
   const onSaveButtonClick = useCallback(async () => {
@@ -243,6 +323,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
       delete newData[id]
 
       onChange(newData)
+      setRows((prev) => prev.filter((rowId) => rowId !== id))
 
       if (editingBlock === id && onChangeEditingBlock) {
         const blockIds = Object.keys(data)
@@ -250,7 +331,9 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
         // Если вообще нет блоков асан, то добавим редактируемый блок - 0
         // Иначе найдем последний
         onChangeEditingBlock(
-          !blockIds.length ? '0' : blockIds[blockIds.length - 1]
+          !blockIds.length
+            ? 'block-1'
+            : `block-${blockIds[blockIds.length - 1]}`
         )
       }
     },
@@ -261,30 +344,75 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     (event: DragEndEvent) => {
       const {active, over} = event
 
-      if (!!over?.id && active.id !== over.id) {
-        const [, oldIndex] = (active.id as string).split('-')
-        const [, newIndex] = (over.id as string).split('-')
+      if (draggingAsana) {
+        setDraggingAsana(null)
+      }
 
-        const sortedItems = arrayMove(data[editingBlock], +oldIndex, +newIndex)
+      if (draggingRowId) {
+        setDraggingRowId(null)
+      }
 
-        const newData = {
-          ...data,
-          [editingBlock]: sortedItems
-        }
+      if (!over) return
 
+      const {id: activeRowId, data: activeData} = active
+
+      const {id: overRowId} = over
+
+      if (activeData.current?.type === 'Block') {
+        if (overRowId === activeRowId) return
+
+        const activeRowIndex = rows.indexOf(activeRowId as string)
+        const overRowIndex = rows.indexOf(overRowId as string)
+
+        const sortedRows = arrayMove(rows, activeRowIndex, overRowIndex)
+
+        const newData = {} as any
+
+        sortedRows.forEach((rowId) => {
+          newData[rowId] = data[rowId]
+        })
+
+        setRows(sortedRows)
         onChange(newData)
+
+        return
+      }
+
+      if (!!over.id && active.id !== over.id) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const [, activeRowId, oldIndex] = (active.id as string).split('.')
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const [, overRowId, newIndex] = (over.id as string).split('.')
+
+        setData((prev) => {
+          return {
+            ...prev,
+            [editingBlock]: arrayMove(data[editingBlock], +oldIndex, +newIndex)
+          }
+        })
+
+        setShouldUpdate(true)
       }
     },
-    [data, editingBlock, onChange]
+    [data, draggingAsana, draggingRowId, editingBlock, onChange, rows]
   )
 
   const onDragStart = useCallback(
-    ({active}: DragStartEvent) => {
-      const {containerId} = active.data.current?.sortable ?? {}
+    (event: DragStartEvent) => {
+      const activeBlockId =
+        event.active.data.current?.blockId ?? event.active.id
 
-      if (containerId && containerId !== editingBlock && onChangeEditingBlock) {
-        onChangeEditingBlock(containerId)
+      if (editingBlock !== activeBlockId) {
+        onChangeEditingBlock?.(activeBlockId)
       }
+
+      if (event.active.data.current?.type === 'Block') {
+        setDraggingRowId(activeBlockId)
+
+        return
+      }
+
+      setDraggingAsana(event.active.data.current?.data)
     },
     [editingBlock, onChangeEditingBlock]
   )
@@ -332,7 +460,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   )
 
   const copyAsana = useCallback(
-    (asana: Asana, index: number, blockId: string) => {
+    (asana: TAsana, index: number, blockId: string) => {
       const newSequence = [...data[blockId]]
 
       newSequence.splice(index, 0, asana)
@@ -347,58 +475,25 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     [data, onChange]
   )
 
-  const sequenceBlocks = useMemo(() => {
-    return Object.keys(data).map((key, index) => (
-      <div
-        key={index}
-        className={styles.blockWrapper}
-        onClick={
-          onChangeEditingBlock ? () => onChangeEditingBlock(key) : undefined
-        }>
-        <Sequence
-          id={key}
-          data={data[key]}
-          onDeleteAsana={deleteAsanaById}
-          onDeleteBlock={isTargetSequence ? deleteAsanasBlock : undefined}
-          onDragEnd={onDragEnd}
-          onDragStart={onDragStart}
-          onAddAsanaButtonClick={showAsanasModal}
-          addAsanaToBlock={addAsanaToBlock}
-          isEditing={editingBlock === key}
-          copyAsana={copyAsana}
-          scrollToAsana={scrollToAsana}
-        />
-      </div>
-    ))
-  }, [
-    data,
-    onChangeEditingBlock,
-    deleteAsanaById,
-    isTargetSequence,
-    deleteAsanasBlock,
-    onDragEnd,
-    onDragStart,
-    showAsanasModal,
-    addAsanaToBlock,
-    editingBlock,
-    copyAsana,
-    scrollToAsana
-  ])
-
   const addAsanasBlock = useCallback(() => {
-    let nextEditingBlockId = '0'
+    let nextEditingBlockId = '1'
 
     Object.keys(data).forEach((key) => {
-      if (+key >= +nextEditingBlockId) {
-        nextEditingBlockId = `${+key + 1}`
+      const newKey = +key.replace('block-', '')
+
+      if (newKey >= +nextEditingBlockId) {
+        nextEditingBlockId = `${newKey + 1}`
       }
     })
 
-    onChangeEditingBlock?.(nextEditingBlockId)
+    const nextBlock = `block-${nextEditingBlockId}`
+
+    onChangeEditingBlock?.(nextBlock)
+    setRows((prev) => [...prev, nextBlock])
 
     const newData = {
       ...data,
-      [nextEditingBlockId]: []
+      [nextBlock]: []
     }
 
     onChange(newData)
@@ -436,7 +531,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     onChange({})
     onChangeTitle('')
     onChangeDescription?.('')
-    onChangeEditingBlock?.('0')
+    onChangeEditingBlock?.('block-1')
 
     reachGoal('clear_sequence')
   }, [onChange, onChangeDescription, onChangeEditingBlock, onChangeTitle])
@@ -516,7 +611,87 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
               )}
             </div>
           )}
-          <div className={styles.sequenceBlocks}>{sequenceBlocks}</div>
+          <div className={styles.sequenceBlocks}>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCorners}
+              // onDragOver={onDragOver}
+              measuring={{droppable: {strategy: MeasuringStrategy.Always}}}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}>
+              <SortableContext
+                strategy={verticalListSortingStrategy}
+                items={rows}>
+                {rows.map((rowId) => {
+                  return (
+                    <div
+                      key={rowId}
+                      id={rowId}
+                      className={styles.blockWrapper}
+                      onClick={
+                        onChangeEditingBlock
+                          ? () => onChangeEditingBlock(rowId)
+                          : undefined
+                      }>
+                      <Sequence
+                        id={rowId}
+                        data={data[rowId]}
+                        onDeleteAsana={deleteAsanaById}
+                        onDeleteBlock={
+                          isTargetSequence ? deleteAsanasBlock : undefined
+                        }
+                        onAddAsanaButtonClick={showAsanasModal}
+                        addAsanaToBlock={addAsanaToBlock}
+                        isEditing={editingBlock === rowId}
+                        copyAsana={copyAsana}
+                        scrollToAsana={scrollToAsana}
+                      />
+                    </div>
+                  )
+                })}
+              </SortableContext>
+              {typeof document !== 'undefined' &&
+                createPortal(
+                  <DragOverlay adjustScale={false}>
+                    {draggingRowId && !draggingAsana && (
+                      <div
+                        className={clsx(styles.blockWrapper, styles.dragging)}>
+                        <Sequence
+                          id={draggingRowId}
+                          data={data[draggingRowId]}
+                          onDeleteAsana={deleteAsanaById}
+                          onDeleteBlock={
+                            isTargetSequence ? deleteAsanasBlock : undefined
+                          }
+                          onAddAsanaButtonClick={showAsanasModal}
+                          addAsanaToBlock={addAsanaToBlock}
+                          isEditing
+                          copyAsana={copyAsana}
+                          scrollToAsana={scrollToAsana}
+                        />
+                      </div>
+                    )}
+                    {draggingAsana && !draggingRowId && (
+                      <Asana
+                        id={draggingAsana.id.toString()}
+                        asana={draggingAsana}
+                        index={1}
+                        className={styles.dragging}
+                        copyAsana={() => copyAsana(draggingAsana, 1, '1')}
+                        scrollToAsana={scrollToAsana}
+                        onDeleteAsana={() => deleteAsanaById(1, '1')}
+                        addAsanaToBlock={() =>
+                          addAsanaToBlock(1, 'repeating', 'add', '1')
+                        }
+                        blockId={'-1'}
+                      />
+                    )}
+                  </DragOverlay>,
+                  document.body
+                )}
+            </DndContext>
+          </div>
+
           {!isViewMode && maxBlocksCount > Object.keys(data).length && (
             <Button
               block

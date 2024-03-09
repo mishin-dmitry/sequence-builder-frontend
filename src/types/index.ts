@@ -1,6 +1,7 @@
 export interface Asana {
   id: number
   name: string
+  key?: string
   description: string
   alias: string
   alignment: string

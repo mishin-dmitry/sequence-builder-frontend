@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 
-import {useSortable} from '@dnd-kit/sortable'
+import {defaultAnimateLayoutChanges, useSortable} from '@dnd-kit/sortable'
 import {Button, Tooltip} from 'antd'
 
 import {
@@ -10,6 +10,8 @@ import {
   RetweetOutlined,
   ToTopOutlined
 } from '@ant-design/icons'
+
+import {CSS} from '@dnd-kit/utilities'
 
 import {useSettings} from 'context/settings'
 
@@ -24,6 +26,7 @@ interface SortableItemProps {
   asana: Asana & {count?: number}
   index: number
   className?: string
+  blockId: string
   onDelete: (id: number) => void
   addAsanasToBlock: (
     id: number,
@@ -34,53 +37,52 @@ interface SortableItemProps {
   scrollToAsana: (id: number) => void
 }
 
+function animateLayoutChanges(args) {
+  const {isSorting, wasDragging} = args
+
+  if (isSorting || wasDragging) {
+    return defaultAnimateLayoutChanges(args)
+  }
+
+  return true
+}
+
 export const SortableItem: React.FC<SortableItemProps> = ({
   id,
   children,
   className,
   index,
+  blockId,
   onDelete,
   addAsanasToBlock,
   copyAsana,
   scrollToAsana: scrollToAsanaProp,
-  asana: {inRepeatingBlock, inDynamicBlock, count, name, id: asanaId}
+  asana
 }) => {
   const [isButtonsVisible, setIsButtonsVisible] = useState(false)
 
   const {isMobile} = useSettings()
+  const {inRepeatingBlock, inDynamicBlock, count, name, id: asanaId} = asana
 
   const toggleButtonVisible = useCallback(
     () => setIsButtonsVisible((prevState) => !prevState),
     []
   )
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-    isSorting
-  } = useSortable({
-    id,
-    animateLayoutChanges: () => false
-  })
+  const {attributes, listeners, setNodeRef, isDragging, transform, transition} =
+    useSortable({
+      id,
+      data: {
+        data: asana,
+        blockId
+      }
+    })
 
   useEffect(() => {
     if (isDragging && isButtonsVisible) {
       setIsButtonsVisible(false)
     }
   }, [isButtonsVisible, isDragging])
-
-  const style = {
-    transition,
-    transform: `translate3d(${Math.round(transform?.x || 0)}px, ${Math.round(
-      transform?.y || 0
-    )}px, 0) scaleX(${transform?.scaleX || 1}) scaleY(${
-      transform?.scaleY || 1
-    })`
-  }
 
   const props = useMemo(
     () =>
@@ -157,20 +159,18 @@ export const SortableItem: React.FC<SortableItemProps> = ({
     <Tooltip title={name}>
       <div
         ref={setNodeRef}
-        className={clsx(
-          styles.wrapper,
-          isSorting && styles.sorting,
-          isDragging && styles.dragOverlay,
-          className
-        )}
-        style={style}
+        className={clsx(styles.wrapper, className)}
+        style={{
+          transition,
+          transform: CSS.Transform.toString(transform),
+          opacity: isDragging ? 0.5 : 1
+        }}
         {...props}
         {...attributes}
         {...listeners}>
         <div
           className={clsx(
             styles.item,
-            isDragging && styles.dragging,
             inRepeatingBlock && !inDynamicBlock && styles.repeating,
             inDynamicBlock && !inRepeatingBlock && styles.dynamic,
             inRepeatingBlock && inDynamicBlock && styles.bothBlocks

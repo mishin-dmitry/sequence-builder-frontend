@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useCallback, useEffect, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import type {
   Asana,
@@ -47,7 +47,7 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
   const [documentTitle, setDocumentTitle] = useState<string>(title)
   const [description, setDescription] = useState<string>(initialDescription)
   const [asanas, setAsanas] = useState(allAsanas)
-  const [editingBlock, setEditingBlock] = useState('0')
+  const [editingBlock, setEditingBlock] = useState('block-1')
   const [isPublic, setIsPublic] = useState(initialIsPublic)
   const [selectedAsanaId, setSelectedAsanaId] = useState(-1)
 
@@ -65,7 +65,7 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
 
   const [builderData, setBuilderData] = useState<Record<string, Asana[]>>(
     blocks.reduce((acc: Record<string, Asana[]>, curValue, index) => {
-      acc[index] = curValue
+      acc[`block-${index + 1}`] = curValue
 
       return acc
     }, {})
@@ -142,7 +142,11 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
 
         // Если вообще нет блоков асан, то добавим редактируемый блок - 0
         // Иначе найдем последний
-        setEditingBlock(!blockIds.length ? '0' : blockIds[blockIds.length - 1])
+        setEditingBlock(
+          !blockIds.length
+            ? 'block-1'
+            : `block-${blockIds[blockIds.length - 1]}`
+        )
       }
 
       setBuilderData((prevData) => {
@@ -261,6 +265,11 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
     />
   )
 
+  const data = useMemo(() => builderData, [builderData])
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const onChange = useCallback(setBuilderData, [])
+
   return (
     <>
       <Meta
@@ -286,8 +295,8 @@ export const EditSequence: React.FC<EditSequenceProps> = ({sequence}) => {
           )}
           <SequenceEditor
             onSave={onSave}
-            data={builderData}
-            onChange={setBuilderData}
+            data={data}
+            onChange={onChange}
             editingBlock={editingBlock}
             onChangeEditingBlock={setEditingBlock}
             title={documentTitle}

@@ -62,11 +62,6 @@
       0 0 0 2px var(--repeat-color),
       inset 0 0 0 2px var(--dynamic-color);
   }
-
-  &.dragging {
-    cursor: grabbing;
-    opacity: 0.5;
-  }
 }
 
 .index {

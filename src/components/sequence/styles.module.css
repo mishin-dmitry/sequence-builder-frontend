@@ -1,24 +1,9 @@
-.imageWrapper {
-  display: flex;
-  flex: 1;
-  justify-content: center;
-  position: relative;
-
-  &.empty {
-    align-self: flex-end;
-
-    & > span {
-      font-size: 11px;
-      font-weight: bold;
-    }
-  }
-}
-
 .sequenceRow {
-  padding: 10px;
+  padding: 10px 30px 10px 10px;
   border: 1px solid var(--sequence-row-border-color);
   border-radius: 8px;
   background: var(--sequence-row-bg);
+  position: relative;
 
   &:empty {
     display: none;
@@ -32,6 +17,13 @@
   }
 }
 
+.drag {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: grab;
+}
+
 .sequence {
   display: flex;
   align-items: center;
@@ -42,17 +34,7 @@
 .buttonWrapper {
   display: flex;
   justify-content: flex-end;
-  margin-top: 10px;
-}
-
-.sortableWrapper {
-  position: relative;
-
-  &:hover {
-    & .deleteButton {
-      display: flex !important;
-    }
-  }
+  margin: 10px -20px 0 0;
 }
 
 .addButton {
@@ -73,10 +55,6 @@
 }
 
 body[data-mobile='true'] {
-  & .sortableWrapper {
-    width: calc((100% - 15px) / 3);
-  }
-
   & .sequenceRow {
     padding: 10px;
   }

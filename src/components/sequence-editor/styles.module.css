@@ -15,8 +15,14 @@
   }
 }
 
-.blockWrapper + .blockWrapper {
-  margin-top: 10px;
+.blockWrapper {
+  & + .blockWrapper {
+    margin-top: 10px;
+  }
+}
+
+.dragging {
+  box-shadow: 0 1px 10px 0 rgba(34 33 81 / 0.1);
 }
 
 .scrollContainer {

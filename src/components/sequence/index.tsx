@@ -1,33 +1,26 @@
-import React, {useCallback, useMemo} from 'react'
+import React, {useCallback} from 'react'
 
-import type {Asana} from 'types'
-import {iconsMap} from 'icons'
-
-import {
-  DndContext,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  closestCenter
-} from '@dnd-kit/core'
+import type {Asana as TAsana} from 'types'
 
 import {
+  AnimateLayoutChanges,
   SortableContext,
-  rectSortingStrategy,
-  sortableKeyboardCoordinates
+  defaultAnimateLayoutChanges,
+  useSortable
 } from '@dnd-kit/sortable'
 
-import {SortableItem} from 'components/sortable-item'
-import {PlusCircleOutlined} from '@ant-design/icons'
-import {KeyboardSensor, MouseSensor, PointerSensor} from 'lib/sensors'
+import {CSS} from '@dnd-kit/utilities'
+
+import {DragOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ConfirmButton} from 'components/confirm-button'
 import {useSettings} from 'context/settings'
+import {Asana} from 'components/asana'
 
 import clsx from 'clsx'
 import styles from './styles.module.css'
 
 interface SequenceProps {
-  data: (Asana & {count?: number})[]
+  data: (TAsana & {count?: number})[]
   id: string
   isEditing: boolean
   className?: string
@@ -39,18 +32,24 @@ interface SequenceProps {
     action: 'add' | 'delete',
     blockId: string
   ) => void
-  onDragEnd: (event: any) => void
-  onDragStart: (event: any) => void
   onAddAsanaButtonClick?: () => void
   scrollToAsana: (id: number) => void
-  copyAsana: (asana: Asana, index: number, blockId: string) => void
+  copyAsana: (asana: TAsana, index: number, blockId: string) => void
+}
+
+const animateLayoutChanges: AnimateLayoutChanges = (args) => {
+  const {isSorting, wasDragging} = args
+
+  if (isSorting || wasDragging) {
+    return defaultAnimateLayoutChanges(args)
+  }
+
+  return true
 }
 
 export const Sequence: React.FC<SequenceProps> = ({
   data = [],
-  id,
-  onDragEnd,
-  onDragStart,
+  id: blockId,
   onAddAsanaButtonClick,
   addAsanaToBlock: addAsanaToBlockProp,
   onDeleteAsana: onDeleteAsanaProp,
@@ -60,18 +59,28 @@ export const Sequence: React.FC<SequenceProps> = ({
   scrollToAsana,
   className
 }) => {
-  const {isDarkTheme, isMobile} = useSettings()
+  const {isMobile} = useSettings()
+
+  const {setNodeRef, attributes, listeners, transform, transition, isDragging} =
+    useSortable({
+      id: blockId,
+      data: {
+        type: 'Block',
+        data
+      },
+      animateLayoutChanges
+    })
 
   const onDeleteBlock = useCallback(
-    () => (onDeleteBlockProp as (id: string) => void)(id),
-    [onDeleteBlockProp, id]
+    () => (onDeleteBlockProp as (id: string) => void)(blockId),
+    [onDeleteBlockProp, blockId]
   )
 
   const onDeleteAsana = useCallback(
     (asanaId: number) => {
-      onDeleteAsanaProp(asanaId, id)
+      onDeleteAsanaProp(asanaId, blockId)
     },
-    [onDeleteAsanaProp, id]
+    [onDeleteAsanaProp, blockId]
   )
 
   const addAsanaToBlock = useCallback(
@@ -80,140 +89,58 @@ export const Sequence: React.FC<SequenceProps> = ({
       block: 'repeating' | 'dynamic',
       action: 'add' | 'delete'
     ) => {
-      addAsanaToBlockProp(asanaId, block, action, id)
+      addAsanaToBlockProp(asanaId, block, action, blockId)
     },
-    [addAsanaToBlockProp, id]
-  )
-
-  const sensors = useSensors(
-    useSensor(MouseSensor, {
-      // Require the mouse to move by 10 pixels before activating
-      activationConstraint: {
-        distance: 10,
-        delay: 100
-      }
-    }),
-    useSensor(TouchSensor, {
-      // Press delay of 250ms, with tolerance of 5px of movement
-      activationConstraint: {
-        delay: 100,
-        tolerance: 5
-      }
-    }),
-    useSensor(PointerSensor, {
-      // Press delay of 250ms, with tolerance of 5px of movement
-      activationConstraint: {
-        delay: 100,
-        tolerance: 5
-      }
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates
-    })
-  )
-
-  const sequence = useMemo(() => {
-    return (
-      <div className={clsx(styles.sequenceRow, isEditing && styles.editing)}>
-        <div className={clsx(styles.sequence, className)}>
-          {data.map((asana, index) => {
-            const {id: asanaId, alias} = asana
-
-            const uniqueId = `${asanaId}-${index}`
-
-            return (
-              <SortableItem
-                key={index}
-                id={uniqueId}
-                index={index}
-                onDelete={onDeleteAsana}
-                asana={asana}
-                addAsanasToBlock={addAsanaToBlock}
-                copyAsana={() => copyAsana(asana, index, id)}
-                scrollToAsana={scrollToAsana}
-                className={styles.sortableWrapper}>
-                <div
-                  className={clsx(
-                    styles.imageWrapper,
-                    (alias === 'empty' || alias === 'separator') && styles.empty
-                  )}>
-                  {iconsMap[alias] && (
-                    <img
-                      width={70}
-                      height={70}
-                      key={id}
-                      src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                        iconsMap[alias].replaceAll(
-                          '$COLOR',
-                          isDarkTheme
-                            ? 'rgba(255, 255, 255, 0.85)'
-                            : 'rgba(0, 0, 0, 0.88)'
-                        )
-                      )}`}
-                      alt="Изображение асаны"
-                    />
-                  )}
-                  {alias === 'empty' && <span>Пустое место</span>}
-                  {alias === 'separator' && <span>Разделитель</span>}
-                </div>
-              </SortableItem>
-            )
-          })}
-          {isMobile && (
-            <button
-              className={styles.addButton}
-              onClick={onAddAsanaButtonClick}>
-              <PlusCircleOutlined />
-            </button>
-          )}
-        </div>
-        {onDeleteBlockProp && (
-          <div className={styles.buttonWrapper}>
-            <ConfirmButton
-              okText="Удалить"
-              title="Удалить блок асан"
-              description="Вы действительно хотите удалить блок асан?"
-              onClick={onDeleteBlock}>
-              Удалить блок асан
-            </ConfirmButton>
-          </div>
-        )}
-      </div>
-    )
-  }, [
-    isEditing,
-    className,
-    data,
-    isMobile,
-    onAddAsanaButtonClick,
-    onDeleteBlockProp,
-    onDeleteBlock,
-    onDeleteAsana,
-    addAsanaToBlock,
-    scrollToAsana,
-    id,
-    isDarkTheme,
-    copyAsana
-  ])
-
-  const sortableContextItems = useMemo(
-    () => data.map(({id}, index) => `${id}-${index}`),
-    [data]
+    [addAsanaToBlockProp, blockId]
   )
 
   return (
-    <DndContext
-      id={id}
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}>
-      <SortableContext
-        id={id}
-        items={sortableContextItems}
-        strategy={rectSortingStrategy}>
-        {sequence}
-      </SortableContext>
-    </DndContext>
+    <div
+      className={clsx(styles.sequenceRow, isEditing && styles.editing)}
+      style={{
+        transition,
+        transform: CSS.Transform.toString(transform),
+        opacity: isDragging ? 0.5 : 1
+      }}
+      ref={setNodeRef}>
+      <DragOutlined className={styles.drag} {...attributes} {...listeners} />
+      <div className={clsx(styles.sequence, className)}>
+        <SortableContext items={data.map(({key = ''}) => key)}>
+          {data.map((asana, index) => {
+            const defaultKey = `${blockId}.${asana.id}.${index}`
+
+            return (
+              <Asana
+                key={asana.key ?? defaultKey}
+                asana={asana}
+                index={index}
+                id={asana.key ?? defaultKey}
+                blockId={blockId}
+                copyAsana={() => copyAsana(asana, index, blockId)}
+                onDeleteAsana={onDeleteAsana}
+                scrollToAsana={scrollToAsana}
+                addAsanaToBlock={addAsanaToBlock}
+              />
+            )
+          })}
+        </SortableContext>
+        {isMobile && (
+          <button className={styles.addButton} onClick={onAddAsanaButtonClick}>
+            <PlusCircleOutlined />
+          </button>
+        )}
+      </div>
+      {onDeleteBlockProp && (
+        <div className={styles.buttonWrapper}>
+          <ConfirmButton
+            okText="Удалить"
+            title="Удалить блок асан"
+            description="Вы действительно хотите удалить блок асан?"
+            onClick={onDeleteBlock}>
+            Удалить блок асан
+          </ConfirmButton>
+        </div>
+      )}
+    </div>
   )
 }

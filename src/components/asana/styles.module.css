@@ -1,0 +1,31 @@
+.sortableWrapper {
+  position: relative;
+
+  &:hover {
+    & .deleteButton {
+      display: flex !important;
+    }
+  }
+}
+
+.imageWrapper {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  position: relative;
+
+  &.empty {
+    align-self: flex-end;
+
+    & > span {
+      font-size: 11px;
+      font-weight: bold;
+    }
+  }
+}
+
+body[data-mobile='true'] {
+  & .sortableWrapper {
+    width: calc((100% - 15px) / 3);
+  }
+}
