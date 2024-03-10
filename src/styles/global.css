@@ -21,6 +21,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-moothing: grayscale;
   -webkit-tap-highlight-color: transparent;
+  font-family: Roboto, sans-serif;
 }
 
 #__next {
