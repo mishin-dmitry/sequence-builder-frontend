@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 
-import {defaultAnimateLayoutChanges, useSortable} from '@dnd-kit/sortable'
+import {useSortable} from '@dnd-kit/sortable'
 import {Button, Tooltip} from 'antd'
 
 import {
@@ -35,16 +35,6 @@ interface SortableItemProps {
   ) => void
   copyAsana: () => void
   scrollToAsana: (id: number) => void
-}
-
-function animateLayoutChanges(args) {
-  const {isSorting, wasDragging} = args
-
-  if (isSorting || wasDragging) {
-    return defaultAnimateLayoutChanges(args)
-  }
-
-  return true
 }
 
 export const SortableItem: React.FC<SortableItemProps> = ({
