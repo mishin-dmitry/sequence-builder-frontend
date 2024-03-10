@@ -379,10 +379,8 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
       }
 
       if (!!over.id && active.id !== over.id) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const [, activeRowId, oldIndex] = (active.id as string).split('.')
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const [, overRowId, newIndex] = (over.id as string).split('.')
+        const [, , oldIndex] = (active.id as string).split('.')
+        const [, , newIndex] = (over.id as string).split('.')
 
         setData((prev) => {
           return {
