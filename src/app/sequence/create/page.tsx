@@ -342,36 +342,34 @@ const CreateSequencePage: React.FC = () => {
 
   return (
     <div className={styles.root}>
-      <>
-        {!isMobile && (
-          <Resizable
-            className={styles.resizable}
-            defaultSize={{
-              width: '352px',
-              height: '100%'
-            }}
-            maxWidth="535px"
-            minWidth="200px">
-            {asanaActions}
-          </Resizable>
-        )}
-        <SequenceEditor
-          onSave={onSave}
-          data={data}
-          onChange={onChange}
-          editingBlock={editingBlock}
-          onChangeEditingBlock={setEditingBlock}
-          title={title}
-          onChangeTitle={setTitle}
-          onDuplicate={duplicateSequence}
-          description={description}
-          onChangeDescription={setDescription}
-          isPublic={isPublic}
-          scrollToAsana={scrollToAsana}
-          onChangePublic={setIsPublic}
-          asanasListNode={asanaActions}
-        />
-      </>
+      {!isMobile && (
+        <Resizable
+          className={styles.resizable}
+          defaultSize={{
+            width: '352px',
+            height: '100%'
+          }}
+          maxWidth="535px"
+          minWidth="200px">
+          {asanaActions}
+        </Resizable>
+      )}
+      <SequenceEditor
+        onSave={onSave}
+        data={data}
+        onChange={onChange}
+        editingBlock={editingBlock}
+        onChangeEditingBlock={setEditingBlock}
+        title={title}
+        onChangeTitle={setTitle}
+        onDuplicate={duplicateSequence}
+        description={description}
+        onChangeDescription={setDescription}
+        isPublic={isPublic}
+        scrollToAsana={scrollToAsana}
+        onChangePublic={setIsPublic}
+        asanasListNode={asanaActions}
+      />
     </div>
   )
 }

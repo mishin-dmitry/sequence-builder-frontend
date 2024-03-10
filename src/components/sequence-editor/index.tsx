@@ -99,14 +99,11 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   target = 'sequence',
   maxBlocksCount = 10
 }) => {
-  const [data, setData] = useState(dataProp)
   const [isSaving, setIsSaving] = useState(false)
   const [isPdfModalVisible, setIsPdfModalVisible] = useState(false)
   const [isAsanasModalVisible, setIsAsanasModalVisible] = useState(false)
   const [isTimeSettingsVisible, setIsTimeSettingsVisible] = useState(false)
   const [isInputEmpty, setIsInputEmpty] = useState(false)
-
-  const [shouldUpdate, setShouldUpdate] = useState(false)
 
   const [draggingAsana, setDraggingAsana] = useState<null | TAsana>(null)
   const [draggingRowId, setDraggingRowId] = useState<string | null>(null)
@@ -128,7 +125,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     DEFAULT_TIME_SETTINGS
   )
 
-  useEffect(() => {
+  const data = useMemo(() => {
     let count = 0
 
     const result: Record<string, TAsana[]> = {}
@@ -153,8 +150,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
       })
     })
 
-    setData(result)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return result
   }, [dataProp])
 
   const sensors = useSensors(
@@ -255,14 +251,6 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
-
-  useEffect(() => {
-    if (shouldUpdate) {
-      onChange?.(data)
-      setShouldUpdate(false)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldUpdate])
 
   const {isAuthorized} = useUser()
 
@@ -379,17 +367,15 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
       }
 
       if (!!over.id && active.id !== over.id) {
-        const [, , oldIndex] = (active.id as string).split('.')
-        const [, , newIndex] = (over.id as string).split('.')
+        const oldIndex = active.data.current?.index
+        const newIndex = over.data.current?.index
 
-        setData((prev) => {
-          return {
-            ...prev,
-            [editingBlock]: arrayMove(data[editingBlock], +oldIndex, +newIndex)
-          }
-        })
+        const newData = {
+          ...data,
+          [editingBlock]: arrayMove(data[editingBlock], +oldIndex, +newIndex)
+        }
 
-        setShouldUpdate(true)
+        onChange(newData)
       }
     },
     [data, draggingAsana, draggingRowId, editingBlock, onChange, rows]

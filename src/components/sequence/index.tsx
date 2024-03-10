@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import React, {useCallback, useMemo} from 'react'
 
 import type {Asana as TAsana} from 'types'
 
@@ -93,6 +93,10 @@ export const Sequence: React.FC<SequenceProps> = ({
     },
     [addAsanaToBlockProp, blockId]
   )
+  const items = useMemo(
+    () => data.map(({id}) => `${blockId}.${id}.${Math.random()}`),
+    [blockId, data]
+  )
 
   return (
     <div
@@ -105,16 +109,16 @@ export const Sequence: React.FC<SequenceProps> = ({
       ref={setNodeRef}>
       <DragOutlined className={styles.drag} {...attributes} {...listeners} />
       <div className={clsx(styles.sequence, className)}>
-        <SortableContext items={data.map(({key = ''}) => key)}>
+        <SortableContext items={items}>
           {data.map((asana, index) => {
-            const defaultKey = `${blockId}.${asana.id}.${index}`
+            const key = items[index]
 
             return (
               <Asana
-                key={asana.key ?? defaultKey}
+                key={key}
+                id={key}
                 asana={asana}
                 index={index}
-                id={asana.key ?? defaultKey}
                 blockId={blockId}
                 copyAsana={() => copyAsana(asana, index, blockId)}
                 onDeleteAsana={onDeleteAsana}

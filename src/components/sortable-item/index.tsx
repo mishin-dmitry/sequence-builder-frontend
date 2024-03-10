@@ -64,7 +64,8 @@ export const SortableItem: React.FC<SortableItemProps> = ({
       id,
       data: {
         data: asana,
-        blockId
+        blockId,
+        index
       }
     })
 
