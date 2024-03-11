@@ -158,20 +158,20 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
       // Require the mouse to move by 10 pixels before activating
       activationConstraint: {
         distance: 10,
-        delay: 100
+        delay: 200
       }
     }),
     useSensor(TouchSensor, {
       // Press delay of 250ms, with tolerance of 5px of movement
       activationConstraint: {
-        delay: 100,
+        delay: 200,
         tolerance: 5
       }
     }),
     useSensor(PointerSensor, {
       // Press delay of 250ms, with tolerance of 5px of movement
       activationConstraint: {
-        delay: 100,
+        delay: 200,
         tolerance: 5
       }
     }),
