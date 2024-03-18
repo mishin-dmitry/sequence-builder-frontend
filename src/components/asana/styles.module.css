@@ -26,6 +26,6 @@
 
 body[data-mobile='true'] {
   & .sortableWrapper {
-    width: calc((100% - 15px) / 3);
+    width: calc((100% - 35px) / 3);
   }
 }
