@@ -193,10 +193,35 @@ import {ardhaEkapadaRadjakapotasana2} from './ardha-ekapada-radjakapotasana-2'
 import {ardhaBrahmachariasana} from './ardha-brahmachariasana'
 import {ardhaVishvamitrasana} from './ardha-vishvamitrasana'
 import {makarasana} from './makarasana'
-import {muktaArdhaVishvamitrasana} from './mukta-ardha-vishvamitrasana'
+import {muktaArdhaVishvamitrasana2} from './mukta-ardha-vishvamitrasana2'
 import {muktaDvipadaAnantasana} from './mukta-dvipada-anantasana'
 import {parivrittaEkapadaAgnistambhasana} from './parivritta-ekapada-agnistambhasana'
 import {utthitaParshvaPadaUpaveshasana} from './utthita-parshva-pada-upaveshasana'
+import {parivrittaSuryaYantrasana} from './parivritta-surya-yantrasana'
+import {adhomukhaStupasana} from './adhomukha-stupasana'
+import {adhomukhaUtkatasana} from './adhomukha-utkatasana'
+import {ardhaNavasana2} from './ardha-navasana-2'
+import {ardhaUtthitahastaPadangushthasana1_2} from './ardha-utthitahasta-padangushthasana1-2'
+import {navasana2} from './navasana-2'
+import {vira1Silovaya} from './vira1-silovaya'
+import {garudaParshvaBakasana} from './garuda-parshva-bakasana'
+import {kurmasana} from './kurmasana'
+import {muktaArdhaVishvamitrasana} from './mukta-ardha-vishvamitrasana'
+import {muktaVasishthasana} from './mukta-vasishthasana'
+import {parivrittaArdhaEkapadaRadjakapotasana} from './parivritta-ardha-ekapada-radjakapotasana'
+import {parivrattaArdhagarudaPrasaritaPadottanasana} from './parivratta-ardhagaruda-prasarita-padottanasana'
+import {parshvaAdhomukhaBaddhaKonasana} from './parshva-adhomukha-baddha-konasana'
+import {parshvaVrikshasana} from './parshva-vrikshasana'
+import {suptaKurmasana} from './supta-kurmasana'
+import {triangdandasana} from './triangdandasana'
+import {planka2} from './planka2'
+import {triangdandasana2} from './triangdandasana2'
+import {utthitaEkapadaPithasana} from './utthita-ekapada-pithasana'
+import {shalabhasana2} from './shalabhasana-2'
+import {ekapadaArdhaPurvottanasana} from './ekapada-ardha-purvottanasana'
+import {ekapadaAshtangaNamaskarasana} from './ekapada-ashtanga-namaskarasana'
+import {ekapadaBakasana2} from './ekapada-bakasana-2'
+import {ekapadaPurvottanasana} from './ekapada-purvottanasana'
 
 export const iconsMap: Record<string, string> = {
   adhomukhaShvanasana,
@@ -394,8 +419,33 @@ export const iconsMap: Record<string, string> = {
   ardhaBrahmachariasana,
   ardhaVishvamitrasana,
   makarasana,
-  muktaArdhaVishvamitrasana,
+  muktaArdhaVishvamitrasana2,
   muktaDvipadaAnantasana,
   parivrittaEkapadaAgnistambhasana,
-  utthitaParshvaPadaUpaveshasana
+  utthitaParshvaPadaUpaveshasana,
+  parivrittaSuryaYantrasana,
+  adhomukhaStupasana,
+  adhomukhaUtkatasana,
+  ardhaNavasana2,
+  ardhaUtthitahastaPadangushthasana1_2,
+  navasana2,
+  vira1Silovaya,
+  garudaParshvaBakasana,
+  kurmasana,
+  muktaArdhaVishvamitrasana,
+  muktaVasishthasana,
+  parivrittaArdhaEkapadaRadjakapotasana,
+  parivrattaArdhagarudaPrasaritaPadottanasana,
+  parshvaAdhomukhaBaddhaKonasana,
+  parshvaVrikshasana,
+  suptaKurmasana,
+  triangdandasana,
+  triangdandasana2,
+  planka2,
+  utthitaEkapadaPithasana,
+  shalabhasana2,
+  ekapadaArdhaPurvottanasana,
+  ekapadaAshtangaNamaskarasana,
+  ekapadaBakasana2,
+  ekapadaPurvottanasana
 }

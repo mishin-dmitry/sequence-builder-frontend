@@ -18,7 +18,8 @@ const formatStringToCamelCase = (str: string): string => {
 }
 
 export const DEFAULT_ICON_HEIGHT = 64
-export const DEFAULT_ICON_WIDTH = 74
+export const DEFAULT_ICON_WIDTH = 64
+// export const DEFAULT_ICON_WIDTH = 74
 
 export const getStyleObjectFromString = (
   str?: string
@@ -59,7 +60,8 @@ export const svgToComponent = (node: any): any => {
       throw new Error(`tagName is doesn't exist`)
     }
 
-    const hasWidth = !!node.properties?.width
+    const hasWidth = false
+    // const hasWidth = !!node.properties?.width
 
     switch (node.tagName.toUpperCase()) {
       case 'SVG':
@@ -72,7 +74,9 @@ export const svgToComponent = (node: any): any => {
             ? parseIntAttributes(node.properties?.width)
             : DEFAULT_ICON_WIDTH,
           style: {
-            fontSize: 12
+            fontSize: 12,
+            marginTop: 3,
+            marginRight: 3
           }
         }
         break
