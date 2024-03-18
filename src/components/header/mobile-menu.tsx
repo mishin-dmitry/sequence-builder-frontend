@@ -35,6 +35,13 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({isAuthorized}) => {
     [closeMenu, isAuthorized]
   )
 
+  const style = useMemo(
+    () => ({
+      body: {padding: '20px 0'}
+    }),
+    []
+  )
+
   return (
     <div className={styles.menuWrapper}>
       <button
@@ -42,11 +49,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({isAuthorized}) => {
         onClick={openMenu}>
         <MenuOutlined />
       </button>
-      <Drawer
-        open={isOpen}
-        onClose={closeMenu}
-        bodyStyle={{padding: '20px 0'}}
-        placement="left">
+      <Drawer open={isOpen} onClose={closeMenu} styles={style} placement="left">
         <Menu
           mode="inline"
           rootClassName={styles.menu}

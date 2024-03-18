@@ -4,6 +4,7 @@
   border-radius: 8px;
   background: var(--sequence-row-bg);
   position: relative;
+  touch-action: none;
 
   &:empty {
     display: none;
@@ -57,5 +58,9 @@
 body[data-mobile='true'] {
   & .sequenceRow {
     padding: 10px;
+  }
+
+  .buttonWrapper {
+    margin: 10px 0 0;
   }
 }

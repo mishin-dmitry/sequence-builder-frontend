@@ -164,7 +164,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     useSensor(TouchSensor, {
       // Press delay of 250ms, with tolerance of 5px of movement
       activationConstraint: {
-        delay: 200,
+        delay: 100,
         tolerance: 5
       }
     }),
@@ -667,7 +667,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
                         addAsanaToBlock={() =>
                           addAsanaToBlock(1, 'repeating', 'add', '1')
                         }
-                        blockId={'-1'}
+                        blockId="-1"
                       />
                     )}
                   </DragOverlay>,
