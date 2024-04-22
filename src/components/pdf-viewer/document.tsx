@@ -20,12 +20,7 @@ import {
 
 import {iconsMap} from 'icons'
 
-import {
-  type AsanaBlock,
-  prepareAsanasBlock,
-  BlockType,
-  isDynamicOrRepeating
-} from './utils'
+import {type AsanaBlock, prepareAsanasBlock, BlockType, isBlock} from './utils'
 
 const styles = StyleSheet.create({
   page: {
@@ -157,7 +152,7 @@ const renderDynamicOrRepeatingBlock = ({
     }
 
     const shouldInsertSeparator =
-      isDynamicOrRepeating(nextElement) &&
+      isBlock(nextElement) &&
       nextElement.type !== BlockType.BOTH &&
       isLastElement
 
@@ -234,24 +229,22 @@ const renderBothBlocks = ({
   asanasBlock
 }: RenderBothBlocksArgs): any => {
   const isNextElementDynamicOrRepeating =
-    isDynamicOrRepeating(nextElement) && nextElement.type !== BlockType.BOTH
+    isBlock(nextElement) && nextElement.type !== BlockType.BOTH
 
   const isPrevElementDynamicOrRepeating =
-    isDynamicOrRepeating(prevElement) && prevElement.type !== BlockType.BOTH
+    isBlock(prevElement) && prevElement.type !== BlockType.BOTH
 
   const isPrevElementRepeating =
-    isDynamicOrRepeating(prevElement) &&
-    prevElement.type === BlockType.REPEATING
+    isBlock(prevElement) && prevElement.type === BlockType.REPEATING
 
   const isNextElementRepeating =
-    isDynamicOrRepeating(nextElement) &&
-    nextElement.type === BlockType.REPEATING
+    isBlock(nextElement) && nextElement.type === BlockType.REPEATING
 
   const isPrevElementDynamic =
-    isDynamicOrRepeating(prevElement) && prevElement.type === BlockType.DYNAMIC
+    isBlock(prevElement) && prevElement.type === BlockType.DYNAMIC
 
   const isNextElementDynamic =
-    isDynamicOrRepeating(nextElement) && nextElement.type === BlockType.DYNAMIC
+    isBlock(nextElement) && nextElement.type === BlockType.DYNAMIC
 
   const shouldRenderText =
     !isNextElementDynamicOrRepeating && !isPrevElementDynamicOrRepeating
@@ -279,11 +272,17 @@ const renderBothBlocks = ({
     }
   }
 
-  if (!prevElement) {
+  if (
+    !prevElement ||
+    (!isBlock(prevElement) && prevElement.alias === 'separator')
+  ) {
     shouldShowDynamicText = true
   }
 
-  if (!nextElement) {
+  if (
+    !nextElement ||
+    (!isBlock(nextElement) && nextElement.alias === 'separator')
+  ) {
     shouldShowRepeatingText = true
   }
 
@@ -430,7 +429,7 @@ export const PDFDocument = ({asanas: asanasProp}: Sequence): any => {
               <View style={styles.rowView} key={blockIndex}>
                 {blockAsanas.map((asana: Asana | AsanaBlock, index, self) => {
                   // Если перед нами блок с динамикой или сменой сторон
-                  if (isDynamicOrRepeating(asana)) {
+                  if (isBlock(asana)) {
                     const {type} = asana
 
                     const prevElement = index ? self[index - 1] : null
@@ -439,11 +438,11 @@ export const PDFDocument = ({asanas: asanasProp}: Sequence): any => {
                       index < self.length - 1 ? self[index + 1] : null
 
                     const isPreviousElementHasBothBlocks =
-                      isDynamicOrRepeating(prevElement) &&
+                      isBlock(prevElement) &&
                       prevElement.type === BlockType.BOTH
 
                     const isNextElementHasBothBlocks =
-                      isDynamicOrRepeating(nextElement) &&
+                      isBlock(nextElement) &&
                       nextElement.type === BlockType.BOTH
 
                     if (type === BlockType.REPEATING) {
