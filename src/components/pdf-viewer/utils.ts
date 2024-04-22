@@ -13,7 +13,7 @@ export interface AsanaBlock {
 
 type AsanasSequence = (Asana | AsanaBlock)[]
 
-export const isBlock = (
+export const isDynamicOrRepeating = (
   target: Asana | AsanaBlock | null
 ): target is AsanaBlock => !!(target as AsanaBlock)?.type
 
@@ -36,7 +36,7 @@ export const prepareAsanasBlock = (asanas: Asana[]): AsanasSequence => {
         ? BlockType.DYNAMIC
         : BlockType.BOTH
 
-      if (isBlock(lastElement) && lastElement.type === type) {
+      if (isDynamicOrRepeating(lastElement) && lastElement.type === type) {
         lastElement.asanas.push(curValue)
       } else {
         acc.push({type, asanas: [curValue]})

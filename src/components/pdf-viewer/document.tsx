@@ -20,7 +20,12 @@ import {
 
 import {iconsMap} from 'icons'
 
-import {type AsanaBlock, prepareAsanasBlock, isBlock, BlockType} from './utils'
+import {
+  type AsanaBlock,
+  prepareAsanasBlock,
+  BlockType,
+  isDynamicOrRepeating
+} from './utils'
 
 const styles = StyleSheet.create({
   page: {
@@ -63,6 +68,7 @@ const renderSvg = ({alias}: Asana, index: number): any => {
       <Svg
         width={DEFAULT_ICON_WIDTH}
         height={DEFAULT_ICON_HEIGHT}
+        style={{marginTop: 3}}
         key={index}
       />
     )
@@ -75,202 +81,399 @@ const renderSvg = ({alias}: Asana, index: number): any => {
   }
 }
 
+interface RenderDynamicOrRepeatingBlockArgs {
+  type: BlockType.DYNAMIC | BlockType.REPEATING
+  asanasBlock: AsanaBlock
+  nextElement: Asana | AsanaBlock | null
+  isNextElementHasBothBlocks: boolean
+  isPreviousElementHasBothBlocks: boolean
+  index: number
+}
+
+interface GetPaddingBottomArgs
+  extends Pick<
+    RenderDynamicOrRepeatingBlockArgs,
+    'isNextElementHasBothBlocks' | 'isPreviousElementHasBothBlocks' | 'type'
+  > {
+  isFirstElement: boolean
+  isLastElement: boolean
+}
+
+const getPaddingBottom = ({
+  isFirstElement,
+  isLastElement,
+  isNextElementHasBothBlocks,
+  isPreviousElementHasBothBlocks,
+  type
+}: GetPaddingBottomArgs): number => {
+  if (type === BlockType.DYNAMIC) {
+    if (
+      isNextElementHasBothBlocks &&
+      isFirstElement &&
+      !isPreviousElementHasBothBlocks
+    )
+      return 0
+
+    if (
+      isLastElement &&
+      isPreviousElementHasBothBlocks &&
+      !isNextElementHasBothBlocks
+    )
+      return 0
+
+    if (isNextElementHasBothBlocks || isPreviousElementHasBothBlocks) {
+      return 29.6
+    }
+  }
+
+  if (
+    (isFirstElement && !isPreviousElementHasBothBlocks) ||
+    (isLastElement && !isNextElementHasBothBlocks)
+  ) {
+    return 0
+  }
+
+  return 5
+}
+
+const renderDynamicOrRepeatingBlock = ({
+  type,
+  asanasBlock,
+  isPreviousElementHasBothBlocks,
+  isNextElementHasBothBlocks,
+  nextElement,
+  index
+}: RenderDynamicOrRepeatingBlockArgs): any => {
+  return asanasBlock.asanas.map((asana, _index, self) => {
+    const isLastElement = _index === self.length - 1
+    const isFirstElement = !_index
+
+    let shouldRenderText
+
+    if (type === 'repeating') {
+      shouldRenderText = isLastElement && !isNextElementHasBothBlocks
+    } else {
+      shouldRenderText = isFirstElement && !isPreviousElementHasBothBlocks
+    }
+
+    const shouldInsertSeparator =
+      isDynamicOrRepeating(nextElement) &&
+      nextElement.type !== BlockType.BOTH &&
+      isLastElement
+
+    return (
+      <React.Fragment key={index}>
+        <View>
+          <View
+            style={{
+              borderBottom: '1px solid black',
+              paddingBottom: getPaddingBottom({
+                type,
+                isFirstElement,
+                isLastElement,
+                isNextElementHasBothBlocks,
+                isPreviousElementHasBothBlocks
+              })
+            }}>
+            {(isFirstElement && !isPreviousElementHasBothBlocks) ||
+            (isLastElement && !isNextElementHasBothBlocks) ? (
+              <View>
+                <>
+                  {renderSvg(asana, _index)}
+                  <View
+                    style={{
+                      height: 5,
+                      ...(isFirstElement && !isPreviousElementHasBothBlocks
+                        ? {borderLeft: '1px solid black'}
+                        : {}),
+                      ...(isLastElement && !isNextElementHasBothBlocks
+                        ? {borderRight: '1px solid black'}
+                        : {}),
+                      ...(type === BlockType.DYNAMIC &&
+                      isFirstElement &&
+                      isNextElementHasBothBlocks
+                        ? {marginTop: 24.6}
+                        : {}),
+                      ...(type === BlockType.DYNAMIC &&
+                      isLastElement &&
+                      isPreviousElementHasBothBlocks
+                        ? {marginTop: 24.6}
+                        : {})
+                    }}
+                  />
+                </>
+              </View>
+            ) : (
+              renderSvg(asana, _index)
+            )}
+          </View>
+          {shouldRenderText && (
+            <Text style={styles.text}>
+              {type === BlockType.REPEATING ? 'смена сторон' : 'в динамике'}
+            </Text>
+          )}
+        </View>
+        {shouldInsertSeparator && <Svg width={5} height={70} />}
+      </React.Fragment>
+    )
+  })
+}
+
+interface RenderBothBlocksArgs
+  extends Pick<
+    RenderDynamicOrRepeatingBlockArgs,
+    'index' | 'asanasBlock' | 'nextElement'
+  > {
+  prevElement: Asana | AsanaBlock | null
+}
+
+const renderBothBlocks = ({
+  index,
+  nextElement,
+  prevElement,
+  asanasBlock
+}: RenderBothBlocksArgs): any => {
+  const isNextElementDynamicOrRepeating =
+    isDynamicOrRepeating(nextElement) && nextElement.type !== BlockType.BOTH
+
+  const isPrevElementDynamicOrRepeating =
+    isDynamicOrRepeating(prevElement) && prevElement.type !== BlockType.BOTH
+
+  const isPrevElementRepeating =
+    isDynamicOrRepeating(prevElement) &&
+    prevElement.type === BlockType.REPEATING
+
+  const isNextElementRepeating =
+    isDynamicOrRepeating(nextElement) &&
+    nextElement.type === BlockType.REPEATING
+
+  const isPrevElementDynamic =
+    isDynamicOrRepeating(prevElement) && prevElement.type === BlockType.DYNAMIC
+
+  const isNextElementDynamic =
+    isDynamicOrRepeating(nextElement) && nextElement.type === BlockType.DYNAMIC
+
+  const shouldRenderText =
+    !isNextElementDynamicOrRepeating && !isPrevElementDynamicOrRepeating
+
+  let shouldShowDynamicText = shouldRenderText
+  let shouldShowRepeatingText = shouldRenderText
+
+  if (isNextElementDynamicOrRepeating) {
+    const isNextBlockOfRepeatingAsanas = nextElement.asanas.every(
+      ({inRepeatingBlock}) => inRepeatingBlock
+    )
+
+    if (!isNextBlockOfRepeatingAsanas) {
+      shouldShowRepeatingText = true
+    }
+  }
+
+  if (isPrevElementDynamicOrRepeating) {
+    const isPrevBlockOfDynamicAsanas = prevElement.asanas.every(
+      ({inDynamicBlock}) => inDynamicBlock
+    )
+
+    if (!isPrevBlockOfDynamicAsanas) {
+      shouldShowDynamicText = true
+    }
+  }
+
+  if (!prevElement) {
+    shouldShowDynamicText = true
+  }
+
+  if (!nextElement) {
+    shouldShowRepeatingText = true
+  }
+
+  return asanasBlock.asanas.map((asana, _index, self) => {
+    const isLastElement = _index === self.length - 1
+    const isFirstElement = !_index
+
+    const shouldShowRepeatingTextForItem =
+      shouldShowRepeatingText && isLastElement
+
+    const shouldShowDynamicTextForItem = shouldShowDynamicText && isFirstElement
+
+    const shouldAddLeftBorderToRepeatingText =
+      isFirstElement && !isPrevElementRepeating
+
+    const shouldAddRightBorderToRepeatingText =
+      isLastElement && !isNextElementRepeating
+
+    const shouldAddLeftOrRightBorderToRepeatingText =
+      shouldAddLeftBorderToRepeatingText || shouldAddRightBorderToRepeatingText
+
+    const shouldAddLeftBorderToDynamicText =
+      isFirstElement && !isPrevElementDynamic
+
+    const shouldAddRightBorderToDynamicText =
+      isLastElement && !isNextElementDynamic
+
+    const shouldAddLeftOrRightBorderToDynamicText =
+      shouldAddLeftBorderToDynamicText
+
+    return (
+      <React.Fragment key={index}>
+        <View>
+          <View
+            style={{
+              borderBottom: '1px solid black',
+              display: 'flex',
+              alignItems: 'center',
+              paddingBottom: shouldAddLeftOrRightBorderToRepeatingText ? 0 : 5
+            }}>
+            {shouldAddLeftOrRightBorderToRepeatingText ? (
+              <View>
+                <>
+                  {renderSvg(asana, _index)}
+                  <View
+                    style={{
+                      height: 5,
+                      ...(shouldAddLeftBorderToRepeatingText
+                        ? {borderLeft: '1px solid black'}
+                        : {}),
+                      ...(shouldAddRightBorderToRepeatingText
+                        ? {borderRight: '1px solid black'}
+                        : {})
+                    }}
+                  />
+                </>
+              </View>
+            ) : (
+              renderSvg(asana, _index)
+            )}
+          </View>
+          <View>
+            <Text style={styles.text}>
+              {shouldShowRepeatingTextForItem ? 'смена сторон' : ''}
+            </Text>
+            {shouldAddLeftOrRightBorderToDynamicText ? (
+              <View
+                style={{marginTop: shouldShowRepeatingTextForItem ? 7 : 18.7}}>
+                <>
+                  <View
+                    style={{
+                      height: 5,
+                      ...(shouldAddLeftBorderToDynamicText
+                        ? {borderLeft: '1px solid black'}
+                        : {}),
+                      ...(shouldAddRightBorderToDynamicText
+                        ? {borderRight: '1px solid black'}
+                        : {})
+                    }}
+                  />
+
+                  <Text
+                    style={{
+                      ...styles.text,
+                      borderTop: '1px solid black'
+                    }}>
+                    {shouldShowDynamicTextForItem ? 'в динамике' : ''}
+                  </Text>
+                </>
+              </View>
+            ) : shouldAddRightBorderToDynamicText ? (
+              <View
+                style={{marginTop: shouldShowRepeatingTextForItem ? 7 : 18.7}}>
+                <>
+                  <View
+                    style={{
+                      height: 5,
+                      ...(shouldAddLeftBorderToDynamicText
+                        ? {borderLeft: '1px solid black'}
+                        : {}),
+                      ...(shouldAddRightBorderToDynamicText
+                        ? {borderRight: '1px solid black'}
+                        : {})
+                    }}
+                  />
+
+                  <Text
+                    style={{
+                      ...styles.text,
+                      borderTop: '1px solid black'
+                    }}>
+                    {shouldShowDynamicTextForItem ? 'в динамике' : ''}
+                  </Text>
+                </>
+              </View>
+            ) : (
+              <Text
+                style={{
+                  ...styles.text,
+                  borderTop: '1px solid black',
+                  marginTop: shouldShowRepeatingTextForItem ? 12 : 23.7
+                }}>
+                {shouldShowDynamicTextForItem ? 'в динамике' : ''}
+              </Text>
+            )}
+          </View>
+        </View>
+      </React.Fragment>
+    )
+  })
+}
+
 export const PDFDocument = ({asanas: asanasProp}: Sequence): any => {
   return (
     <Document>
       <Page orientation="landscape" style={styles.page}>
         <View style={styles.columnView}>
           {Object.values(asanasProp).map((asanasBlock, blockIndex) => {
-            const asanas = prepareAsanasBlock(asanasBlock)
+            // Асаны в конкретном блоке. Либо просто асана,
+            // либо последовательность с динамикой или сменой сторон
+            const blockAsanas = prepareAsanasBlock(asanasBlock)
 
             return (
               <View style={styles.rowView} key={blockIndex}>
-                {asanas.map((asana: Asana | AsanaBlock, index, self) => {
-                  if (isBlock(asana)) {
-                    const {asanas, type} = asana
+                {blockAsanas.map((asana: Asana | AsanaBlock, index, self) => {
+                  // Если перед нами блок с динамикой или сменой сторон
+                  if (isDynamicOrRepeating(asana)) {
+                    const {type} = asana
 
                     const prevElement = index ? self[index - 1] : null
 
                     const nextElement =
                       index < self.length - 1 ? self[index + 1] : null
 
-                    const isNextElementBlock =
-                      isBlock(nextElement) && isBlock(asana)
-
                     const isPreviousElementHasBothBlocks =
-                      isBlock(prevElement) &&
+                      isDynamicOrRepeating(prevElement) &&
                       prevElement.type === BlockType.BOTH
 
-                    const blockMiddleAsanaIndex = Math.floor(asanas.length / 2)
-
-                    const separator = <Svg width={5} height={70} key={index} />
+                    const isNextElementHasBothBlocks =
+                      isDynamicOrRepeating(nextElement) &&
+                      nextElement.type === BlockType.BOTH
 
                     if (type === BlockType.REPEATING) {
-                      return asanas.map((asana, _index, self) => {
-                        let shouldRenderText = _index === blockMiddleAsanaIndex
-
-                        const shouldInsertSeparator =
-                          isNextElementBlock &&
-                          nextElement.type !== BlockType.BOTH &&
-                          _index === self.length - 1
-
-                        if (isPreviousElementHasBothBlocks) {
-                          const prevElementLength = prevElement.asanas.length
-
-                          const currentAndPreviousArraysLength =
-                            prevElementLength + self.length
-
-                          const _middleAsanaIndex = Math.floor(
-                            currentAndPreviousArraysLength / 2
-                          )
-
-                          shouldRenderText =
-                            _index + prevElementLength === _middleAsanaIndex
-                        }
-
-                        return (
-                          <React.Fragment key={index}>
-                            <View>
-                              <View
-                                style={{
-                                  borderBottom: '1px solid black',
-                                  paddingBottom: 5
-                                }}>
-                                {renderSvg(asana, _index)}
-                              </View>
-                              {shouldRenderText && (
-                                <Text style={styles.text}>смена сторон</Text>
-                              )}
-                            </View>
-                            {shouldInsertSeparator && separator}
-                          </React.Fragment>
-                        )
+                      return renderDynamicOrRepeatingBlock({
+                        type: BlockType.REPEATING,
+                        asanasBlock: asana,
+                        isNextElementHasBothBlocks,
+                        isPreviousElementHasBothBlocks,
+                        index,
+                        nextElement
                       })
                     }
 
                     if (type === BlockType.DYNAMIC) {
-                      return asanas.map((asana, _index, self) => {
-                        let shouldRenderText = _index === blockMiddleAsanaIndex
-
-                        const shouldInsertSeparator =
-                          isNextElementBlock &&
-                          nextElement.type !== BlockType.BOTH &&
-                          _index === self.length - 1
-
-                        if (isPreviousElementHasBothBlocks) {
-                          const prevElementLength = prevElement.asanas.length
-
-                          const currentAndPreviousArraysLength =
-                            prevElementLength + self.length
-
-                          const _middleAsanaIndex = Math.floor(
-                            currentAndPreviousArraysLength / 2
-                          )
-
-                          shouldRenderText =
-                            _index + prevElementLength === _middleAsanaIndex
-                        }
-
-                        return (
-                          <React.Fragment key={index}>
-                            <View>
-                              <View
-                                style={{
-                                  borderBottom: '1px solid black',
-                                  paddingBottom: isPreviousElementHasBothBlocks
-                                    ? 22.6
-                                    : 5
-                                }}>
-                                {renderSvg(asana, _index)}
-                              </View>
-                              {shouldRenderText && (
-                                <Text style={styles.text}>в динамике</Text>
-                              )}
-                            </View>
-                            {shouldInsertSeparator && separator}
-                          </React.Fragment>
-                        )
+                      return renderDynamicOrRepeatingBlock({
+                        type: BlockType.DYNAMIC,
+                        asanasBlock: asana,
+                        isNextElementHasBothBlocks,
+                        isPreviousElementHasBothBlocks,
+                        index,
+                        nextElement
                       })
                     }
 
                     if (type === BlockType.BOTH) {
-                      let shouldShowDynamicText = true
-                      let shouldShowRepeatingText = true
-
-                      if (isNextElementBlock) {
-                        const isNextBlockOfDynamicAsanas =
-                          nextElement.asanas.every(
-                            ({inDynamicBlock}) => inDynamicBlock
-                          )
-
-                        const isNextBlockOfRepeatingAsanas =
-                          nextElement.asanas.every(
-                            ({inRepeatingBlock}) => inRepeatingBlock
-                          )
-
-                        const currentAndNextArraysLength =
-                          nextElement.asanas.length + asanas.length
-
-                        const _middleAsanaIndex = Math.floor(
-                          currentAndNextArraysLength / 2
-                        )
-
-                        shouldShowDynamicText =
-                          !isNextBlockOfDynamicAsanas ||
-                          _middleAsanaIndex <= blockMiddleAsanaIndex
-
-                        shouldShowRepeatingText =
-                          !isNextBlockOfRepeatingAsanas ||
-                          _middleAsanaIndex <= blockMiddleAsanaIndex
-                      }
-
-                      return asanas.map((asana, _index) => {
-                        const shouldInsertSeparator =
-                          isNextElementBlock && _index === self.length - 1
-
-                        return (
-                          <React.Fragment key={index}>
-                            <View>
-                              <View
-                                style={{
-                                  borderBottom: '1px solid black',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  paddingBottom: 5
-                                }}>
-                                {renderSvg(asana, _index)}
-                              </View>
-                              {blockMiddleAsanaIndex !== _index && (
-                                <View
-                                  style={{
-                                    height: 17.6,
-                                    borderBottom: '1px solid black'
-                                  }}
-                                />
-                              )}
-                              {blockMiddleAsanaIndex === _index && (
-                                <View>
-                                  <Text style={styles.text}>
-                                    {shouldShowRepeatingText
-                                      ? 'смена сторон'
-                                      : ''}
-                                  </Text>
-                                  <Text
-                                    style={{
-                                      ...styles.text,
-                                      borderTop: '1px solid black',
-                                      marginTop: shouldShowRepeatingText
-                                        ? 5
-                                        : 16.7
-                                    }}>
-                                    {shouldShowDynamicText ? 'в динамике' : ''}
-                                  </Text>
-                                </View>
-                              )}
-                              {shouldInsertSeparator && separator}
-                            </View>
-                          </React.Fragment>
-                        )
+                      return renderBothBlocks({
+                        index,
+                        nextElement,
+                        prevElement,
+                        asanasBlock: asana
                       })
                     }
                   }

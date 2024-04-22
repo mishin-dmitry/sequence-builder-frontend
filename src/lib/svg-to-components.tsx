@@ -1,5 +1,6 @@
 // NOTE https://github.com/diegomura/react-pdf/issues/1234
 import {Text, Svg, Rect, G, ClipPath, Defs, Path} from '@react-pdf/renderer'
+import type {Style} from '@react-pdf/types'
 import {parse, RootNode} from 'svg-parser'
 
 // https://dev.to/qausim/convert-html-inline-styles-to-a-style-object-for-react-components-2cbi
@@ -50,7 +51,7 @@ function parseIntAttributes(attr?: string | number): number | string {
   return Number(attr)
 }
 
-export const svgToComponent = (node: any): any => {
+export const svgToComponent = (node: any, styles?: Style): any => {
   const render = (node: any): any => {
     let Component: any
     let componentProps = {}
@@ -69,7 +70,8 @@ export const svgToComponent = (node: any): any => {
           style: {
             fontSize: 12,
             marginTop: 3,
-            marginRight: 3
+            marginRight: 3,
+            ...styles
           }
         }
         break
@@ -148,7 +150,8 @@ export const svgToComponent = (node: any): any => {
 }
 
 export const createSVGPdfRendererComponent = (
-  svgString: string
+  svgString: string,
+  styles?: Style
 ): React.ReactNode => {
   if (!svgString || svgString === '') return null
 
@@ -156,5 +159,5 @@ export const createSVGPdfRendererComponent = (
 
   const parsed: RootNode = parse(svg)
 
-  return svgToComponent(parsed.children[0])
+  return svgToComponent(parsed.children[0], styles)
 }
