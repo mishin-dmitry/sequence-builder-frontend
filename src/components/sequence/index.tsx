@@ -23,6 +23,7 @@ interface SequenceProps {
   data: (TAsana & {count?: number})[]
   id: string
   isEditing: boolean
+  target?: 'sequence' | 'bunch'
   className?: string
   onDeleteAsana: (id: number, blockId: string) => void
   onDeleteBlock?: (id: string) => void
@@ -57,7 +58,8 @@ export const Sequence: React.FC<SequenceProps> = ({
   isEditing,
   copyAsana,
   scrollToAsana,
-  className
+  className,
+  target
 }) => {
   const {isMobile} = useSettings()
 
@@ -107,7 +109,9 @@ export const Sequence: React.FC<SequenceProps> = ({
         opacity: isDragging ? 0.5 : 1
       }}
       ref={setNodeRef}>
-      <DragOutlined className={styles.drag} {...attributes} {...listeners} />
+      {target === 'sequence' && (
+        <DragOutlined className={styles.drag} {...attributes} {...listeners} />
+      )}
       <div className={clsx(styles.sequence, className)}>
         <SortableContext items={items}>
           {data.map((asana, index) => {
@@ -120,10 +124,11 @@ export const Sequence: React.FC<SequenceProps> = ({
                 asana={asana}
                 index={index}
                 blockId={blockId}
-                copyAsana={() => copyAsana(asana, index, blockId)}
+                copyAsana={copyAsana}
                 onDeleteAsana={onDeleteAsana}
                 scrollToAsana={scrollToAsana}
                 addAsanaToBlock={addAsanaToBlock}
+                isBlockButtonsHidden={target === 'bunch'}
               />
             )
           })}

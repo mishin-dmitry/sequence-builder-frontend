@@ -9,6 +9,7 @@ import {FileTextOutlined} from '@ant-design/icons'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
+import {AsanaImage} from 'components/asana-image'
 
 interface AsanaCardProps {
   data: Asana
@@ -53,18 +54,7 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
     () =>
       iconsMap[alias] && (
         <div className={styles.imageContainer}>
-          <img
-            alt="Изображение асаны"
-            loading="lazy"
-            src={`data:image/svg+xml;utf8,${encodeURIComponent(
-              iconsMap[alias].replaceAll(
-                '$COLOR',
-                isDarkTheme
-                  ? 'rgba(255, 255, 255, 0.85)'
-                  : 'rgba(0, 0, 0, 0.88)'
-              )
-            )}`}
-          />
+          <AsanaImage isLazy alias={alias} isDarkTheme={isDarkTheme} />
         </div>
       ),
     [alias, isDarkTheme]

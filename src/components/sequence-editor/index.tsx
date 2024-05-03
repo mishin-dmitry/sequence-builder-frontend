@@ -599,7 +599,6 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
             <DndContext
               sensors={sensors}
               collisionDetection={closestCorners}
-              // onDragOver={onDragOver}
               measuring={{droppable: {strategy: MeasuringStrategy.Always}}}
               onDragStart={onDragStart}
               onDragEnd={onDragEnd}>
@@ -629,6 +628,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
                         isEditing={editingBlock === rowId}
                         copyAsana={copyAsana}
                         scrollToAsana={scrollToAsana}
+                        target={target}
                       />
                     </div>
                   )

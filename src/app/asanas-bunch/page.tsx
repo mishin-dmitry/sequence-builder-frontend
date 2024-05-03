@@ -11,6 +11,7 @@ import {iconsMap} from 'icons'
 import {useAsanasBunches} from 'context/asanas-bunches'
 import {useUser} from 'context/user'
 import {useSettings} from 'context/settings'
+import {AsanaImage} from 'components/asana-image'
 
 import type {ColumnsType, TableLocale} from 'antd/es/table/interface'
 import type {Asana, AsanaBunch} from 'types'
@@ -67,17 +68,10 @@ const AsanasBunchPage: React.FC = () => {
               ({alias}, index) =>
                 iconsMap[alias] && (
                   <div className={styles.imageContainer} key={index}>
-                    <img
-                      alt="Изображение асаны"
-                      loading="lazy"
-                      src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                        iconsMap[alias].replaceAll(
-                          '$COLOR',
-                          isDarkTheme
-                            ? 'rgba(255, 255, 255, 0.85)'
-                            : 'rgba(0, 0, 0, 0.88)'
-                        )
-                      )}`}
+                    <AsanaImage
+                      alias={alias}
+                      isDarkTheme={isDarkTheme}
+                      isLazy
                     />
                   </div>
                 )
