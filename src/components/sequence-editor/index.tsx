@@ -194,11 +194,21 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     setTimeSettings(
       timeSettingsFromLS
         ? {
-            asanaTime: dayjs(timeSettingsFromLS.asanaTime),
-            namaskarTime: dayjs(timeSettingsFromLS.namaskarTime),
-            pranayamaTime: dayjs(timeSettingsFromLS.pranayamaTime),
-            shavasanaTime: dayjs(timeSettingsFromLS.shavasanaTime),
-            warmUpTime: dayjs(timeSettingsFromLS.warmUpTime)
+            asanaTime: !timeSettingsFromLS.asanaTime
+              ? null
+              : dayjs(timeSettingsFromLS.asanaTime),
+            namaskarTime: !timeSettingsFromLS.namaskarTime
+              ? null
+              : dayjs(timeSettingsFromLS.namaskarTime),
+            pranayamaTime: !timeSettingsFromLS.pranayamaTime
+              ? null
+              : dayjs(timeSettingsFromLS.pranayamaTime),
+            shavasanaTime: !timeSettingsFromLS.shavasanaTime
+              ? null
+              : dayjs(timeSettingsFromLS.shavasanaTime),
+            warmUpTime: !timeSettingsFromLS.warmUpTime
+              ? null
+              : dayjs(timeSettingsFromLS.warmUpTime)
           }
         : DEFAULT_TIME_SETTINGS
     )
@@ -213,8 +223,8 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
 
         if (!time) return acc
 
-        const seconds = time.second()
-        const minutes = time.minute()
+        const seconds = isNaN(time.second()) ? 0 : time.second()
+        const minutes = isNaN(time.minute()) ? 0 : time.minute()
 
         if (key === 'asanaTime') {
           Object.values(data).forEach((asanasBlock) => {
@@ -688,25 +698,23 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
         </div>
       </div>
 
-      {!!builderLength &&
-        (!!sequenceDuration.hours || !!sequenceDuration.minutes) &&
-        isTargetSequence && (
-          <div className={styles.timeWrapper}>
-            {!isViewMode && (
-              <Button
-                icon={<SettingOutlined />}
-                size="small"
-                className={styles.settingsButton}
-                onClick={toggleTimeSettingsVisible}
-              />
-            )}
-            <div>{`Время последовательности: ${
-              sequenceDuration.hours ? `${sequenceDuration.hours}ч` : ''
-            } ${
-              sequenceDuration.minutes ? `${sequenceDuration.minutes}м` : ''
-            }`}</div>
-          </div>
-        )}
+      {!!builderLength && isTargetSequence && (
+        <div className={styles.timeWrapper}>
+          {!isViewMode && (
+            <Button
+              icon={<SettingOutlined />}
+              size="small"
+              className={styles.settingsButton}
+              onClick={toggleTimeSettingsVisible}
+            />
+          )}
+          <div>{`Время последовательности: ${
+            sequenceDuration.hours ? `${sequenceDuration.hours}ч` : ''
+          } ${
+            sequenceDuration.minutes ? `${sequenceDuration.minutes}м` : '0'
+          }`}</div>
+        </div>
+      )}
 
       <div className={styles.actionButtons}>
         {!isViewMode &&

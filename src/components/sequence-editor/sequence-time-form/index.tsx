@@ -7,11 +7,11 @@ import styles from './styles.module.css'
 import {type Dayjs} from 'dayjs'
 
 export interface TimeSettingsFormInputs {
-  pranayamaTime: Dayjs
-  warmUpTime: Dayjs
-  namaskarTime: Dayjs
-  asanaTime: Dayjs
-  shavasanaTime: Dayjs
+  pranayamaTime: Dayjs | null
+  warmUpTime: Dayjs | null
+  namaskarTime: Dayjs | null
+  asanaTime: Dayjs | null
+  shavasanaTime: Dayjs | null
 }
 
 const INPUTS = [
@@ -38,7 +38,20 @@ export const SequenceTimeForm: React.FC<SequenceTimeFormProps> = ({
   })
 
   const onSubmit: SubmitHandler<TimeSettingsFormInputs> = (data) => {
-    onSubmitProp(data)
+    const resultData = Object.entries(data).reduce(
+      (acc: Record<string, any>, [key, value]) => {
+        if (!value || !value.isValid()) {
+          acc[key] = null
+        }
+
+        acc[key] = value
+
+        return acc
+      },
+      {}
+    ) as TimeSettingsFormInputs
+
+    onSubmitProp(resultData)
   }
 
   return (
