@@ -222,6 +222,11 @@ import {ekapadaArdhaPurvottanasana} from './ekapada-ardha-purvottanasana'
 import {ekapadaAshtangaNamaskarasana} from './ekapada-ashtanga-namaskarasana'
 import {ekapadaBakasana2} from './ekapada-bakasana-2'
 import {ekapadaPurvottanasana} from './ekapada-purvottanasana'
+import {yogaNidrasana} from './yoga-nidrasana'
+import {marichiasana3} from './marichiasana-3'
+import {parshvaDhanurasana} from './parshva-dhanurasana'
+import {ekapadaMardjariasana2} from './ekapada-mardjariasana-2'
+import {urdhvamukhaUpavishtaKonasana} from './urdhvamukha-upavishta-konasana'
 
 export const iconsMap: Record<string, string> = {
   adhomukhaShvanasana,
@@ -301,6 +306,7 @@ export const iconsMap: Record<string, string> = {
   shashankasana2,
   marichiasana1,
   marichiasana2,
+  marichiasana3,
   svastikasana,
   padmasana,
   ardhaBhekasana,
@@ -447,5 +453,9 @@ export const iconsMap: Record<string, string> = {
   ekapadaArdhaPurvottanasana,
   ekapadaAshtangaNamaskarasana,
   ekapadaBakasana2,
-  ekapadaPurvottanasana
+  ekapadaPurvottanasana,
+  yogaNidrasana,
+  parshvaDhanurasana,
+  ekapadaMardjariasana2,
+  urdhvamukhaUpavishtaKonasana
 }

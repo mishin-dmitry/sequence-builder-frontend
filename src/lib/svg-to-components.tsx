@@ -66,7 +66,7 @@ export const svgToComponent = (node: any, styles?: Style): any => {
         componentProps = {
           viewBox: node.properties?.viewBox,
           height: DEFAULT_ICON_HEIGHT,
-          width: DEFAULT_ICON_WIDTH,
+          width: node.properties?.width ?? DEFAULT_ICON_WIDTH,
           style: {
             fontSize: 12,
             marginTop: 3,
