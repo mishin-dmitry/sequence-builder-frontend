@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useCallback, useEffect} from 'react'
+import React, {useEffect} from 'react'
 
 import {
   RegistrationForm,
@@ -21,15 +21,12 @@ const RegistrationPage: React.FC = () => {
 
   const router = useRouter()
 
-  const onSubmit = useCallback(
-    async (
-      values: RegistrationFormInputs,
-      setError: UseFormSetError<RegistrationFormInputs>
-    ) => {
-      await registerUser(values, setError)
-    },
-    [registerUser]
-  )
+  const onSubmit = async (
+    values: RegistrationFormInputs,
+    setError: UseFormSetError<RegistrationFormInputs>
+  ): Promise<void> => {
+    await registerUser(values, setError)
+  }
 
   useEffect(() => {
     if (isAuthorized) {

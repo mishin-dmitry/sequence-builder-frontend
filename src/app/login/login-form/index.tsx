@@ -55,23 +55,38 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     []
   )
 
+  const loginRules = useMemo(
+    () => ({
+      required: {
+        value: true,
+        message: 'Введите почту'
+      },
+
+      pattern: {
+        value:
+          /^[+a-zA-Z0-9_.!#$%&'*/=?^`{|}~-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z0-9]{2,63}$/,
+        message: 'Введите корректный адрес почты'
+      }
+    }),
+    []
+  )
+
+  const passwordRules = useMemo(
+    () => ({
+      required: {
+        value: true,
+        message: 'Введите пароль'
+      }
+    }),
+    []
+  )
+
   return (
     <FormCard title="Войти" footer={footer}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Controller
           name="email"
-          rules={{
-            required: {
-              value: true,
-              message: 'Введите почту'
-            },
-
-            pattern: {
-              value:
-                /^[+a-zA-Z0-9_.!#$%&'*/=?^`{|}~-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z0-9]{2,63}$/,
-              message: 'Введите корректный адрес почты'
-            }
-          }}
+          rules={loginRules}
           control={control}
           render={({field, fieldState}) => (
             <Input
@@ -85,12 +100,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         />
         <Controller
           name="password"
-          rules={{
-            required: {
-              value: true,
-              message: 'Введите пароль'
-            }
-          }}
+          rules={passwordRules}
           control={control}
           render={({field, fieldState}) => (
             <Input

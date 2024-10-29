@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useMemo, useState} from 'react'
 
 import {Button, Modal} from 'antd'
 import {reachGoal} from 'lib/metrics'
@@ -29,15 +29,13 @@ export const SequenceViewer: React.FC<SequenceViewerProps> = ({
   const [isPdfModalVisible, setIsPdfModalVisible] = useState(false)
 
   const {isDarkTheme, isMobile} = useSettings()
-  // Скрыть превью pdf файла
-  const hidePreview = useCallback(() => setIsPdfModalVisible(false), [])
 
   // Показать превью pdf файла
-  const showPreview = useCallback(() => {
+  const showPreview = (): void => {
     setIsPdfModalVisible(true)
 
     reachGoal('show_preview')
-  }, [])
+  }
 
   const sequenceBlocks = useMemo(() => {
     return Object.keys(data).map((key, index) => (
@@ -81,14 +79,15 @@ export const SequenceViewer: React.FC<SequenceViewerProps> = ({
     ))
   }, [data, isDarkTheme])
 
-  const pdfAsanaData = useMemo(() => {
-    return {
+  const pdfAsanaData = useMemo(
+    () => ({
       asanas: data
-    }
-  }, [data])
+    }),
+    [data]
+  )
 
   // Сгенерировать pdf файл
-  const generatePdf = useCallback(async () => {
+  const generatePdf = async (): Promise<void> => {
     const pdfDoc = pdf(PDFDocument(pdfAsanaData))
 
     pdfDoc.updateContainer(PDFDocument(pdfAsanaData))
@@ -98,23 +97,17 @@ export const SequenceViewer: React.FC<SequenceViewerProps> = ({
     saveAs(blob, title.replaceAll('.', '_'))
 
     reachGoal('save_pdf')
-  }, [pdfAsanaData, title])
+  }
 
-  const duplicate = useCallback(
-    (event: React.SyntheticEvent) => {
-      event.preventDefault()
+  const duplicate = (event: React.SyntheticEvent): void => {
+    event.preventDefault()
 
-      setItem(LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY, data)
+    setItem(LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY, data)
 
-      window.setTimeout(() => {
-        window.open(
-          `${window.location.origin}${Urls.CREATE_SEQUENCE}`,
-          '_blank'
-        )
-      }, 0)
-    },
-    [data]
-  )
+    window.setTimeout(() => {
+      window.open(`${window.location.origin}${Urls.CREATE_SEQUENCE}`, '_blank')
+    }, 0)
+  }
 
   return (
     <div className={styles.previewWrapper}>
@@ -148,7 +141,7 @@ export const SequenceViewer: React.FC<SequenceViewerProps> = ({
         cancelText="Отмена"
         open={isPdfModalVisible}
         onOk={generatePdf}
-        onCancel={hidePreview}
+        onCancel={() => setIsPdfModalVisible(false)}
         destroyOnClose
         width={1000}
         {...(isMobile ? {footer: null} : {})}>

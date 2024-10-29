@@ -19,8 +19,10 @@ export {
   type UpdatePasswordRequest
 } from './auth'
 
-export {getAsanasList, getAsanaGroupsList} from './data'
+export {getAsanasList} from './data'
 export {getUser} from './user'
+
+export {getAsanaGroupsCategoriesList} from './groups-categories'
 
 export {
   createAsanasBunch,

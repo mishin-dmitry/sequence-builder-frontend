@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useEffect, useMemo, useState} from 'react'
 
 import {Tabs as TabsComponent} from 'antd'
 import {PirsList} from 'components/pirs-list'
@@ -7,7 +7,7 @@ import {AsanasList} from 'components/asanas-list'
 import {useUser} from 'context/user'
 import {AsanasBunchesList} from 'components/asanas-bunches-list'
 
-import type {Asana, AsanaBunch, AsanaGroup} from 'types'
+import type {Asana, AsanaBunch, AsanaGroup, AsanaGroupCategory} from 'types'
 
 import styles from './styles.module.css'
 
@@ -25,7 +25,7 @@ interface Tab {
 
 interface AsanaActionsProps {
   pirPairs?: [number, number][]
-  asanaGroups: AsanaGroup[]
+  groupsCategories: AsanaGroupCategory[]
   asanas: Asana[]
   asanasBunches?: AsanaBunch[]
   selectedAsanaId: number
@@ -57,7 +57,7 @@ export const AsanaActions: React.FC<AsanaActionsProps> = ({
   onAsanaClick,
   pirPairs = [],
   onSearchAsana,
-  asanaGroups,
+  groupsCategories,
   onFilterAsanaByGroups,
   asanas,
   selectedAsanaId,
@@ -74,14 +74,11 @@ export const AsanaActions: React.FC<AsanaActionsProps> = ({
     }
   }, [activeTab, isAuthorized])
 
-  const onTabChange = useCallback(
-    (key: string) => {
-      onTabChangeProp?.()
+  const onTabChange = (key: string): void => {
+    onTabChangeProp?.()
 
-      setActiveTab(key as Tabs)
-    },
-    [onTabChangeProp]
-  )
+    setActiveTab(key as Tabs)
+  }
 
   const tabs = useMemo(
     () =>
@@ -105,7 +102,7 @@ export const AsanaActions: React.FC<AsanaActionsProps> = ({
         <>
           <SearchFilter
             onSearchAsana={onSearchAsana}
-            filterItems={asanaGroups}
+            groupsCategories={groupsCategories}
             onFilterAsanaByGroups={onFilterAsanaByGroups}
             searchItems={asanas}
           />

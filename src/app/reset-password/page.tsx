@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useCallback, useEffect} from 'react'
+import React, {useEffect} from 'react'
 
 import {
   UpdatePasswordForm,
@@ -18,16 +18,13 @@ const ResetPasswordPage: React.FC = () => {
 
   const router = useRouter()
 
-  const onSubmit = useCallback(
-    async (values: UpdatePasswordFormInputs) => {
-      await updatePassword({
-        ...values,
-        token: router.query.token as string,
-        id: router.query.id as string
-      })
-    },
-    [router.query.id, router.query.token, updatePassword]
-  )
+  const onSubmit = async (values: UpdatePasswordFormInputs): Promise<void> => {
+    await updatePassword({
+      ...values,
+      token: router.query.token as string,
+      id: router.query.id as string
+    })
+  }
 
   useEffect(() => {
     if (router.isReady && (!router.query.token || !router.query.id)) {
@@ -41,12 +38,7 @@ const ResetPasswordPage: React.FC = () => {
     }
   }, [isAuthorized, router])
 
-  return (
-    <>
-      {isAuthorized && <Spinner />}
-      {!isAuthorized && <UpdatePasswordForm onSubmit={onSubmit} />}
-    </>
-  )
+  return isAuthorized ? <Spinner /> : <UpdatePasswordForm onSubmit={onSubmit} />
 }
 
 export default ResetPasswordPage

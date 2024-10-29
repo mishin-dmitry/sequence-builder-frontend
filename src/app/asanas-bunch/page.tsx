@@ -49,13 +49,8 @@ const AsanasBunchPage: React.FC = () => {
     [deleteAsanasBunch, updateAsanasBunches]
   )
 
-  const onEdit = useCallback(
-    (id: string) => router.push(`${Urls.EDIT_ASANAS_BUNCH}/${id}`),
-    [router]
-  )
-
-  const columns = useMemo(() => {
-    return [
+  const columns = useMemo(
+    () => [
       {title: 'Название', dataIndex: 'title', key: 'title'},
       {
         title: 'Связки асан',
@@ -119,15 +114,16 @@ const AsanasBunchPage: React.FC = () => {
                 type="primary"
                 disabled={isConfirmLoading}
                 size="small"
-                onClick={() => onEdit(id)}>
+                onClick={() => router.push(`${Urls.EDIT_ASANAS_BUNCH}/${id}`)}>
                 <EditOutlined />
               </Button>
             </Tooltip>
           </div>
         )
       }
-    ]
-  }, [isConfirmLoading, isDarkTheme, onDeleteBunch, onEdit])
+    ],
+    [isConfirmLoading, isDarkTheme, onDeleteBunch, router]
+  )
 
   const dataSource = useMemo(
     () =>
@@ -139,10 +135,6 @@ const AsanasBunchPage: React.FC = () => {
       })),
     [asanasBunches]
   )
-
-  const onCreateAsanasBunch = useCallback(() => {
-    router.push(Urls.CREATE_ASANAS_BUNCH)
-  }, [router])
 
   return (
     <div className={styles.pageWrapper}>
@@ -158,7 +150,7 @@ const AsanasBunchPage: React.FC = () => {
         type="primary"
         className={!asanasBunches.length ? styles.withTopMargin : undefined}
         block
-        onClick={onCreateAsanasBunch}>
+        onClick={() => router.push(Urls.CREATE_ASANAS_BUNCH)}>
         Создать связку асан
       </Button>
     </div>

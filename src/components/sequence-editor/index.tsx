@@ -51,16 +51,26 @@ import PdfViewer from 'components/pdf-viewer'
 import {createPortal} from 'react-dom'
 import clsx from 'clsx'
 import {Asana} from 'components/asana'
+import {BlockType} from 'components/pdf-viewer/utils'
+
+export enum Target {
+  SEQUENCE = 'sequence',
+  BUNCH = 'bunch'
+}
+
+export enum Action {
+  ADD = 'add',
+  DELETE = 'delete'
+}
 
 interface SequenceEditorProps {
   data: Record<string, TAsana[]>
   editingBlock: string
   title: string
   description?: string
-  isPublic?: boolean
   asanasListNode: React.ReactNode
   isViewMode?: boolean
-  target?: 'sequence' | 'bunch'
+  target?: Target
   maxBlocksCount?: number
   onSave: () => Promise<void>
   onDelete?: () => Promise<void>
@@ -70,7 +80,6 @@ interface SequenceEditorProps {
   onChangeEditingBlock?: (id: string) => void
   onChangeTitle: (title: string) => void
   onChangeDescription?: (description: string) => void
-  onChangePublic?: (checked: boolean) => void
 }
 
 const DEFAULT_TIME_SETTINGS = {
@@ -96,7 +105,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   isViewMode,
   scrollToAsana,
   onDuplicate: onDuplicateProp,
-  target = 'sequence',
+  target = Target.SEQUENCE,
   maxBlocksCount = 10
 }) => {
   const [isSaving, setIsSaving] = useState(false)
@@ -104,7 +113,6 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   const [isAsanasModalVisible, setIsAsanasModalVisible] = useState(false)
   const [isTimeSettingsVisible, setIsTimeSettingsVisible] = useState(false)
   const [isInputEmpty, setIsInputEmpty] = useState(false)
-
   const [draggingAsana, setDraggingAsana] = useState<null | TAsana>(null)
   const [draggingRowId, setDraggingRowId] = useState<string | null>(null)
 
@@ -114,7 +122,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
 
   const {isMobile} = useSettings()
 
-  const isTargetSequence = target === 'sequence'
+  const isTargetSequence = target === Target.SEQUENCE
 
   const [sequenceDuration, setSequenceDuration] = useState<{
     hours?: number
@@ -430,8 +438,8 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   const addAsanaToBlock = useCallback(
     (
       asanaIndex: number,
-      block: 'repeating' | 'dynamic',
-      action: 'add' | 'delete',
+      block: BlockType.REPEATING | BlockType.DYNAMIC,
+      action: Action,
       blockId: string
     ) => {
       const newData = {
@@ -440,9 +448,9 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
           index === asanaIndex
             ? {
                 ...asana,
-                ...(block === 'repeating'
-                  ? {inRepeatingBlock: action === 'add'}
-                  : {inDynamicBlock: action === 'add'})
+                ...(block === BlockType.REPEATING
+                  ? {inRepeatingBlock: action === Action.ADD}
+                  : {inDynamicBlock: action === Action.ADD})
               }
             : asana
         )
@@ -565,6 +573,9 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     [onDuplicateProp]
   )
 
+  const targetName = isTargetSequence ? 'последовательность' : 'связку асан'
+  const plurTargetName = isTargetSequence ? 'последовательности' : 'связки асан'
+
   return (
     <div className={styles.previewWrapper}>
       <div className={styles.scrollContainer}>
@@ -572,25 +583,13 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
           {isAuthorized && !isViewMode && (
             <div className={styles.controls}>
               <Input
-                placeholder={
-                  isTargetSequence
-                    ? 'Введите название вашей последовательности...'
-                    : 'Введите название связки асан...'
-                }
-                label={
-                  isTargetSequence
-                    ? 'Название последовательности'
-                    : 'Название связки асан'
-                }
+                placeholder={`Введите название ${plurTargetName}`}
+                label={`Название ${plurTargetName}`}
                 value={title}
                 onChange={onTitleChange}
                 name="title"
                 errorMessage={
-                  isInputEmpty
-                    ? isTargetSequence
-                      ? 'Введите название последовательности'
-                      : 'Введите название связки асан'
-                    : ''
+                  isInputEmpty ? `Введите название ${plurTargetName}` : ''
                 }
               />
               {onDescriptionChange && isTargetSequence && (
@@ -615,34 +614,32 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
               <SortableContext
                 strategy={verticalListSortingStrategy}
                 items={rows}>
-                {rows.map((rowId) => {
-                  return (
-                    <div
-                      key={rowId}
+                {rows.map((rowId) => (
+                  <div
+                    key={rowId}
+                    id={rowId}
+                    className={styles.blockWrapper}
+                    onClick={
+                      onChangeEditingBlock
+                        ? () => onChangeEditingBlock(rowId)
+                        : undefined
+                    }>
+                    <Sequence
                       id={rowId}
-                      className={styles.blockWrapper}
-                      onClick={
-                        onChangeEditingBlock
-                          ? () => onChangeEditingBlock(rowId)
-                          : undefined
-                      }>
-                      <Sequence
-                        id={rowId}
-                        data={data[rowId]}
-                        onDeleteAsana={deleteAsanaById}
-                        onDeleteBlock={
-                          isTargetSequence ? deleteAsanasBlock : undefined
-                        }
-                        onAddAsanaButtonClick={showAsanasModal}
-                        addAsanaToBlock={addAsanaToBlock}
-                        isEditing={editingBlock === rowId}
-                        copyAsana={copyAsana}
-                        scrollToAsana={scrollToAsana}
-                        target={target}
-                      />
-                    </div>
-                  )
-                })}
+                      data={data[rowId]}
+                      onDeleteAsana={deleteAsanaById}
+                      onDeleteBlock={
+                        isTargetSequence ? deleteAsanasBlock : undefined
+                      }
+                      onAddAsanaButtonClick={showAsanasModal}
+                      addAsanaToBlock={addAsanaToBlock}
+                      isEditing={editingBlock === rowId}
+                      copyAsana={copyAsana}
+                      scrollToAsana={scrollToAsana}
+                      target={target}
+                    />
+                  </div>
+                ))}
               </SortableContext>
               {typeof document !== 'undefined' &&
                 createPortal(
@@ -675,7 +672,12 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
                         scrollToAsana={scrollToAsana}
                         onDeleteAsana={() => deleteAsanaById(1, '1')}
                         addAsanaToBlock={() =>
-                          addAsanaToBlock(1, 'repeating', 'add', '1')
+                          addAsanaToBlock(
+                            1,
+                            BlockType.REPEATING,
+                            Action.ADD,
+                            '1'
+                          )
                         }
                         blockId="-1"
                       />
@@ -720,8 +722,8 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
         {!isViewMode &&
           (typeof onDelete === 'function' ? (
             <ConfirmButton
-              title="Удалить последовательность"
-              description="Вы действительно хотите удалить последовательность?"
+              title={`Удалить ${targetName}`}
+              description={`Вы действительно хотите удалить ${targetName}?`}
               onClick={onDelete}
               size="large"
               okText="Удалить">
@@ -729,8 +731,8 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
             </ConfirmButton>
           ) : (
             <ConfirmButton
-              title="Очистить последовательность"
-              description="Вы действительно хотите очистить последовательность?"
+              title={`Очистить ${targetName}`}
+              description={`Вы действительно хотите очистить ${targetName}?`}
               size="large"
               okText="Очистить"
               onClick={clearSequence}>

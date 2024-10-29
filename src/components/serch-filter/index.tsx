@@ -1,8 +1,8 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {FilterOutlined} from '@ant-design/icons'
 import {Button, Dropdown, Checkbox, AutoComplete} from 'antd'
 
-import type {Asana, AsanaGroup} from 'types'
+import type {Asana, AsanaGroup, AsanaGroupCategory} from 'types'
 import type {CheckboxChangeEvent} from 'antd/es/checkbox'
 
 import debounce from 'lodash.debounce'
@@ -11,14 +11,14 @@ import styles from './styles.module.css'
 interface SearchFilterProps {
   onSearchAsana: (value: string) => void
   onFilterAsanaByGroups: (groups: AsanaGroup[]) => void
-  filterItems: AsanaGroup[]
+  groupsCategories: AsanaGroupCategory[]
   searchItems: Asana[]
 }
 
 export const SearchFilter: React.FC<SearchFilterProps> = ({
   onSearchAsana,
   onFilterAsanaByGroups,
-  filterItems,
+  groupsCategories,
   searchItems: propsSearchItems
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -34,17 +34,10 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
     [propsSearchItems]
   )
 
-  const toggleDropdown = useCallback(
-    () => setIsFilterDropdownOpen((prevState) => !prevState),
-    []
-  )
-
   useEffect(() => {
     onFilterAsanaByGroups(chosenFilters)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chosenFilters])
-
-  const hideDropdown = useCallback(() => setIsFilterDropdownOpen(false), [])
 
   useEffect(() => {
     const node = document.querySelector(`.${styles.menu}`)
@@ -56,7 +49,7 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
         !node.contains(event.target as HTMLElement) &&
         !buttonRef.current?.contains(event.target as HTMLElement)
       ) {
-        hideDropdown()
+        setIsFilterDropdownOpen(false)
       }
     }, 200)
 
@@ -70,37 +63,40 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
 
   const filterItemCheckboxes = useMemo(
     () =>
-      filterItems.map(({id, name}) => {
-        const onChange = (event: CheckboxChangeEvent): void => {
-          if (event.target.checked) {
-            setChosenFilters((prevData) => [...prevData, {id, name}])
-          } else {
-            setChosenFilters((prevData) =>
-              prevData.filter((item) => item.id !== id)
+      groupsCategories.map(({id: categoryId, name: categoryName, groups}) => ({
+        key: categoryId,
+        type: 'group',
+        label: categoryName,
+        children: groups.map((group) => {
+          const onChange = (event: CheckboxChangeEvent): void => {
+            if (event.target.checked) {
+              setChosenFilters((prevData) => [...prevData, group])
+            } else {
+              setChosenFilters((prevData) =>
+                prevData.filter((item) => item.id !== group.id)
+              )
+            }
+          }
+
+          const isChosen = chosenFilters.some((item) => item.id === group.id)
+
+          return {
+            key: group.id,
+            label: (
+              <Checkbox
+                key={group.id}
+                title={group.name}
+                checked={isChosen}
+                className={styles.checkbox}
+                onChange={onChange}>
+                {group.name}
+              </Checkbox>
             )
           }
-        }
-
-        const isChosen = chosenFilters.some((item) => item.id === id)
-
-        return {
-          key: id,
-          label: (
-            <Checkbox
-              key={id}
-              title={name}
-              checked={isChosen}
-              className={styles.checkbox}
-              onChange={onChange}>
-              {name}
-            </Checkbox>
-          )
-        }
-      }),
-    [chosenFilters, filterItems]
+        })
+      })),
+    [chosenFilters, groupsCategories]
   )
-
-  const resetFilter = useCallback(() => setChosenFilters([]), [])
 
   const dropdownMenu = useMemo(
     () => ({
@@ -109,7 +105,7 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
         {
           key: 'reset',
           label: (
-            <Button key="reset" block onClick={resetFilter}>
+            <Button key="reset" block onClick={() => setChosenFilters([])}>
               Сбросить
             </Button>
           )
@@ -118,14 +114,11 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
       multiple: true,
       className: styles.menu
     }),
-    [filterItemCheckboxes, resetFilter]
+    [filterItemCheckboxes]
   )
 
-  const onFilterOption = useCallback(
-    (value: string, option: any) =>
-      option.value.toUpperCase().indexOf(value.toUpperCase()) !== -1,
-    []
-  )
+  const onFilterOption = (value: string, option: any): boolean =>
+    option.value.toUpperCase().indexOf(value.toUpperCase()) !== -1
 
   return (
     <>
@@ -144,7 +137,7 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
             icon={<FilterOutlined />}
             className={styles.filterIcon}
             size="large"
-            onClick={toggleDropdown}
+            onClick={() => setIsFilterDropdownOpen((prevState) => !prevState)}
             ref={buttonRef}
           />
         </Dropdown>

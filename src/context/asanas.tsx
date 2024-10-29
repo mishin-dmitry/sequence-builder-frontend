@@ -1,42 +1,31 @@
 'use client'
 
-import React, {useMemo, type PropsWithChildren, useContext} from 'react'
+import React, {useMemo, useContext} from 'react'
 
-import type {Asana, AsanaGroup} from 'types'
+import type {Asana, AsanaGroupCategory} from 'types'
 
 interface AsanasContext {
   asanas: Asana[]
-  asanaGroups: AsanaGroup[]
+  asanaGroupsCategories: AsanaGroupCategory[]
   asanasMap: Record<string, Asana>
   pirPairs: [number, number][]
 }
 
 const initialData: AsanasContext = {
   asanas: [],
-  asanaGroups: [],
+  asanaGroupsCategories: [],
   asanasMap: {},
   pirPairs: []
 }
 
 const AsanasContext = React.createContext(initialData)
 
-interface ProvideAsanasProps extends PropsWithChildren {
-  asanas: Asana[]
-  asanaGroups: AsanaGroup[]
-  asanasMap: Record<string, Asana>
-  pirPairs: [number, number][]
-}
-
-export const ProvideAsanas: React.FC<ProvideAsanasProps> = ({
-  children,
-  asanas,
-  asanaGroups,
-  asanasMap,
-  pirPairs
-}) => {
+export const ProvideAsanas: React.FC<
+  AsanasContext & {children: React.ReactNode}
+> = ({children, asanas, asanaGroupsCategories, asanasMap, pirPairs}) => {
   const value = useMemo<AsanasContext>(
-    () => ({asanas, asanaGroups, asanasMap, pirPairs}),
-    [asanaGroups, asanas, asanasMap, pirPairs]
+    () => ({asanas, asanaGroupsCategories, asanasMap, pirPairs}),
+    [asanaGroupsCategories, asanas, asanasMap, pirPairs]
   )
 
   return (

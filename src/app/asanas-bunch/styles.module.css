@@ -21,6 +21,8 @@
 
 .table {
   width: 100%;
+  max-height: calc(100% - 30px);
+  overflow: scroll;
 }
 
 .buttons {

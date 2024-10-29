@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo} from 'react'
+import React, {useEffect} from 'react'
 
 import {useSortable} from '@dnd-kit/sortable'
 import {CSS} from '@dnd-kit/utilities'
@@ -46,11 +46,6 @@ export const SortableItem: React.FC<SortableItemProps> = ({
     }
   }, [isDragging, onMouseLeave])
 
-  const props = useMemo(
-    () => (isMobile ? {onClick} : {onMouseEnter, onMouseLeave}),
-    [isMobile, onClick, onMouseEnter, onMouseLeave]
-  )
-
   return (
     <div
       ref={setNodeRef}
@@ -60,7 +55,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({
         transform: CSS.Transform.toString(transform),
         opacity: isDragging ? 0.5 : 1
       }}
-      {...props}
+      {...(isMobile ? {onClick} : {onMouseEnter, onMouseLeave})}
       {...attributes}
       {...listeners}>
       {children}

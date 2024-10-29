@@ -17,13 +17,11 @@ const classes = StyleSheet.create({
   }
 })
 
-const PdfViewer: React.FC<PdfViewerProps> = ({sequence}) => {
-  return (
-    <div className={styles.viewerWrapper}>
-      <PDFViewer style={classes.viewer}>{PDFDocument(sequence)}</PDFViewer>
-    </div>
-  )
-}
+const PdfViewer: React.FC<PdfViewerProps> = ({sequence}) => (
+  <div className={styles.viewerWrapper}>
+    <PDFViewer style={classes.viewer}>{PDFDocument(sequence)}</PDFViewer>
+  </div>
+)
 
 export default dynamic(() => Promise.resolve(PdfViewer), {
   ssr: false

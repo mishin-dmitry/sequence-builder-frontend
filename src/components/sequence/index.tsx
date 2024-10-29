@@ -15,22 +15,24 @@ import {DragOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import {ConfirmButton} from 'components/confirm-button'
 import {useSettings} from 'context/settings'
 import {Asana} from 'components/asana'
+import {Action, Target} from 'components/sequence-editor'
 
 import clsx from 'clsx'
 import styles from './styles.module.css'
+import {BlockType} from 'components/pdf-viewer/utils'
 
 interface SequenceProps {
   data: (TAsana & {count?: number})[]
   id: string
   isEditing: boolean
-  target?: 'sequence' | 'bunch'
+  target?: Target
   className?: string
   onDeleteAsana: (id: number, blockId: string) => void
   onDeleteBlock?: (id: string) => void
   addAsanaToBlock: (
     id: number,
-    block: 'repeating' | 'dynamic',
-    action: 'add' | 'delete',
+    block: BlockType.REPEATING | BlockType.DYNAMIC,
+    action: Action,
     blockId: string
   ) => void
   onAddAsanaButtonClick?: () => void
@@ -88,8 +90,8 @@ export const Sequence: React.FC<SequenceProps> = ({
   const addAsanaToBlock = useCallback(
     (
       asanaId: number,
-      block: 'repeating' | 'dynamic',
-      action: 'add' | 'delete'
+      block: BlockType.REPEATING | BlockType.DYNAMIC,
+      action: Action
     ) => {
       addAsanaToBlockProp(asanaId, block, action, blockId)
     },
@@ -109,7 +111,7 @@ export const Sequence: React.FC<SequenceProps> = ({
         opacity: isDragging ? 0.5 : 1
       }}
       ref={setNodeRef}>
-      {target === 'sequence' && (
+      {target === Target.SEQUENCE && (
         <DragOutlined className={styles.drag} {...attributes} {...listeners} />
       )}
       <div className={clsx(styles.sequence, className)}>
@@ -128,7 +130,7 @@ export const Sequence: React.FC<SequenceProps> = ({
                 onDeleteAsana={onDeleteAsana}
                 scrollToAsana={scrollToAsana}
                 addAsanaToBlock={addAsanaToBlock}
-                isBlockButtonsHidden={target === 'bunch'}
+                isBlockButtonsHidden={target === Target.BUNCH}
               />
             )
           })}

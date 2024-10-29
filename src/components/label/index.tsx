@@ -7,10 +7,8 @@ interface LabelProps {
   children: React.ReactNode
 }
 
-export const Label: React.FC<LabelProps> = ({children, htmlFor}) => {
-  return (
-    <label htmlFor={htmlFor} className={styles.label}>
-      {children}
-    </label>
-  )
-}
+export const Label: React.FC<LabelProps> = ({children, htmlFor}) => (
+  <label htmlFor={htmlFor} className={styles.label}>
+    {children}
+  </label>
+)

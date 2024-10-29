@@ -31,8 +31,8 @@ export const SequenceTable: React.FC<SequenceTableProps> = ({
     []
   )
 
-  const columns = useMemo(() => {
-    return [
+  const columns = useMemo(
+    () => [
       {title: 'Название', dataIndex: 'title', key: 'title'},
       {
         title: 'Описание',
@@ -102,8 +102,9 @@ export const SequenceTable: React.FC<SequenceTableProps> = ({
           </div>
         )
       }
-    ]
-  }, [onDelete, isConfirmLoading, onEdit, onShow])
+    ],
+    [onDelete, isConfirmLoading, onEdit, onShow]
+  )
 
   const dataSource = useMemo(
     () =>
@@ -116,6 +117,8 @@ export const SequenceTable: React.FC<SequenceTableProps> = ({
     [items]
   )
 
+  const scroll = useMemo(() => ({x: 'max-content'}), [])
+
   return (
     <Table
       columns={columns as ColumnsType<any>}
@@ -123,7 +126,7 @@ export const SequenceTable: React.FC<SequenceTableProps> = ({
       className={styles.table}
       locale={locale}
       size="small"
-      scroll={{x: 'max-content'}}
+      scroll={scroll}
     />
   )
 }

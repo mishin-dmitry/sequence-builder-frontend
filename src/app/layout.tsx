@@ -3,7 +3,7 @@ import React, {type PropsWithChildren} from 'react'
 import {cookies as nextCookies, headers} from 'next/headers'
 import {Layout} from 'antd'
 import {type Metadata} from 'next'
-import {getAsanaGroupsList, getAsanasList, getUser} from 'api'
+import {getAsanaGroupsCategoriesList, getAsanasList, getUser} from 'api'
 import {Asana} from 'types'
 import {Header} from 'components/header'
 import {StyledComponentsRegistry} from 'lib/antd-registry'
@@ -29,14 +29,11 @@ export const metadata: Metadata = {
 const RootLayout: React.FC<PropsWithChildren> = async ({children}) => {
   const cookies = nextCookies().toString()
 
-  const [{isFound, ...user}, asanas, asanaGroups] = await Promise.all([
-    getUser({cookies}),
-    getAsanasList(),
-    getAsanaGroupsList()
-  ])
+  const [{isFound, ...user}, asanas, asanaGroupsCategories] = await Promise.all(
+    [getUser({cookies}), getAsanasList(), getAsanaGroupsCategoriesList()]
+  )
 
   asanas.sort((a, b) => (a.name > b.name ? 1 : -1))
-  asanaGroups.sort((a, b) => (a.name > b.name ? 1 : -1))
 
   const asanasMap = asanas.reduce((acc: Record<string, Asana>, curValue) => {
     acc[curValue.id] = curValue
@@ -46,7 +43,7 @@ const RootLayout: React.FC<PropsWithChildren> = async ({children}) => {
 
   const pirPairs = asanas.reduce((acc: [number, number][], curValue: Asana) => {
     if (curValue.pirs.length) {
-      curValue.pirs.forEach(({pirId}) => {
+      curValue.pirs.forEach((pirId) => {
         acc.push([curValue.id, pirId])
       })
     }
@@ -71,7 +68,7 @@ const RootLayout: React.FC<PropsWithChildren> = async ({children}) => {
       <ProvideUser user={isFound ? user : null}>
         <ProvideAsanas
           asanas={asanas}
-          asanaGroups={asanaGroups}
+          asanaGroupsCategories={asanaGroupsCategories}
           pirPairs={pirPairs}
           asanasMap={asanasMap}>
           <ProvideAsanasBunches>

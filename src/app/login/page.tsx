@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useCallback, useEffect} from 'react'
+import React, {useEffect} from 'react'
 
 import {LoginForm, type LoginFormInputs} from './login-form'
 import {useLogin} from './hooks'
@@ -17,15 +17,12 @@ const LoginPage: React.FC = () => {
 
   const router = useRouter()
 
-  const onSubmit = useCallback(
-    async (
-      values: LoginFormInputs,
-      setError: UseFormSetError<LoginFormInputs>
-    ) => {
-      await login(values, setError)
-    },
-    [login]
-  )
+  const onSubmit = async (
+    values: LoginFormInputs,
+    setError: UseFormSetError<LoginFormInputs>
+  ): Promise<void> => {
+    await login(values, setError)
+  }
 
   useEffect(() => {
     if (isAuthorized) {

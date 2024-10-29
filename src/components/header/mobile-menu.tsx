@@ -42,6 +42,8 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({isAuthorized}) => {
     []
   )
 
+  const selectedKeys = useMemo(() => [pathname], [pathname])
+
   return (
     <div className={styles.menuWrapper}>
       <button
@@ -54,7 +56,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({isAuthorized}) => {
           mode="inline"
           rootClassName={styles.menu}
           selectable
-          selectedKeys={[pathname]}>
+          selectedKeys={selectedKeys}>
           {links}
         </Menu>
       </Drawer>

@@ -10,19 +10,18 @@
 
 .checkbox {
   display: flex;
-  padding: 5px 12px;
 }
 
 .menu {
-  max-height: 300px;
   overflow: auto;
+  display: flex;
+  flex-wrap: wrap;
 
   & > li {
-    padding: 5px !important;
-
     &:last-child {
       padding: 0 !important;
       margin-top: 10px !important;
+      width: 100%;
     }
   }
 }

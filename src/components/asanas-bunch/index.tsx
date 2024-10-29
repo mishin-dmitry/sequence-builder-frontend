@@ -1,13 +1,13 @@
-import React, {useCallback} from 'react'
+import React from 'react'
 
 import {iconsMap} from 'icons'
 import {useSettings} from 'context/settings'
 import {Typography} from 'antd'
+import {AsanaImage} from 'components/asana-image'
 
 import type {Asana} from 'types'
 
 import styles from './styles.module.css'
-import {AsanaImage} from 'components/asana-image'
 
 interface AsanaBunchProps {
   title: string
@@ -18,29 +18,19 @@ interface AsanaBunchProps {
 export const AsanaBunch: React.FC<AsanaBunchProps> = ({
   title,
   asanas,
-  onClick: propOnClick
+  onClick
 }) => {
   const {isDarkTheme} = useSettings()
 
-  const renderImage = useCallback(
-    ({alias}: Asana, index: number) => {
-      return (
-        iconsMap[alias] && (
-          <div className={styles.imageContainer} key={index}>
-            <AsanaImage isLazy isDarkTheme={isDarkTheme} alias={alias} />
-          </div>
-        )
-      )
-    },
-    [isDarkTheme]
-  )
-
-  const onClick = useCallback(() => {
-    propOnClick(asanas)
-  }, [asanas, propOnClick])
+  const renderImage = ({alias}: Asana, index: number): React.ReactNode =>
+    iconsMap[alias] && (
+      <div className={styles.imageContainer} key={index}>
+        <AsanaImage isLazy isDarkTheme={isDarkTheme} alias={alias} />
+      </div>
+    )
 
   return (
-    <button className={styles.asanaBunch} onClick={onClick}>
+    <button className={styles.asanaBunch} onClick={() => onClick(asanas)}>
       <div className={styles.asanas}>{asanas.map(renderImage)}</div>
       <Typography.Title level={5} className={styles.title}>
         {title}

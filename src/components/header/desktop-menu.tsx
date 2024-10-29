@@ -28,13 +28,16 @@ export const DesktopMenu: React.FC<DesktopMenuProps> = ({isAuthorized}) => {
     [isAuthorized]
   )
 
+  const styles = useMemo(() => ({flex: 'auto', minWidth: 0}), [])
+  const selectedKeys = useMemo(() => [pathname], [pathname])
+
   return (
     <Menu
       theme="dark"
       mode="horizontal"
       items={links}
-      selectedKeys={[pathname]}
-      style={{flex: 'auto', minWidth: 0}}
+      selectedKeys={selectedKeys}
+      style={styles}
     />
   )
 }

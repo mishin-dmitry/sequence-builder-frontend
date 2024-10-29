@@ -46,23 +46,28 @@ export const RequestResetPasswordForm: React.FC<
     []
   )
 
+  const emailRules = useMemo(
+    () => ({
+      required: {
+        value: true,
+        message: 'Введите почту'
+      },
+
+      pattern: {
+        value:
+          /^[+a-zA-Z0-9_.!#$%&'*/=?^`{|}~-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z0-9]{2,63}$/,
+        message: 'Введите корректный адрес почты'
+      }
+    }),
+    []
+  )
+
   return (
     <FormCard title="Восстановление пароля" footer={footer}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Controller
           name="email"
-          rules={{
-            required: {
-              value: true,
-              message: 'Введите почту'
-            },
-
-            pattern: {
-              value:
-                /^[+a-zA-Z0-9_.!#$%&'*/=?^`{|}~-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z0-9]{2,63}$/,
-              message: 'Введите корректный адрес почты'
-            }
-          }}
+          rules={emailRules}
           control={control}
           render={({field, fieldState}) => (
             <Input

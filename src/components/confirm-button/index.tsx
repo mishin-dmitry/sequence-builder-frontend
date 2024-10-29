@@ -24,18 +24,16 @@ export const ConfirmButton: React.FC<ConfirmButtonProps> = ({
   onClick,
   className,
   okText
-}) => {
-  return (
-    <Popconfirm
-      title={title}
-      description={description}
-      okText={okText}
-      className={className}
-      onConfirm={onClick}
-      cancelText="Отмена">
-      <Button size={size} block={block} danger disabled={disabled}>
-        {children}
-      </Button>
-    </Popconfirm>
-  )
-}
+}) => (
+  <Popconfirm
+    title={title}
+    description={description}
+    okText={okText}
+    className={className}
+    onConfirm={onClick}
+    cancelText="Отмена">
+    <Button size={size} block={block} danger disabled={disabled}>
+      {children}
+    </Button>
+  </Popconfirm>
+)

@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useMemo, useState} from 'react'
 
 import {SortableItem} from 'components/sortable-item'
 import {AsanaImage} from 'components/asana-image'
@@ -12,6 +12,9 @@ import {
   RetweetOutlined,
   ToTopOutlined
 } from '@ant-design/icons'
+
+import {BlockType} from 'components/pdf-viewer/utils'
+import {Action} from 'components/sequence-editor'
 
 import type {Asana as TAsana} from 'types'
 
@@ -30,8 +33,8 @@ interface AsanaProps {
   onDeleteAsana: (id: number) => void
   addAsanaToBlock: (
     id: number,
-    block: 'repeating' | 'dynamic',
-    action: 'add' | 'delete'
+    block: BlockType.DYNAMIC | BlockType.REPEATING,
+    action: Action
   ) => void
   scrollToAsana: (id: number) => void
 }
@@ -42,9 +45,9 @@ export const Asana: React.FC<AsanaProps> = ({
   asana,
   className,
   blockId,
-  copyAsana: copyAsanaProp,
+  copyAsana,
   onDeleteAsana,
-  scrollToAsana: scrollToAsanaProp,
+  scrollToAsana,
   addAsanaToBlock,
   isBlockButtonsHidden
 }) => {
@@ -61,30 +64,6 @@ export const Asana: React.FC<AsanaProps> = ({
 
   const {isDarkTheme, isMobile} = useSettings()
 
-  const toggleButtonVisible = useCallback(
-    () => setIsButtonsVisible((prevState) => !prevState),
-    []
-  )
-
-  const copyAsana = useCallback(
-    () => copyAsanaProp(asana, index, blockId),
-    [asana, blockId, copyAsanaProp, index]
-  )
-
-  const onMouseEnter = useCallback(() => setIsButtonsVisible(true), [])
-
-  const onMouseLeave = useCallback(() => setIsButtonsVisible(false), [])
-
-  const scrollToAsana = useCallback(
-    () => scrollToAsanaProp(asanaId),
-    [asanaId, scrollToAsanaProp]
-  )
-
-  const onDelete = useCallback(
-    () => onDeleteAsana(index),
-    [index, onDeleteAsana]
-  )
-
   const repeatingBlockButton = useMemo(
     () => (
       <Button
@@ -99,8 +78,8 @@ export const Asana: React.FC<AsanaProps> = ({
         onClick={() =>
           addAsanaToBlock(
             index,
-            'repeating',
-            inRepeatingBlock ? 'delete' : 'add'
+            BlockType.REPEATING,
+            inRepeatingBlock ? Action.DELETE : Action.ADD
           )
         }
       />
@@ -127,7 +106,11 @@ export const Asana: React.FC<AsanaProps> = ({
         )}
         icon={<RetweetOutlined />}
         onClick={() =>
-          addAsanaToBlock(index, 'dynamic', inDynamicBlock ? 'delete' : 'add')
+          addAsanaToBlock(
+            index,
+            BlockType.DYNAMIC,
+            inDynamicBlock ? Action.DELETE : Action.ADD
+          )
         }
       />
     ),
@@ -143,9 +126,9 @@ export const Asana: React.FC<AsanaProps> = ({
     <SortableItem
       id={id}
       sortableData={sortableData}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      onClick={toggleButtonVisible}
+      onMouseEnter={() => setIsButtonsVisible(true)}
+      onMouseLeave={() => setIsButtonsVisible(false)}
+      onClick={() => setIsButtonsVisible((prevState) => !prevState)}
       className={clsx(styles.sortableWrapper, className)}>
       <Tooltip title={name}>
         <div
@@ -208,7 +191,7 @@ export const Asana: React.FC<AsanaProps> = ({
                   data-no-dnd="true"
                   className={styles.deleteButton}
                   icon={<DeleteOutlined />}
-                  onClick={onDelete}
+                  onClick={() => onDeleteAsana(index)}
                 />
                 <Tooltip
                   {...(isMobile && {open: false})}
@@ -219,7 +202,7 @@ export const Asana: React.FC<AsanaProps> = ({
                     data-no-dnd="true"
                     className={styles.copyButton}
                     icon={<CopyOutlined />}
-                    onClick={copyAsana}
+                    onClick={() => copyAsana(asana, index, blockId)}
                   />
                 </Tooltip>
                 {!isMobile && (
@@ -229,7 +212,7 @@ export const Asana: React.FC<AsanaProps> = ({
                       data-no-dnd="true"
                       className={styles.scrollButton}
                       icon={<ToTopOutlined />}
-                      onClick={scrollToAsana}
+                      onClick={() => scrollToAsana(asanaId)}
                     />
                   </Tooltip>
                 )}

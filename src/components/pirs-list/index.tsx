@@ -18,6 +18,8 @@ export const PirsList: React.FC<PirsListProps> = ({pairs, onClick}) => {
     return <div className={styles.list}>Список пуст...</div>
   }
 
+  console.log('pairs', pairs)
+
   return (
     <div className={styles.listWrapper}>
       <div className={styles.list}>

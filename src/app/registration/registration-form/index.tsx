@@ -45,6 +45,8 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
     }
   })
 
+  const watchPassword = watch('password')
+
   const onSubmit: SubmitHandler<RegistrationFormInputs> = async (data) => {
     await onSubmitProp(data, setError)
   }
@@ -58,23 +60,57 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
     []
   )
 
+  const emailRules = useMemo(
+    () => ({
+      required: {
+        value: true,
+        message: 'Введите почту'
+      },
+
+      pattern: {
+        value:
+          /^[+a-zA-Z0-9_.!#$%&'*/=?^`{|}~-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z0-9]{2,63}$/,
+        message: 'Введите корректный адрес почты'
+      }
+    }),
+    []
+  )
+
+  const passwordRules = useMemo(
+    () => ({
+      required: {
+        value: true,
+        message: 'Введите пароль'
+      },
+      minLength: {
+        value: 7,
+        message: 'Пароль должен состоять из 7 и более символов'
+      }
+    }),
+    []
+  )
+
+  const confirmPasswordRules = useMemo(
+    () => ({
+      required: {
+        value: true,
+        message: 'Введите пароль'
+      },
+      validate: (value: string) => {
+        if (watchPassword !== value) {
+          return 'Введенные пароли не совпадают'
+        }
+      }
+    }),
+    [watchPassword]
+  )
+
   return (
     <FormCard title="Регистрация" footer={footer}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Controller
           name="email"
-          rules={{
-            required: {
-              value: true,
-              message: 'Введите почту'
-            },
-
-            pattern: {
-              value:
-                /^[+a-zA-Z0-9_.!#$%&'*/=?^`{|}~-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z0-9]{2,63}$/,
-              message: 'Введите корректный адрес почты'
-            }
-          }}
+          rules={emailRules}
           control={control}
           render={({field, fieldState}) => (
             <Input
@@ -88,16 +124,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
         />
         <Controller
           name="password"
-          rules={{
-            required: {
-              value: true,
-              message: 'Введите пароль'
-            },
-            minLength: {
-              value: 7,
-              message: 'Пароль должен состоять из 7 и более символов'
-            }
-          }}
+          rules={passwordRules}
           control={control}
           render={({field, fieldState}) => (
             <Input
@@ -113,17 +140,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
         />
         <Controller
           name="confirmPassword"
-          rules={{
-            required: {
-              value: true,
-              message: 'Введите пароль'
-            },
-            validate: (value: string) => {
-              if (watch('password') !== value) {
-                return 'Введенные пароли не совпадают'
-              }
-            }
-          }}
+          rules={confirmPasswordRules}
           control={control}
           render={({field, fieldState}) => (
             <Input

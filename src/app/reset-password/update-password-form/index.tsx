@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 
 import {
   type SubmitHandler,
@@ -42,25 +42,47 @@ export const UpdatePasswordForm: React.FC<ResetPasswordFormProps> = ({
     }
   })
 
+  const watchPassword = watch('password')
+
   const onSubmit: SubmitHandler<UpdatePasswordFormInputs> = async (data) => {
     await onSubmitProp(data, setError)
   }
+
+  const passwordRules = useMemo(
+    () => ({
+      required: {
+        value: true,
+        message: 'Введите пароль'
+      },
+      minLength: {
+        value: 7,
+        message: 'Пароль должен состоять из 7 и более символов'
+      }
+    }),
+    []
+  )
+
+  const confirmPasswordRules = useMemo(
+    () => ({
+      required: {
+        value: true,
+        message: 'Введите пароль'
+      },
+      validate: (value: string) => {
+        if (watchPassword !== value) {
+          return 'Введенные пароли не совпадают'
+        }
+      }
+    }),
+    [watchPassword]
+  )
 
   return (
     <FormCard title="Обновление пароля">
       <form onSubmit={handleSubmit(onSubmit)}>
         <Controller
           name="password"
-          rules={{
-            required: {
-              value: true,
-              message: 'Введите пароль'
-            },
-            minLength: {
-              value: 7,
-              message: 'Пароль должен состоять из 7 и более символов'
-            }
-          }}
+          rules={passwordRules}
           control={control}
           render={({field, fieldState}) => (
             <Input
@@ -76,17 +98,7 @@ export const UpdatePasswordForm: React.FC<ResetPasswordFormProps> = ({
         />
         <Controller
           name="confirmPassword"
-          rules={{
-            required: {
-              value: true,
-              message: 'Введите пароль'
-            },
-            validate: (value: string) => {
-              if (watch('password') !== value) {
-                return 'Введенные пароли не совпадают'
-              }
-            }
-          }}
+          rules={confirmPasswordRules}
           control={control}
           render={({field, fieldState}) => (
             <Input

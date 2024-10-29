@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef} from 'react'
+import React, {useEffect, useMemo, useRef} from 'react'
 
 import type {Asana} from 'types'
 
@@ -32,14 +32,10 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
   isAsanaSelected,
   hideAlignment
 }) => {
-  const ref = useRef<any>(null)
+  const ref = useRef<HTMLButtonElement & HTMLDivElement>(null)
 
   const {isDarkTheme} = useSettings()
   const {name, alias = '', alignment} = data
-
-  const onAsanaClick = useCallback(() => {
-    onAsanaClickProp?.(data)
-  }, [data, onAsanaClickProp])
 
   useEffect(() => {
     if (isAsanaSelected) {
@@ -71,7 +67,9 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
         (alias === 'empty' || alias === 'separator') && styles.empty,
         className
       )}
-      onClick={onAsanaClick}>
+      onClick={
+        isButton && onAsanaClickProp ? () => onAsanaClickProp(data) : undefined
+      }>
       {image}
       {!hideText && (
         <div className={styles.textContainer}>

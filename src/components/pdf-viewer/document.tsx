@@ -145,7 +145,7 @@ const renderDynamicOrRepeatingBlock = ({
 
     let shouldRenderText
 
-    if (type === 'repeating') {
+    if (type === BlockType.REPEATING) {
       shouldRenderText = isLastElement && !isNextElementHasBothBlocks
     } else {
       shouldRenderText = isFirstElement && !isPreviousElementHasBothBlocks

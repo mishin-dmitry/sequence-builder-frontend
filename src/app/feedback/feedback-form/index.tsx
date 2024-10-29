@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useMemo} from 'react'
 
 import {type SubmitHandler, useForm, Controller} from 'react-hook-form'
 
@@ -57,23 +57,28 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
     await onSubmitProp(data)
   }
 
+  const rules = useMemo(
+    () => ({
+      required: {
+        value: true,
+        message: 'Введите почту'
+      },
+
+      pattern: {
+        value:
+          /^[+a-zA-Z0-9_.!#$%&'*/=?^`{|}~-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z0-9]{2,63}$/,
+        message: 'Введите корректный адрес почты'
+      }
+    }),
+    []
+  )
+
   return (
     <FormCard title="Обратная связь" className={styles.card}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Controller
           name="email"
-          rules={{
-            required: {
-              value: true,
-              message: 'Введите почту'
-            },
-
-            pattern: {
-              value:
-                /^[+a-zA-Z0-9_.!#$%&'*/=?^`{|}~-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z0-9]{2,63}$/,
-              message: 'Введите корректный адрес почты'
-            }
-          }}
+          rules={rules}
           control={control}
           render={({field, fieldState}) => (
             <Input

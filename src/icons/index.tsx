@@ -52,7 +52,6 @@ import {parshvakonasana} from './parshvakonasana'
 import {ashtavakrasana} from './ashtavakrasana'
 import {sahadjaPurvottanasana} from './sahadja-purvottanasana'
 import {parivritaParshvakonasana} from './parivrita-parshvakonasana'
-import {skrutkaLeza} from './skrutka-leza'
 import {kapotasana} from './kapotasana'
 import {upavishtaKonasana} from './upavishta-konasana'
 import {pavanaMuktasana} from './pavana-muktasana'
@@ -75,10 +74,10 @@ import {anandaBalasana} from './ananda-balasana'
 import {shashankasana2} from './shashankasana-2'
 import {marichiasana1} from './marichiasana-1'
 import {marichiasana2} from './marichiasana-2'
+import {marichiasana4} from './marichiasana-4'
 import {svastikasana} from './svastikasana'
 import {padmasana} from './padmasana'
 import {ardhaBhekasana} from './ardha-bhekasana'
-import {ashvaSanchalanasana2} from './ashva-sanchalanasana-2'
 import {vasishthasana} from './vasishthasana'
 import {ekaPadaRadjaKapotasana} from './eka-pada-radja-kapotasana'
 import {urdhvaMukhaPashimottanasana} from './urdhva-mukha-pashimottanasana'
@@ -227,6 +226,28 @@ import {marichiasana3} from './marichiasana-3'
 import {parshvaDhanurasana} from './parshva-dhanurasana'
 import {ekapadaMardjariasana2} from './ekapada-mardjariasana-2'
 import {urdhvamukhaUpavishtaKonasana} from './urdhvamukha-upavishta-konasana'
+import {yogadandaBrahmachariasana} from './yogadanda-brahmachariasana'
+import {ekapadaDhanurasana} from './ekapada-dhanurasana'
+import {parivrittaKarnaPidasana} from './parivritta-karna-pidasana'
+import {ekapadaDandaKaundiniasana} from './ekapada-danda-kaundiniasana'
+import {parivrittaEkapadaDandaKaundiniasana} from './parivritta-ekapada-danda-kaundiniasana'
+import {urdhvaKukkutasana} from './urdhva-kukkutasana'
+import {parivrittaPrasaritaPadottanasana} from './parivritta-prasarita-padottanasana'
+import {ardhagarudaPrasaritaPadottanasana} from './ardhagaruda-prasarita-padottanasana'
+import {urdhvamukhaUpavishtaKonasanaLeza} from './urdhvamukha-upavishta-konasana-leza'
+import {parshvaStupasana} from './parshva-stupasana'
+import {ekapadaUrdhvaDhanurasana} from './ekapada-urdhva-dhanurasana'
+import {parivrittaUttanasana} from './parivritta-uttanasana'
+import {trivikramasana} from './trivikramasana'
+import {ekapadaUshtrasana} from './ekapada-ushtrasana'
+import {adhomukhaArdhaEkapadaRadjakapotasana} from './adhomukha-ardha-ekapada-radjakapotasana'
+import {shirshasana2} from './shirshasana-2'
+import {utthitaAkarnaDhanurasana} from './utthita-akarna-dhanurasana'
+import {nataradjaAdhomukhaShvanasana} from './nataradja-adhomukha-shvanasana'
+import {anantasana} from './anantasana'
+import {ekapadaAdhoBakasana} from './ekapada-adho-bakasana'
+import {vamadevasana2} from './vamadevasana2'
+import {dvipadaShirshasana} from './dvipada-shirshasana'
 
 export const iconsMap: Record<string, string> = {
   adhomukhaShvanasana,
@@ -283,7 +304,6 @@ export const iconsMap: Record<string, string> = {
   ashtavakrasana,
   sahadjaPurvottanasana,
   parivritaParshvakonasana,
-  skrutkaLeza,
   kapotasana,
   upavishtaKonasana,
   pavanaMuktasana,
@@ -307,10 +327,10 @@ export const iconsMap: Record<string, string> = {
   marichiasana1,
   marichiasana2,
   marichiasana3,
+  marichiasana4,
   svastikasana,
   padmasana,
   ardhaBhekasana,
-  ashvaSanchalanasana2,
   vasishthasana,
   ekaPadaRadjaKapotasana,
   urdhvaMukhaPashimottanasana,
@@ -457,5 +477,27 @@ export const iconsMap: Record<string, string> = {
   yogaNidrasana,
   parshvaDhanurasana,
   ekapadaMardjariasana2,
-  urdhvamukhaUpavishtaKonasana
+  urdhvamukhaUpavishtaKonasana,
+  yogadandaBrahmachariasana,
+  ekapadaDhanurasana,
+  parivrittaKarnaPidasana,
+  ekapadaDandaKaundiniasana,
+  parivrittaEkapadaDandaKaundiniasana,
+  urdhvaKukkutasana,
+  parivrittaPrasaritaPadottanasana,
+  ardhagarudaPrasaritaPadottanasana,
+  parshvaStupasana,
+  urdhvamukhaUpavishtaKonasanaLeza,
+  ekapadaUrdhvaDhanurasana,
+  parivrittaUttanasana,
+  trivikramasana,
+  ekapadaUshtrasana,
+  adhomukhaArdhaEkapadaRadjakapotasana,
+  shirshasana2,
+  nataradjaAdhomukhaShvanasana,
+  utthitaAkarnaDhanurasana,
+  anantasana,
+  ekapadaAdhoBakasana,
+  vamadevasana2,
+  dvipadaShirshasana
 }

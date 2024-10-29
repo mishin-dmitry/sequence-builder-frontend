@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useCallback, useEffect} from 'react'
+import React, {useEffect} from 'react'
 
 import {
   RequestResetPasswordForm,
@@ -19,12 +19,11 @@ const RequestResetPasswordPage: React.FC = () => {
 
   const router = useRouter()
 
-  const onSubmit = useCallback(
-    async (values: RequestResetPasswordFormInputs) => {
-      await getRecoveryLink(values)
-    },
-    [getRecoveryLink]
-  )
+  const onSubmit = async (
+    values: RequestResetPasswordFormInputs
+  ): Promise<void> => {
+    await getRecoveryLink(values)
+  }
 
   useEffect(() => {
     if (isAuthorized) {
@@ -32,11 +31,10 @@ const RequestResetPasswordPage: React.FC = () => {
     }
   }, [isAuthorized, router])
 
-  return (
-    <>
-      {isAuthorized && <Spinner />}
-      {!isAuthorized && <RequestResetPasswordForm onSubmit={onSubmit} />}
-    </>
+  return isAuthorized ? (
+    <Spinner />
+  ) : (
+    <RequestResetPasswordForm onSubmit={onSubmit} />
   )
 }
 

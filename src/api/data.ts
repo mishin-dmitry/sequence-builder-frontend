@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 
-import type {Asana, AsanaGroup} from 'types'
+import type {Asana} from 'types'
 import {HttpMethod, request} from './request'
 
 export const getAsanasList = request.bind<null, string, [], Promise<Asana[]>>(
@@ -9,10 +9,3 @@ export const getAsanasList = request.bind<null, string, [], Promise<Asana[]>>(
   HttpMethod.GET,
   'api/asanas/getAll'
 )
-
-export const getAsanaGroupsList = request.bind<
-  null,
-  string,
-  [],
-  Promise<AsanaGroup[]>
->(null, HttpMethod.GET, 'api/asana-groups/getAll')

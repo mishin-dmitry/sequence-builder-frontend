@@ -13,12 +13,19 @@ export interface Asana {
   // который надо сделать в динамике
   inDynamicBlock?: boolean
   groups: AsanaGroup[]
-  pirs: {pirId: number; title: string}[]
+  pirs: number[]
 }
 
 export interface AsanaGroup {
   id: number
   name: string
+  categoryId: number
+}
+
+export interface AsanaGroupCategory {
+  id: number
+  name: string
+  groups: AsanaGroup[]
 }
 
 interface BaseSequence {

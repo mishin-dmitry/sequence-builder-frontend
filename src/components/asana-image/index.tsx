@@ -16,21 +16,18 @@ export const AsanaImage: React.FC<AsanaImageProps> = ({
   isLazy,
   width,
   height
-}) => {
-  return (
-    iconsMap[alias] && (
-      <img
-        width={width}
-        height={height}
-        loading={isLazy ? 'lazy' : undefined}
-        src={`data:image/svg+xml;utf8,${encodeURIComponent(
-          iconsMap[alias].replaceAll(
-            '$COLOR',
-            isDarkTheme ? 'rgba(255, 255, 255, 0.85)' : 'rgba(0, 0, 0, 0.88)'
-          )
-        )}`}
-        alt="Изображение асаны"
-      />
-    )
+}) =>
+  iconsMap[alias] && (
+    <img
+      width={width}
+      height={height}
+      loading={isLazy ? 'lazy' : undefined}
+      src={`data:image/svg+xml;utf8,${encodeURIComponent(
+        iconsMap[alias].replaceAll(
+          '$COLOR',
+          isDarkTheme ? 'rgba(255, 255, 255, 0.85)' : 'rgba(0, 0, 0, 0.88)'
+        )
+      )}`}
+      alt="Изображение асаны"
+    />
   )
-}

@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useEffect, useMemo, useState} from 'react'
 
 import {getRandomItem} from 'lib/get-random-item'
 import {Spinner} from 'components/spinner'
@@ -33,13 +33,13 @@ const QuizPage: React.FC = () => {
     [initialAsanas]
   )
 
-  const prepareVariations = useCallback(() => {
+  const prepareVariations = (): void => {
     const variations = sampleSize(asanas, VARIATIONS_LENGTH)
     const rightAnswer = getRandomItem(variations)
 
     setRightAnswer(rightAnswer)
     setQuizVariations(shuffle(variations))
-  }, [asanas])
+  }
 
   useEffect(() => {
     if (asanas.length) {
@@ -83,15 +83,12 @@ const QuizPage: React.FC = () => {
     [quizVariations, rightAnswer?.id, selectedAnswer, showedAnswer?.id]
   )
 
-  const onNextClick = useCallback(() => {
+  const onNextClick = (): void => {
     setSelectedAnswer(null)
     setShowedAnswer(null)
-    window.setTimeout(prepareVariations, 0)
-  }, [prepareVariations])
 
-  const showRightAnswer = useCallback(() => {
-    setShowedAnswer(rightAnswer)
-  }, [rightAnswer])
+    window.setTimeout(prepareVariations, 0)
+  }
 
   if (!rightAnswer) return <Spinner />
 
@@ -118,7 +115,7 @@ const QuizPage: React.FC = () => {
         type="default"
         size="large"
         block
-        onClick={showRightAnswer}
+        onClick={() => setShowedAnswer(rightAnswer)}
         className={styles.bottomButton}>
         Показать правильный ответ
       </Button>
