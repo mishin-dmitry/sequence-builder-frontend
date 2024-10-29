@@ -17,8 +17,6 @@ interface PirCardProps {
 export const PirCard: React.FC<PirCardProps> = ({source, pir, onClick}) => {
   const {isDarkTheme} = useSettings()
 
-  console.log('pir', pir)
-
   const sourceAsanaImage = useMemo(() => {
     const {alias} = source
 
