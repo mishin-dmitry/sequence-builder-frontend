@@ -12,6 +12,7 @@ export interface Asana {
   // Признак того, что асана находится в блоке,
   // который надо сделать в динамике
   inDynamicBlock?: boolean
+  image: string
   groups: AsanaGroup[]
   pirs: number[]
 }

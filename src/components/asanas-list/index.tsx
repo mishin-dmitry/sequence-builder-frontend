@@ -5,7 +5,6 @@ import type {Asana} from 'types'
 import {AsanaCard} from 'components/asana-card'
 import {Typography} from 'antd'
 import {Spinner} from 'components/spinner'
-import {useSettings} from 'context/settings'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
@@ -28,8 +27,6 @@ export const AsanasList: React.FC<AsanaCardsListProps> = ({
   onAsanaClick,
   selectedId
 }) => {
-  const {isMobile} = useSettings()
-
   if (isLoading) {
     return <Spinner />
   }
@@ -52,7 +49,6 @@ export const AsanasList: React.FC<AsanaCardsListProps> = ({
             size={size}
             onAsanaClick={onAsanaClick}
             className={styles.asana}
-            hideAlignment={isMobile}
             isAsanaSelected={asana.id === selectedId}
           />
         ))}

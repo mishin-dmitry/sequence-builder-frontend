@@ -97,7 +97,6 @@ const QuizPage: React.FC = () => {
       <AsanaCard
         data={rightAnswer}
         hideText
-        hideAlignment
         isButton={false}
         className={styles.card}
       />

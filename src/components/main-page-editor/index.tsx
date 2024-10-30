@@ -457,7 +457,7 @@ export const MainPageEditor: React.FC<MainPageEditorProps> = ({
       onFilterAsanaByGroups={onFilterAsanaByGroups}
       onAsanaClick={onAsanaClick}
       tabs={tabs}
-      asanasBunches={!isBunchMode ? undefined : asanasBunches}
+      asanasBunches={asanasBunches}
     />
   )
 

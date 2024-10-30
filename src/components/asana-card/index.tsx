@@ -5,11 +5,11 @@ import type {Asana} from 'types'
 import {Tooltip, Typography} from 'antd'
 import {iconsMap} from 'icons'
 import {useSettings} from 'context/settings'
-import {FileTextOutlined} from '@ant-design/icons'
+import {FileImageOutlined} from '@ant-design/icons'
+import {AsanaImage} from 'components/asana-image'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
-import {AsanaImage} from 'components/asana-image'
 
 interface AsanaCardProps {
   data: Asana
@@ -18,7 +18,7 @@ interface AsanaCardProps {
   hideText?: boolean
   className?: string
   isAsanaSelected?: boolean
-  hideAlignment?: boolean
+  isMobile?: boolean
   onAsanaClick?: (asana: Asana) => void
 }
 
@@ -30,12 +30,12 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
   isButton = true,
   className,
   isAsanaSelected,
-  hideAlignment
+  isMobile
 }) => {
   const ref = useRef<HTMLButtonElement & HTMLDivElement>(null)
 
   const {isDarkTheme} = useSettings()
-  const {name, alias = '', alignment} = data
+  const {name, alias = '', image} = data
 
   useEffect(() => {
     if (isAsanaSelected) {
@@ -46,7 +46,7 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
     }
   }, [isAsanaSelected])
 
-  const image = useMemo(
+  const icon = useMemo(
     () =>
       iconsMap[alias] && (
         <div className={styles.imageContainer}>
@@ -70,7 +70,7 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
       onClick={
         isButton && onAsanaClickProp ? () => onAsanaClickProp(data) : undefined
       }>
-      {image}
+      {icon}
       {!hideText && (
         <div className={styles.textContainer}>
           {name && (
@@ -81,9 +81,20 @@ export const AsanaCard: React.FC<AsanaCardProps> = ({
         </div>
       )}
 
-      {!!alignment && !hideAlignment && (
-        <Tooltip title={<span className={styles.tooltip}>{alignment}</span>}>
-          <FileTextOutlined className={styles.icon} />
+      {!!image && (
+        <Tooltip
+          trigger={isMobile ? 'click' : 'hover'}
+          title={
+            <div className={styles.imageWrapper}>
+              <img
+                alt={`Изображение асаны ${name}`}
+                src={image}
+                className={styles.image}
+                loading="lazy"
+              />
+            </div>
+          }>
+          <FileImageOutlined className={styles.icon} />
         </Tooltip>
       )}
     </TagName>
