@@ -27,7 +27,7 @@ const AboutPage: React.FC = () => {
         />
       </div>
       <Button
-        href={ExternalUrls.BOOSTY}
+        href={ExternalUrls.CLOUD_TIPS}
         size={isMobile ? 'middle' : 'large'}
         target="_blank"
         className={styles.button}

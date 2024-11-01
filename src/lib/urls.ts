@@ -19,5 +19,5 @@ export enum Urls {
 }
 
 export enum ExternalUrls {
-  BOOSTY = 'https://boosty.to/sequoia-flow/donate'
+  CLOUD_TIPS = 'https://pay.cloudtips.ru/p/fed06add'
 }
