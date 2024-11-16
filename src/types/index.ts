@@ -15,6 +15,7 @@ export interface Asana {
   image: string
   groups: AsanaGroup[]
   pirs: number[]
+  continuingAsanas: number[]
 }
 
 export interface AsanaGroup {

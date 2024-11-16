@@ -16,10 +16,10 @@ import {ConfirmButton} from 'components/confirm-button'
 import {useSettings} from 'context/settings'
 import {Asana} from 'components/asana'
 import {Action, Target} from 'components/sequence-editor'
+import {BlockType} from 'components/pdf-viewer/utils'
 
 import clsx from 'clsx'
 import styles from './styles.module.css'
-import {BlockType} from 'components/pdf-viewer/utils'
 
 interface SequenceProps {
   data: (TAsana & {count?: number})[]

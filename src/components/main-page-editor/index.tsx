@@ -61,10 +61,11 @@ export const MainPageEditor: React.FC<MainPageEditorProps> = ({
   } = sequence ?? {}
 
   const {asanas: bunchAsanas = [], title: bunchTitle = ''} = asanasBunch ?? {}
-
   const {asanas: allAsanas, asanaGroupsCategories, pirPairs} = useAsanas()
+
   const {isMobile} = useSettings()
   const {createSequence, deleteSequence, updateSequence} = useSequence()
+
   const {updateAsanasBunch, deleteAsanasBunch, createAsanasBunch} =
     useAsanaBunch()
 
@@ -74,10 +75,11 @@ export const MainPageEditor: React.FC<MainPageEditorProps> = ({
   const [asanas, setAsanas] = useState(allAsanas)
   const [editingBlock, setEditingBlock] = useState('block-1')
   const [selectedAsanaId, setSelectedAsanaId] = useState(-1)
+  const [description, setDescription] = useState<string>(initialDescription)
+
   const [title, setTitle] = useState<string>(
     isBunchMode ? bunchTitle : initialTitle
   )
-  const [description, setDescription] = useState<string>(initialDescription)
 
   const [builderData, setBuilderData] = useState<Record<string, Asana[]>>(
     (isBunchMode ? [bunchAsanas] : blocks).reduce(
@@ -313,6 +315,7 @@ export const MainPageEditor: React.FC<MainPageEditorProps> = ({
   // Добавить асану в ряд последовательности
   const onAsanaClick = useCallback(
     (asana: Asana | Asana[]) => {
+      // Если массив, значит добавляем связку
       const isArray = Array.isArray(asana)
 
       // Если слетел редактируемый блок

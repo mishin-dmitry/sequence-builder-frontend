@@ -9,6 +9,7 @@ import {
   ArrowLeftOutlined,
   CopyOutlined,
   DeleteOutlined,
+  DoubleRightOutlined,
   RetweetOutlined,
   ToTopOutlined
 } from '@ant-design/icons'
@@ -20,6 +21,7 @@ import type {Asana as TAsana} from 'types'
 
 import styles from './styles.module.css'
 import clsx from 'clsx'
+import {useAsanas} from 'context/asanas'
 
 interface AsanaProps {
   id: string
@@ -27,8 +29,12 @@ interface AsanaProps {
   asana: TAsana & {count?: number}
   className?: string
   blockId: string
+
   // Скрыты кнопки добавить в блок с динамикой/повтором
   isBlockButtonsHidden?: boolean
+
+  // показываем только картинку, без всяких кнопок
+  useSimpleImage?: boolean
   copyAsana: (asana: TAsana, index: number, blockId: string) => void
   onDeleteAsana: (id: number) => void
   addAsanaToBlock: (
@@ -37,6 +43,7 @@ interface AsanaProps {
     action: Action
   ) => void
   scrollToAsana: (id: number) => void
+  onClick?: () => void
 }
 
 export const Asana: React.FC<AsanaProps> = ({
@@ -49,8 +56,11 @@ export const Asana: React.FC<AsanaProps> = ({
   onDeleteAsana,
   scrollToAsana,
   addAsanaToBlock,
-  isBlockButtonsHidden
+  onClick,
+  isBlockButtonsHidden,
+  useSimpleImage
 }) => {
+  const {asanasMap} = useAsanas()
   const [isButtonsVisible, setIsButtonsVisible] = useState(false)
 
   const {
@@ -59,7 +69,8 @@ export const Asana: React.FC<AsanaProps> = ({
     inRepeatingBlock,
     inDynamicBlock,
     count,
-    id: asanaId
+    id: asanaId,
+    continuingAsanas = []
   } = asana
 
   const {isDarkTheme, isMobile} = useSettings()
@@ -121,6 +132,25 @@ export const Asana: React.FC<AsanaProps> = ({
     () => ({blockId, data: asana, index}),
     [asana, blockId, index]
   )
+
+  if (useSimpleImage) {
+    return (
+      <Tooltip title={name}>
+        <button className={styles.button} onClick={onClick}>
+          <div className={clsx(styles.item, styles.noGrab)}>
+            <div className={styles.imageWrapper}>
+              <AsanaImage
+                alias={alias}
+                isDarkTheme={isDarkTheme}
+                width={70}
+                height={70}
+              />
+            </div>
+          </div>
+        </button>
+      </Tooltip>
+    )
+  }
 
   return (
     <SortableItem
@@ -206,13 +236,54 @@ export const Asana: React.FC<AsanaProps> = ({
                   />
                 </Tooltip>
                 {!isMobile && (
-                  <Tooltip style={{width: 100}} title="Перейти к асане">
+                  <Tooltip style={{width: 100}} title="Проскроллить к асане">
                     <Button
                       shape="circle"
                       data-no-dnd="true"
                       className={styles.scrollButton}
                       icon={<ToTopOutlined />}
                       onClick={() => scrollToAsana(asanaId)}
+                    />
+                  </Tooltip>
+                )}
+                {!!continuingAsanas.length && (
+                  <Tooltip
+                    overlay={
+                      <div className={styles.continuingAsanas}>
+                        <h4>Возможные следующие асаны</h4>
+                        <div className={styles.continuingAsanasList}>
+                          {continuingAsanas.map(
+                            (asanaId, continuingAsanaIndex) => {
+                              const asana = asanasMap[asanaId]
+
+                              return (
+                                <Asana
+                                  key={continuingAsanaIndex}
+                                  id={continuingAsanaIndex.toString()}
+                                  asana={asana}
+                                  index={continuingAsanaIndex}
+                                  blockId={blockId}
+                                  copyAsana={copyAsana}
+                                  onDeleteAsana={onDeleteAsana}
+                                  scrollToAsana={scrollToAsana}
+                                  addAsanaToBlock={addAsanaToBlock}
+                                  onClick={() =>
+                                    copyAsana(asana, index + 1, blockId)
+                                  }
+                                  isBlockButtonsHidden
+                                  useSimpleImage
+                                />
+                              )
+                            }
+                          )}
+                        </div>
+                      </div>
+                    }>
+                    <Button
+                      shape="circle"
+                      data-no-dnd="true"
+                      className={styles.suggestButton}
+                      icon={<DoubleRightOutlined />}
                     />
                   </Tooltip>
                 )}

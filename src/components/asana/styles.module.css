@@ -23,8 +23,37 @@
   }
 }
 
+.button {
+  padding: 0;
+  outline: 0;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  margin: 0 5px;
+}
+
+.opacityOverlay {
+  opacity: 0.5;
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+}
+
+.continuingAsanas {
+  margin-left: -5px;
+
+
+  & > h4 {
+    margin: 0 5px 5px;
+  }
+}
+
+.continuingAsanasList {
+  display: flex;
+  overflow: scroll;
+}
+
 .item {
-  cursor: grab;
   position: relative;
   display: flex;
   flex-grow: 1;
@@ -41,6 +70,10 @@
   border-radius: 8px;
   transition: box-shadow 0.2s;
   -webkit-tap-highlight-color: transparent;
+
+  &:not(.noGrab) {
+    cursor: grab;
+  }
 
   &.repeating {
     box-shadow: 0 0 0 2px var(--repeat-color);
@@ -93,7 +126,9 @@
 .dynamicButton,
 .copyButton,
 .scrollButton,
-.deleteButton {
+.deleteButton,
+.reloadButton,
+.suggestButton {
   min-width: 17px !important;
   width: 17px !important;
   height: 17px !important;
@@ -102,6 +137,7 @@
   justify-content: center;
   align-items: center;
   display: flex !important;
+  opacity: 1;
 
   & svg {
     width: 10px;
@@ -109,9 +145,14 @@
   }
 }
 
-.scrollButton {
+.scrollButton, .reloadButton {
   right: -5px !important;
   top: 14px !important;
+}
+
+.suggestButton {
+  right: -5px !important;
+  top: 34px !important;
 }
 
 .index {
@@ -133,5 +174,11 @@
 body[data-mobile='true'] {
   & .sortableWrapper {
     width: calc((100% - 35px) / 3);
+  }
+
+  & .button {
+    &.suggestion {
+      margin: 5px 0 0 5px;
+    }
   }
 }

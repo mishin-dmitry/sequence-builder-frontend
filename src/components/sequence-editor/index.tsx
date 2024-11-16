@@ -91,22 +91,22 @@ const DEFAULT_TIME_SETTINGS = {
 }
 
 export const SequenceEditor: React.FC<SequenceEditorProps> = ({
-  onSave,
   data: dataProp,
-  onChange,
   editingBlock,
-  onChangeEditingBlock,
   title,
-  onChangeTitle,
   description,
-  onChangeDescription,
   asanasListNode,
-  onDelete,
   isViewMode,
-  scrollToAsana,
-  onDuplicate: onDuplicateProp,
   target = Target.SEQUENCE,
-  maxBlocksCount = 10
+  maxBlocksCount = 10,
+  onSave,
+  onChange,
+  onChangeEditingBlock,
+  onChangeTitle,
+  onChangeDescription,
+  onDuplicate: onDuplicateProp,
+  onDelete,
+  scrollToAsana
 }) => {
   const [isSaving, setIsSaving] = useState(false)
   const [isPdfModalVisible, setIsPdfModalVisible] = useState(false)
@@ -662,6 +662,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
                         />
                       </div>
                     )}
+                    {/* Мок асаны, для dnd */}
                     {draggingAsana && !draggingRowId && (
                       <Asana
                         id={draggingAsana.id.toString()}
