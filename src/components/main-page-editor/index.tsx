@@ -15,6 +15,7 @@ import {
   LOCAL_STORAGE_DESCRIPTION_KEY,
   LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY,
   LOCAL_STORAGE_EDITING_BLOCK,
+  LOCAL_STORAGE_FILTER_CONTINUING_ASANAS,
   LOCAL_STORAGE_IS_PUBLIC_KEY,
   LOCAL_STORAGE_SEQUENCE_KEY,
   LOCAL_STORAGE_TITLE_KEY
@@ -32,6 +33,7 @@ import {useAsanaBunch} from 'app/asanas-bunch/hooks'
 
 import styles from './styles.module.css'
 import debounce from 'lodash.debounce'
+import Loading from 'app/loading'
 
 const RESET_SELECTED_ASANA_ID_TIMEOUT = 1000
 
@@ -47,12 +49,34 @@ interface MainPageEditorProps {
   isBunchMode?: boolean
 }
 
+interface ISequenceContext {
+  sequence: Record<string, Asana[]>
+  title: string
+  description: string
+  shouldFilterContinuingAsanas: boolean
+  editingBlock: string
+}
+
+const initialSequenceContext: ISequenceContext = {
+  sequence: {},
+  title: '',
+  description: '',
+  shouldFilterContinuingAsanas: false,
+  editingBlock: 'block-1'
+}
+
+export const SequenceContext = React.createContext<ISequenceContext>(
+  initialSequenceContext
+)
+
 export const MainPageEditor: React.FC<MainPageEditorProps> = ({
   sequence,
   isEditMode,
   isBunchMode,
   asanasBunch
 }) => {
+  const [isInitializing, setIsInitializing] = useState(true)
+
   const {
     id,
     title: initialTitle = '',
@@ -76,6 +100,8 @@ export const MainPageEditor: React.FC<MainPageEditorProps> = ({
   const [editingBlock, setEditingBlock] = useState('block-1')
   const [selectedAsanaId, setSelectedAsanaId] = useState(-1)
   const [description, setDescription] = useState<string>(initialDescription)
+  const [shouldFilterContinuingAsanas, setShouldFilterContinuingAsanas] =
+    useState(false)
 
   const [title, setTitle] = useState<string>(
     isBunchMode ? bunchTitle : initialTitle
@@ -113,6 +139,7 @@ export const MainPageEditor: React.FC<MainPageEditorProps> = ({
     removeItem(LOCAL_STORAGE_TITLE_KEY)
     removeItem(LOCAL_STORAGE_DESCRIPTION_KEY)
     removeItem(LOCAL_STORAGE_IS_PUBLIC_KEY)
+    removeItem(LOCAL_STORAGE_FILTER_CONTINUING_ASANAS)
   }
 
   // Сохранить последовательность
@@ -230,8 +257,17 @@ export const MainPageEditor: React.FC<MainPageEditorProps> = ({
     }
   }, [selectedAsanaId])
 
+  const filterContinuingAsanas = (value: boolean): void => {
+    setShouldFilterContinuingAsanas(value)
+    setItem(LOCAL_STORAGE_FILTER_CONTINUING_ASANAS, value)
+  }
+
   useEffect(() => {
-    if (isEditMode || isBunchMode) return
+    if (isEditMode || isBunchMode) {
+      setIsInitializing(false)
+
+      return
+    }
 
     const sequenceFromLS = getItem<Record<string, Asana[]>>(
       LOCAL_STORAGE_SEQUENCE_KEY
@@ -241,10 +277,18 @@ export const MainPageEditor: React.FC<MainPageEditorProps> = ({
       LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY
     )
 
+    const filterContinuingAsanasFromLS = getItem<boolean>(
+      LOCAL_STORAGE_FILTER_CONTINUING_ASANAS
+    )
+
+    if (typeof filterContinuingAsanasFromLS === 'boolean') {
+      setShouldFilterContinuingAsanas(filterContinuingAsanasFromLS)
+    }
+
     if (duplicatedSequenceFromLS) {
       setBuilderData(duplicatedSequenceFromLS)
-
       removeItem(LOCAL_STORAGE_DUPLICATED_SEQUENCE_KEY)
+      setIsInitializing(false)
 
       return
     }
@@ -270,6 +314,8 @@ export const MainPageEditor: React.FC<MainPageEditorProps> = ({
     if (titleFromLS) {
       setTitle(titleFromLS)
     }
+
+    setIsInitializing(false)
   }, [isEditMode, isBunchMode])
 
   useEffect(() => {
@@ -374,6 +420,7 @@ export const MainPageEditor: React.FC<MainPageEditorProps> = ({
     []
   )
 
+  // Фильтр асан по группам
   const onFilterAsanaByGroups = useCallback(
     (groups: AsanaGroup[] = []) => {
       let filteredAsanas
@@ -467,39 +514,59 @@ export const MainPageEditor: React.FC<MainPageEditorProps> = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const onChange = useCallback(setBuilderData, [])
 
-  const data = useMemo(() => builderData, [builderData])
+  const sequenceContextValue = useMemo<ISequenceContext>(
+    () => ({
+      sequence: builderData,
+      title,
+      description,
+      editingBlock,
+      shouldFilterContinuingAsanas
+    }),
+    [
+      builderData,
+      description,
+      editingBlock,
+      shouldFilterContinuingAsanas,
+      title
+    ]
+  )
 
   return (
-    <div className={styles.root}>
-      {!isMobile && (
-        <Resizable
-          className={styles.resizable}
-          defaultSize={{
-            width: '352px',
-            height: '100%'
-          }}
-          maxWidth="535px"
-          minWidth="200px">
-          {asanaActions}
-        </Resizable>
-      )}
-      <SequenceEditor
-        onSave={onSave}
-        data={data}
-        onChange={onChange}
-        editingBlock={editingBlock}
-        onChangeEditingBlock={setEditingBlock}
-        title={title}
-        onChangeTitle={setTitle}
-        onDuplicate={isBunchMode ? undefined : duplicateSequence}
-        description={description}
-        onChangeDescription={setDescription}
-        scrollToAsana={scrollToAsana}
-        asanasListNode={asanaActions}
-        onDelete={isEditMode ? onDelete : undefined}
-        maxBlocksCount={isBunchMode ? 1 : undefined}
-        target={isBunchMode ? Target.BUNCH : Target.SEQUENCE}
-      />
-    </div>
+    <SequenceContext.Provider value={sequenceContextValue}>
+      <div className={styles.root}>
+        {!isMobile && (
+          <Resizable
+            className={styles.resizable}
+            defaultSize={{
+              width: '352px',
+              height: '100%'
+            }}
+            maxWidth="535px"
+            minWidth="200px">
+            {asanaActions}
+          </Resizable>
+        )}
+        {isInitializing ? (
+          <div className={styles.loading}>
+            <Loading />
+          </div>
+        ) : (
+          <SequenceEditor
+            onSave={onSave}
+            onChange={onChange}
+            onChangeEditingBlock={setEditingBlock}
+            onChangeTitle={setTitle}
+            onDuplicate={isBunchMode ? undefined : duplicateSequence}
+            onChangeDescription={setDescription}
+            scrollToAsana={scrollToAsana}
+            asanasListNode={asanaActions}
+            onDelete={isEditMode ? onDelete : undefined}
+            maxBlocksCount={isBunchMode ? 1 : undefined}
+            target={isBunchMode ? Target.BUNCH : Target.SEQUENCE}
+            filterContinuingAsanas={filterContinuingAsanas}
+          />
+        )}
+      </div>
+    </SequenceContext.Provider>
   )
 }

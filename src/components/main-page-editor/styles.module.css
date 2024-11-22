@@ -74,6 +74,11 @@
   border-right: 1px solid var(--resizable-border-color);
 }
 
+.loading {
+  position: relative;
+  width: 100%;
+}
+
 body[data-mobile='true'] {
   & .previewWrapper {
     height: auto;

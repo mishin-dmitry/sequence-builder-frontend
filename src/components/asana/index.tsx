@@ -1,9 +1,9 @@
-import React, {useMemo, useState} from 'react'
+import React, {useContext, useEffect, useMemo, useState} from 'react'
 
 import {SortableItem} from 'components/sortable-item'
 import {AsanaImage} from 'components/asana-image'
 import {useSettings} from 'context/settings'
-import {Button, Tooltip} from 'antd'
+import {Button, Checkbox, Tooltip} from 'antd'
 
 import {
   ArrowLeftOutlined,
@@ -22,6 +22,7 @@ import type {Asana as TAsana} from 'types'
 import styles from './styles.module.css'
 import clsx from 'clsx'
 import {useAsanas} from 'context/asanas'
+import {SequenceContext} from 'components/main-page-editor'
 
 interface AsanaProps {
   id: string
@@ -35,6 +36,7 @@ interface AsanaProps {
 
   // показываем только картинку, без всяких кнопок
   useSimpleImage?: boolean
+
   copyAsana: (asana: TAsana, index: number, blockId: string) => void
   onDeleteAsana: (id: number) => void
   addAsanaToBlock: (
@@ -44,6 +46,7 @@ interface AsanaProps {
   ) => void
   scrollToAsana: (id: number) => void
   onClick?: () => void
+  filterContinuingAsanas?: (value: boolean) => void
 }
 
 export const Asana: React.FC<AsanaProps> = ({
@@ -52,16 +55,19 @@ export const Asana: React.FC<AsanaProps> = ({
   asana,
   className,
   blockId,
+  isBlockButtonsHidden,
+  useSimpleImage,
+  filterContinuingAsanas,
   copyAsana,
   onDeleteAsana,
   scrollToAsana,
   addAsanaToBlock,
-  onClick,
-  isBlockButtonsHidden,
-  useSimpleImage
+  onClick
 }) => {
   const {asanasMap} = useAsanas()
   const [isButtonsVisible, setIsButtonsVisible] = useState(false)
+
+  const {sequence, shouldFilterContinuingAsanas} = useContext(SequenceContext)
 
   const {
     alias,
@@ -70,8 +76,26 @@ export const Asana: React.FC<AsanaProps> = ({
     inDynamicBlock,
     count,
     id: asanaId,
-    continuingAsanas = []
+    continuingAsanas: propContinuingAsanas
   } = asana
+
+  const [continuingAsanas, setContinuingAsanas] = useState(
+    propContinuingAsanas ?? []
+  )
+
+  useEffect(() => {
+    if (shouldFilterContinuingAsanas) {
+      const sequenceAsanas = Object.values(sequence).flat()
+
+      setContinuingAsanas((prevContinuingAsanas) =>
+        prevContinuingAsanas.filter(
+          (id) => !sequenceAsanas.some(({id: asanaId}) => asanaId === id)
+        )
+      )
+    } else {
+      setContinuingAsanas(propContinuingAsanas ?? [])
+    }
+  }, [sequence, shouldFilterContinuingAsanas, propContinuingAsanas])
 
   const {isDarkTheme, isMobile} = useSettings()
 
@@ -250,7 +274,7 @@ export const Asana: React.FC<AsanaProps> = ({
                   <Tooltip
                     overlay={
                       <div className={styles.continuingAsanas}>
-                        <h4>Возможные следующие асаны</h4>
+                        <h4>Асаны для продолжения</h4>
                         <div className={styles.continuingAsanasList}>
                           {continuingAsanas.map(
                             (asanaId, continuingAsanaIndex) => {
@@ -277,6 +301,14 @@ export const Asana: React.FC<AsanaProps> = ({
                             }
                           )}
                         </div>
+                        <Checkbox
+                          className={styles.checkbox}
+                          checked={shouldFilterContinuingAsanas}
+                          onChange={(e) =>
+                            filterContinuingAsanas?.(e.target.checked)
+                          }>
+                          Исключить асаны, которые уже есть в последовательности
+                        </Checkbox>
                       </div>
                     }>
                     <Button

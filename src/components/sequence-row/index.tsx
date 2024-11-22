@@ -2,12 +2,7 @@ import React, {useCallback, useMemo} from 'react'
 
 import type {Asana as TAsana} from 'types'
 
-import {
-  AnimateLayoutChanges,
-  SortableContext,
-  defaultAnimateLayoutChanges,
-  useSortable
-} from '@dnd-kit/sortable'
+import {SortableContext, useSortable} from '@dnd-kit/sortable'
 
 import {CSS} from '@dnd-kit/utilities'
 
@@ -17,16 +12,18 @@ import {useSettings} from 'context/settings'
 import {Asana} from 'components/asana'
 import {Action, Target} from 'components/sequence-editor'
 import {BlockType} from 'components/pdf-viewer/utils'
+import {animateLayoutChanges} from './helpers'
 
 import clsx from 'clsx'
 import styles from './styles.module.css'
 
-interface SequenceProps {
+interface SequenceRowProps {
   data: (TAsana & {count?: number})[]
   id: string
   isEditing: boolean
   target?: Target
   className?: string
+  filterContinuingAsanas?: (value: boolean) => void
   onDeleteAsana: (id: number, blockId: string) => void
   onDeleteBlock?: (id: string) => void
   addAsanaToBlock: (
@@ -40,17 +37,7 @@ interface SequenceProps {
   copyAsana: (asana: TAsana, index: number, blockId: string) => void
 }
 
-const animateLayoutChanges: AnimateLayoutChanges = (args) => {
-  const {isSorting, wasDragging} = args
-
-  if (isSorting || wasDragging) {
-    return defaultAnimateLayoutChanges(args)
-  }
-
-  return true
-}
-
-export const Sequence: React.FC<SequenceProps> = ({
+export const SequenceRow: React.FC<SequenceRowProps> = ({
   data = [],
   id: blockId,
   onAddAsanaButtonClick,
@@ -61,7 +48,8 @@ export const Sequence: React.FC<SequenceProps> = ({
   copyAsana,
   scrollToAsana,
   className,
-  target
+  target,
+  filterContinuingAsanas
 }) => {
   const {isMobile} = useSettings()
 
@@ -131,6 +119,7 @@ export const Sequence: React.FC<SequenceProps> = ({
                 scrollToAsana={scrollToAsana}
                 addAsanaToBlock={addAsanaToBlock}
                 isBlockButtonsHidden={target === Target.BUNCH}
+                filterContinuingAsanas={filterContinuingAsanas}
               />
             )
           })}

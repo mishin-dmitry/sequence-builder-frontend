@@ -30,6 +30,14 @@
   cursor: pointer;
   border-radius: 8px;
   margin: 0 5px;
+
+  &:first-of-type {
+    margin: 0 5px 0 0;
+  }
+
+  &:last-of-type {
+    margin: 0 0 0 5px;
+  }
 }
 
 .opacityOverlay {
@@ -40,12 +48,19 @@
 }
 
 .continuingAsanas {
-  margin-left: -5px;
-
+  display: flex;
+  flex-direction: column;
 
   & > h4 {
-    margin: 0 5px 5px;
+    margin: 0 0 5px;
   }
+}
+
+.checkbox {
+  color: #fff;
+  font-size: 13px;
+  margin-top: 5px;
+  line-height: 15px;
 }
 
 .continuingAsanasList {

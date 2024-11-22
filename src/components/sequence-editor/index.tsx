@@ -1,6 +1,12 @@
 'use client'
 
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 
 import {Input} from 'components/input'
 import {useUser} from 'context/user'
@@ -8,7 +14,7 @@ import {useUser} from 'context/user'
 import {Textarea} from 'components/textarea'
 import {Button, Modal} from 'antd'
 import {SettingOutlined} from '@ant-design/icons'
-import {Sequence} from 'components/sequence'
+import {SequenceRow} from 'components/sequence-row'
 import {arrayMove} from 'lib/array-move'
 import {reachGoal} from 'lib/metrics'
 import {PDFDocument} from 'components/pdf-viewer/document'
@@ -52,6 +58,7 @@ import {createPortal} from 'react-dom'
 import clsx from 'clsx'
 import {Asana} from 'components/asana'
 import {BlockType} from 'components/pdf-viewer/utils'
+import {SequenceContext} from 'components/main-page-editor'
 
 export enum Target {
   SEQUENCE = 'sequence',
@@ -64,12 +71,7 @@ export enum Action {
 }
 
 interface SequenceEditorProps {
-  data: Record<string, TAsana[]>
-  editingBlock: string
-  title: string
-  description?: string
   asanasListNode: React.ReactNode
-  isViewMode?: boolean
   target?: Target
   maxBlocksCount?: number
   onSave: () => Promise<void>
@@ -80,6 +82,7 @@ interface SequenceEditorProps {
   onChangeEditingBlock?: (id: string) => void
   onChangeTitle: (title: string) => void
   onChangeDescription?: (description: string) => void
+  filterContinuingAsanas?: (value: boolean) => void
 }
 
 const DEFAULT_TIME_SETTINGS = {
@@ -91,12 +94,7 @@ const DEFAULT_TIME_SETTINGS = {
 }
 
 export const SequenceEditor: React.FC<SequenceEditorProps> = ({
-  data: dataProp,
-  editingBlock,
-  title,
-  description,
   asanasListNode,
-  isViewMode,
   target = Target.SEQUENCE,
   maxBlocksCount = 10,
   onSave,
@@ -106,7 +104,8 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   onChangeDescription,
   onDuplicate: onDuplicateProp,
   onDelete,
-  scrollToAsana
+  scrollToAsana,
+  filterContinuingAsanas
 }) => {
   const [isSaving, setIsSaving] = useState(false)
   const [isPdfModalVisible, setIsPdfModalVisible] = useState(false)
@@ -116,8 +115,11 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   const [draggingAsana, setDraggingAsana] = useState<null | TAsana>(null)
   const [draggingRowId, setDraggingRowId] = useState<string | null>(null)
 
+  const {sequence, description, title, editingBlock} =
+    useContext(SequenceContext)
+
   const [rows, setRows] = useState<string[]>(
-    Object.keys(dataProp ?? {}).map((key) => key)
+    Object.keys(sequence ?? {}).map((key) => key)
   )
 
   const {isMobile} = useSettings()
@@ -138,8 +140,8 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
 
     const result: Record<string, TAsana[]> = {}
 
-    Object.keys(dataProp ?? {}).forEach((key) => {
-      const currentBlock = dataProp[key] ?? []
+    Object.keys(sequence ?? {}).forEach((key) => {
+      const currentBlock = sequence[key] ?? []
 
       result[key] = currentBlock.map((asana, index) => {
         if (asana.alias === 'separator')
@@ -159,7 +161,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     })
 
     return result
-  }, [dataProp])
+  }, [sequence])
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -189,8 +191,8 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
   )
 
   useEffect(() => {
-    setRows(Object.keys(dataProp ?? {}).map((key) => key))
-  }, [dataProp])
+    setRows(Object.keys(sequence ?? {}).map((key) => key))
+  }, [sequence])
 
   useEffect(() => {
     if (!isTargetSequence) return
@@ -580,7 +582,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
     <div className={styles.previewWrapper}>
       <div className={styles.scrollContainer}>
         <div>
-          {isAuthorized && !isViewMode && (
+          {isAuthorized && (
             <div className={styles.controls}>
               <Input
                 placeholder={`Введите название ${plurTargetName}`}
@@ -624,7 +626,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
                         ? () => onChangeEditingBlock(rowId)
                         : undefined
                     }>
-                    <Sequence
+                    <SequenceRow
                       id={rowId}
                       data={data[rowId]}
                       onDeleteAsana={deleteAsanaById}
@@ -637,6 +639,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
                       copyAsana={copyAsana}
                       scrollToAsana={scrollToAsana}
                       target={target}
+                      filterContinuingAsanas={filterContinuingAsanas}
                     />
                   </div>
                 ))}
@@ -647,7 +650,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
                     {draggingRowId && !draggingAsana && (
                       <div
                         className={clsx(styles.blockWrapper, styles.dragging)}>
-                        <Sequence
+                        <SequenceRow
                           id={draggingRowId}
                           data={data[draggingRowId]}
                           onDeleteAsana={deleteAsanaById}
@@ -689,7 +692,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
             </DndContext>
           </div>
 
-          {!isViewMode && maxBlocksCount > Object.keys(data).length && (
+          {maxBlocksCount > Object.keys(data).length && (
             <Button
               block
               size="large"
@@ -703,14 +706,12 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
 
       {!!builderLength && isTargetSequence && (
         <div className={styles.timeWrapper}>
-          {!isViewMode && (
-            <Button
-              icon={<SettingOutlined />}
-              size="small"
-              className={styles.settingsButton}
-              onClick={toggleTimeSettingsVisible}
-            />
-          )}
+          <Button
+            icon={<SettingOutlined />}
+            size="small"
+            className={styles.settingsButton}
+            onClick={toggleTimeSettingsVisible}
+          />
           <div>{`Время последовательности: ${
             sequenceDuration.hours ? `${sequenceDuration.hours}ч` : ''
           } ${
@@ -720,26 +721,25 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
       )}
 
       <div className={styles.actionButtons}>
-        {!isViewMode &&
-          (typeof onDelete === 'function' ? (
-            <ConfirmButton
-              title={`Удалить ${targetName}`}
-              description={`Вы действительно хотите удалить ${targetName}?`}
-              onClick={onDelete}
-              size="large"
-              okText="Удалить">
-              Удалить
-            </ConfirmButton>
-          ) : (
-            <ConfirmButton
-              title={`Очистить ${targetName}`}
-              description={`Вы действительно хотите очистить ${targetName}?`}
-              size="large"
-              okText="Очистить"
-              onClick={clearSequence}>
-              Очистить
-            </ConfirmButton>
-          ))}
+        {typeof onDelete === 'function' ? (
+          <ConfirmButton
+            title={`Удалить ${targetName}`}
+            description={`Вы действительно хотите удалить ${targetName}?`}
+            onClick={onDelete}
+            size="large"
+            okText="Удалить">
+            Удалить
+          </ConfirmButton>
+        ) : (
+          <ConfirmButton
+            title={`Очистить ${targetName}`}
+            description={`Вы действительно хотите очистить ${targetName}?`}
+            size="large"
+            okText="Очистить"
+            onClick={clearSequence}>
+            Очистить
+          </ConfirmButton>
+        )}
         {isAuthorized && isTargetSequence && (
           <Button
             size="large"
@@ -760,7 +760,7 @@ export const SequenceEditor: React.FC<SequenceEditorProps> = ({
             </Button>
           </>
         )}
-        {isAuthorized && !isViewMode && (
+        {isAuthorized && (
           <Button
             type="primary"
             size="large"
