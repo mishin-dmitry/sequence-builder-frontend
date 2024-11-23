@@ -68,6 +68,10 @@
   overflow: scroll;
 }
 
+.emptyList {
+  margin: 10px 0;
+}
+
 .item {
   position: relative;
   display: flex;

@@ -270,35 +270,41 @@ export const Asana: React.FC<AsanaProps> = ({
                     />
                   </Tooltip>
                 )}
-                {!!continuingAsanas.length && (
+                {!!propContinuingAsanas.length && (
                   <Tooltip
                     overlay={
                       <div className={styles.continuingAsanas}>
                         <h4>Асаны для продолжения</h4>
                         <div className={styles.continuingAsanasList}>
-                          {continuingAsanas.map(
-                            (asanaId, continuingAsanaIndex) => {
-                              const asana = asanasMap[asanaId]
+                          {continuingAsanas.length ? (
+                            continuingAsanas.map(
+                              (asanaId, continuingAsanaIndex) => {
+                                const asana = asanasMap[asanaId]
 
-                              return (
-                                <Asana
-                                  key={continuingAsanaIndex}
-                                  id={continuingAsanaIndex.toString()}
-                                  asana={asana}
-                                  index={continuingAsanaIndex}
-                                  blockId={blockId}
-                                  copyAsana={copyAsana}
-                                  onDeleteAsana={onDeleteAsana}
-                                  scrollToAsana={scrollToAsana}
-                                  addAsanaToBlock={addAsanaToBlock}
-                                  onClick={() =>
-                                    copyAsana(asana, index + 1, blockId)
-                                  }
-                                  isBlockButtonsHidden
-                                  useSimpleImage
-                                />
-                              )
-                            }
+                                return (
+                                  <Asana
+                                    key={continuingAsanaIndex}
+                                    id={continuingAsanaIndex.toString()}
+                                    asana={asana}
+                                    index={continuingAsanaIndex}
+                                    blockId={blockId}
+                                    copyAsana={copyAsana}
+                                    onDeleteAsana={onDeleteAsana}
+                                    scrollToAsana={scrollToAsana}
+                                    addAsanaToBlock={addAsanaToBlock}
+                                    onClick={() =>
+                                      copyAsana(asana, index + 1, blockId)
+                                    }
+                                    isBlockButtonsHidden
+                                    useSimpleImage
+                                  />
+                                )
+                              }
+                            )
+                          ) : (
+                            <div className={styles.emptyList}>
+                              Список пуст...
+                            </div>
                           )}
                         </div>
                         <Checkbox
