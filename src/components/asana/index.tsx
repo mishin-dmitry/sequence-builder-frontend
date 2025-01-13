@@ -270,7 +270,7 @@ export const Asana: React.FC<AsanaProps> = ({
                     />
                   </Tooltip>
                 )}
-                {!!propContinuingAsanas.length && (
+                {!!(propContinuingAsanas ?? []).length && (
                   <Tooltip
                     overlay={
                       <div className={styles.continuingAsanas}>
