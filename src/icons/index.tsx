@@ -222,6 +222,7 @@ import {ekapadaAshtangaNamaskarasana} from './ekapada-ashtanga-namaskarasana'
 import {ekapadaBakasana2} from './ekapada-bakasana-2'
 import {ekapadaPurvottanasana} from './ekapada-purvottanasana'
 import {yogaNidrasana} from './yoga-nidrasana'
+
 import {marichiasana3} from './marichiasana-3'
 import {parshvaDhanurasana} from './parshva-dhanurasana'
 import {ekapadaMardjariasana2} from './ekapada-mardjariasana-2'
@@ -248,8 +249,30 @@ import {anantasana} from './anantasana'
 import {ekapadaAdhoBakasana} from './ekapada-adho-bakasana'
 import {vamadevasana2} from './vamadevasana2'
 import {dvipadaShirshasana} from './dvipada-shirshasana'
+import {nizkayaBakasana} from './nizkaya-bakasana'
+import {babyBakasana} from './baby-bakasana'
+import {brahmachariPashchimottanasana} from './brahmachari-pashchimottanasana'
+import {parivrittaGomukhasana} from './parivritta-gomukhasana'
+import {mandukasana} from './mandukasana'
+import {rombergUttanasana} from './romberg-uttansana'
+import {parivrittaSvastikasana} from './parivritta-svastikasana'
+import {parshvaSvastikasana} from './parshva-svastikasana'
+import {tittibhasanaB} from './tittibhasana-b'
+import {uttanaPadasana} from './uttana-padasana'
+import {ardhapadmaVrikshasana} from './ardhapadma-vrikshasana'
 
 export const iconsMap: Record<string, string> = {
+  ardhapadmaVrikshasana,
+  uttanaPadasana,
+  tittibhasanaB,
+  parshvaSvastikasana,
+  parivrittaSvastikasana,
+  rombergUttanasana,
+  mandukasana,
+  parivrittaGomukhasana,
+  brahmachariPashchimottanasana,
+  babyBakasana,
+  nizkayaBakasana,
   adhomukhaShvanasana,
   planka,
   tadasana,
